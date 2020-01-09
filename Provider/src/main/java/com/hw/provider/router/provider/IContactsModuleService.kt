@@ -10,7 +10,7 @@ import io.reactivex.Observable
  *data:2020/1/9 13:53
  * 获取通讯录的服务接口
  */
-public interface IContactsModuleProvider : IProvider {
+public interface IContactsModuleService : IProvider {
 
     /**
      * 获取所有联系人
