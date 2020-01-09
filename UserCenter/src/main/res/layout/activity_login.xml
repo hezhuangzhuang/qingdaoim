@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_127acb"
+    android:orientation="vertical"
+    tools:context=".ui.activity.LoginActivity">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scaleType="centerCrop"
+        android:src="@mipmap/ic_login_bg" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/etUser"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="150dp"
+            android:layout_marginBottom="120dp"
+            android:src="@mipmap/ic_login_lable" />
+
+        <EditText
+            android:id="@+id/etUser"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_above="@id/etPwd"
+            android:background="@drawable/shape_et_login_bg"
+            android:hint="请输入用户名"
+            android:paddingLeft="12dp"
+            android:inputType="text"
+            android:textColor="@color/white"
+            android:textColorHint="@color/color_87bef5" />
+
+        <EditText
+            android:inputType="textPassword"
+            android:id="@+id/etPwd"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_above="@id/btLogin"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="70dp"
+            android:background="@drawable/shape_et_login_bg"
+            android:hint="请输入密码"
+            android:paddingLeft="12dp"
+            android:textColor="@color/white"
+            android:textColorHint="@color/color_87bef5" />
+
+        <Button
+            android:id="@+id/btLogin"
+            android:layout_width="match_parent"
+            android:background="@drawable/shape_bt_login_bg"
+            android:layout_height="wrap_content"
+            android:textColor="@color/color_418ad5"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="80dp"
+            android:text="登录" />
+    </RelativeLayout>
+
+
+</FrameLayout>

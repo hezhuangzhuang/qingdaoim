@@ -1,0 +1,12 @@
+include ':app',
+        ':baselibrary',
+        ':Study',
+        ':Provider',
+        ':UserCenter',
+        ':MessageModule', 
+        ':ConfModule',
+        ':ContactsModule'
+include ':FlycoTabLayout_Lib'
+
+
+rootProject.name='KotlinMvpAndroidxQingDaoIm'
