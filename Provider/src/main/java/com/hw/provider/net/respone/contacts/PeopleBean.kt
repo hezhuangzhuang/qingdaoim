@@ -1,7 +1,6 @@
 package com.hw.provider.net.respone.contacts
 
 import com.chad.library.adapter.base.entity.MultiItemEntity
-import com.hw.contactsmodule.ui.adapter.OrganizationAdapter
 import java.io.Serializable
 
 /**
@@ -18,7 +17,7 @@ class PeopleBean(
 ) : Serializable, MultiItemEntity {
 
     override fun getItemType(): Int {
-        return OrganizationAdapter.TYPE_LEVEL_PERSON
+        return 2
     }
 
     override fun equals(other: Any?): Boolean {

@@ -25,4 +25,11 @@ object RouterPath {
             const val CONTACTS_MODULE_SERVICE="/contacts/service"
         }
     }
+
+    //会议模块
+    class Conf{
+        companion object{
+            const val CREATE_CONF="/conf/createConf"
+        }
+    }
 }

@@ -4,7 +4,6 @@ import com.alibaba.android.arouter.facade.template.IProvider
 import com.hw.baselibrary.common.BaseData
 import com.hw.provider.net.respone.contacts.PeopleBean
 import io.reactivex.Observable
-import javax.inject.Inject
 
 /**
  *author：pc-20171125

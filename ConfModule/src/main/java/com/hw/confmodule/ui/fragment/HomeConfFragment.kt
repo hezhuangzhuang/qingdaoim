@@ -3,8 +3,11 @@ package com.hw.confmodule.ui.fragment
 
 import android.os.Bundle
 import android.view.View
+import com.alibaba.android.arouter.launcher.ARouter
 import com.hw.baselibrary.ui.fragment.BaseFragment
 import com.hw.confmodule.R
+import com.hw.provider.router.RouterPath
+import kotlinx.android.synthetic.main.fragment_home_conf.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -21,6 +24,11 @@ class HomeConfFragment : BaseFragment() {
     override fun bindLayout(): Int = R.layout.fragment_home_conf
 
     override fun initView(savedInstanceState: Bundle?, contentView: View) {
+        rl_create.setOnClickListener {
+            ARouter.getInstance()
+                .build(RouterPath.Conf.CREATE_CONF)
+                .navigation()
+        }
     }
 
     override fun onError(text: String) {
