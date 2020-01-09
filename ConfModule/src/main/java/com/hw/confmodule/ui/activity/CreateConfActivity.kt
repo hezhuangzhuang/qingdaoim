@@ -28,6 +28,7 @@ class CreateConfActivity : BaseMvpActivity<ConfPresenter>(), ConfContract.View {
             .confModule(ConfModule())
             .build()
             .inject(this)
+
         mPresenter.mRootView = this
     }
 
