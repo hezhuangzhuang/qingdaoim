@@ -9,10 +9,15 @@ import com.hw.baselibrary.common.IBaseView
 interface ConfContract {
 
     interface View :IBaseView{
+        //创建会议成功
+        fun createConfSuccess()
 
+        //创建会议失败
+        fun createConfFaile()
     }
 
     interface Presenter{
-
+        //创建会议
+        fun createConf()
     }
 }

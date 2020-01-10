@@ -12,9 +12,12 @@ import com.hw.confmodule.mvp.presenter.ConfPresenter
 import com.hw.provider.router.RouterPath
 import com.hw.provider.router.provider.ModuleRouteService
 
-
+/**
+ * 创建会议界面
+ */
 @Route(path = RouterPath.Conf.CREATE_CONF)
 class CreateConfActivity : BaseMvpActivity<ConfPresenter>(), ConfContract.View {
+
 
     override fun initComponent() {
         DaggerConfComponent.builder()
@@ -46,5 +49,11 @@ class CreateConfActivity : BaseMvpActivity<ConfPresenter>(), ConfContract.View {
     }
 
     override fun setListeners() {
+    }
+
+    override fun createConfSuccess() {
+    }
+
+    override fun createConfFaile() {
     }
 }
