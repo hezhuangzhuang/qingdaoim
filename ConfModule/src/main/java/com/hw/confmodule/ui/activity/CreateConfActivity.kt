@@ -10,7 +10,7 @@ import com.hw.confmodule.inject.component.DaggerConfComponent
 import com.hw.confmodule.mvp.contract.ConfContract
 import com.hw.confmodule.mvp.presenter.ConfPresenter
 import com.hw.provider.router.RouterPath
-import com.hw.provider.router.provider.ModuleRouteService
+import com.hw.provider.router.provider.impl.ContactsModuleRouteService
 
 /**
  * 创建会议界面
@@ -32,7 +32,7 @@ class CreateConfActivity : BaseMvpActivity<ConfPresenter>(), ConfContract.View {
     }
 
     override fun initData(bundle: Bundle?) {
-        ModuleRouteService.getAllPeople()
+        ContactsModuleRouteService.getAllPeople()
             .subscribe({ baseData ->
                 ToastHelper.showShort("${baseData.data.size}")
             }, {

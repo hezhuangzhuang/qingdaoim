@@ -15,8 +15,11 @@ import javax.inject.Inject
  *data:2020/1/9 13:58
  */
 @Route(path = RouterPath.Contacts.CONTACTS_MODULE_SERVICE)
-class ContactsModuleService @Inject constructor() : IContactsModuleService {
+class ContactsModuleServiceImp @Inject constructor() : IContactsModuleService {
 
+    /**
+     * 获取所有的联系人
+     */
     override fun getAllPeople(): Observable<BaseData<PeopleBean>> {
         return ContactsService().queryAllPeople()
     }
