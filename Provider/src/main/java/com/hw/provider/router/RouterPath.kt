@@ -6,30 +6,37 @@ package com.hw.provider.router
  */
 object RouterPath {
     //用户模块
-    class UserCenter{
-        companion object{
-            const val PATH_LOGIN="/userCenter/login"
+    class UserCenter {
+        companion object {
+            const val PATH_LOGIN = "/userCenter/login"
         }
     }
 
     //主模块
-    class Main{
-        companion object{
-            const val PATH_MAIN="/main/main"
+    class Main {
+        companion object {
+            const val PATH_MAIN = "/main/main"
         }
     }
 
     //通讯录模块
-    class Contacts{
-        companion object{
-            const val CONTACTS_MODULE_SERVICE="/contacts/service"
+    class Contacts {
+        companion object {
+            const val CONTACTS_MODULE_SERVICE = "/contacts/service"
         }
     }
 
     //会议模块
-    class Conf{
-        companion object{
-            const val CREATE_CONF="/conf/createConf"
+    class Conf {
+        companion object {
+            const val CREATE_CONF = "/conf/createConf"
+        }
+    }
+
+    //聊天模块
+    class Chat {
+        companion object {
+            const val CHAT = "/chat/chat"
         }
     }
 }

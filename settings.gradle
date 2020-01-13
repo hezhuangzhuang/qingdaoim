@@ -8,5 +8,4 @@ include ':app',
         ':ContactsModule'
 include ':FlycoTabLayout_Lib'
 
-
-rootProject.name='KotlinMvpAndroidxQingDaoIm'
+rootProject.name='KotlinQingDaoIm'
