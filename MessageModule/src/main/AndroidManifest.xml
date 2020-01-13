@@ -2,8 +2,19 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.hw.messagemodule">
 
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
     <application>
-        <activity android:name=".ui.activity.ChatActivity"></activity>
+        <service
+            android:name=".service.KotlinMessageSocketService"
+            android:enabled="true"
+            android:exported="true"></service>
+        <service
+            android:name=".service.MessageSocketService"
+            android:enabled="true"
+            android:exported="true" />
+
+        <activity android:name=".ui.activity.ChatActivity" />
     </application>
 
 </manifest>

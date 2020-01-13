@@ -4,6 +4,7 @@ package com.hw.messagemodule.ui.fragment
 import android.os.Bundle
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.alibaba.android.arouter.launcher.ARouter
 import com.gyf.immersionbar.ImmersionBar
 import com.hjq.bar.OnTitleBarListener
 import com.hw.baselibrary.utils.ToastHelper
@@ -11,6 +12,7 @@ import com.hw.messagemodule.R
 import com.hw.messagemodule.mvp.contract.MessageContract
 import com.hw.messagemodule.mvp.presenter.MessagePresenter
 import com.hw.messagemodule.ui.adapter.HomeMessageAdapter
+import com.hw.provider.router.RouterPath
 import kotlinx.android.synthetic.main.fragment_message.*
 import com.hw.baselibrary.ui.fragment.BaseMvpFragment as BaseMvpFragment1
 
@@ -38,7 +40,7 @@ class HomeMessageFragment : BaseMvpFragment1<MessagePresenter>(), MessageContrac
 
     override fun initView(savedInstanceState: Bundle?, contentView: View) {
         ImmersionBar.setTitleBar(mActivity, titleBar)
-        titleBar.setOnTitleBarListener(object :OnTitleBarListener{
+        titleBar.setOnTitleBarListener(object : OnTitleBarListener {
             override fun onLeftClick(v: View?) {
             }
 
@@ -66,6 +68,14 @@ class HomeMessageFragment : BaseMvpFragment1<MessagePresenter>(), MessageContrac
      */
     private fun initAdapter() {
         messageAdapter = HomeMessageAdapter(R.layout.item_home_message, initTempData())
+        messageAdapter.setOnItemClickListener { adapter, view, position ->
+            ARouter.getInstance()
+                .build(RouterPath.Chat.CHAT)
+                .withString(RouterPath.Chat.FILED_RECEIVE_ID,"0000010001")
+                .withString(RouterPath.Chat.FILED_RECEIVE_NAME,"田虎")
+                .withBoolean(RouterPath.Chat.FILED_IS_GROUP,false)
+                .navigation()
+        }
         rvList.layoutManager = LinearLayoutManager(activity)
         rvList.adapter = messageAdapter
     }

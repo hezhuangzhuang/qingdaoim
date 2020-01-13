@@ -11,6 +11,7 @@ import com.hw.confmodule.ui.fragment.HomeConfFragment
 import com.hw.contactsmodule.ui.fragment.HomeContactsFragment
 import com.hw.kotlinmvpandroidxframe.R
 import com.hw.kotlinmvpandroidxframe.ui.fragment.MineFragment
+import com.hw.messagemodule.service.KotlinMessageSocketService
 import com.hw.messagemodule.ui.fragment.HomeMessageFragment
 import com.hw.provider.router.RouterPath
 import kotlinx.android.synthetic.main.activity_main.*
@@ -55,6 +56,7 @@ class MainActivity : BaseActivity() {
     private var currentTab = 0
 
     override fun initData(bundle: Bundle?) {
+        KotlinMessageSocketService.startService(this)
     }
 
     override fun bindLayout(): Int = R.layout.activity_main

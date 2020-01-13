@@ -24,4 +24,6 @@
     <color name="color_bbb">#BBBBBB</color>
     <color name="color_eee">#EEEEEE</color>
     <color name="color_f6f6f6">#f6f6f6</color>
+    <color name="tran">#00000000</color>
+    <color name="color_ccc">#ccc</color>
 </resources>

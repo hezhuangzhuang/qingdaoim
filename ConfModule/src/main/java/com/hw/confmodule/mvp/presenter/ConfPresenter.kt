@@ -11,4 +11,7 @@ import javax.inject.Inject
 class ConfPresenter @Inject constructor() : BasePresenter<ConfContract.View>(),
     ConfContract.Presenter {
 
+    override fun createConf() {
+    }
+
 }

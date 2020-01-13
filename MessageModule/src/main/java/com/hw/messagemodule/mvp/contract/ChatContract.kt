@@ -2,6 +2,7 @@ package com.hw.messagemodule.mvp.contract
 
 import com.hw.baselibrary.common.IBaseView
 import com.hw.messagemodule.data.bean.ChatBean
+import com.hw.messagemodule.data.bean.MessageBody
 
 /**
  *author：pc-20171125
@@ -21,7 +22,7 @@ interface ChatContract {
 
     interface Presenter {
         //发送新消息
-        fun sendMessage(chatBean: ChatBean)
+        fun sendMessage(messageBody: MessageBody)
 
     }
 }

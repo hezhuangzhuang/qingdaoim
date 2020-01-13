@@ -37,6 +37,11 @@ object RouterPath {
     class Chat {
         companion object {
             const val CHAT = "/chat/chat"
+
+            const val FILED_RECEIVE_ID = "FILED_RECEIVE_ID"
+            const val FILED_RECEIVE_NAME = "FILED_RECEIVE_NAME"
+            const val FILED_IS_GROUP = "FILED_IS_GROUP"
+
         }
     }
 }

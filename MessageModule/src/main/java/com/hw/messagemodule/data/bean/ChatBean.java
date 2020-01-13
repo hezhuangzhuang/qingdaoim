@@ -1,5 +1,7 @@
 package com.hw.messagemodule.data.bean;
 
+import java.util.Date;
+
 /**
  * author：pc-20171125
  * data:2020/1/12 18:24
@@ -18,10 +20,10 @@ public class ChatBean {
     public String name;
 
     //消息内容
-    public String content;
+    public String textContent;
 
     //时间
-    public long sendDate;
+    public Date time;
 
     //true：发出去的消息
     //false：接收到的消息
@@ -44,11 +46,11 @@ public class ChatBean {
     public ChatBean(
             int messageType,
             String name,
-            String content, long sendDate, boolean isSend, boolean isRead, boolean isGroup, String conversationId, String conversationUserName) {
+            String content, Date sendDate, boolean isSend, boolean isRead, boolean isGroup, String conversationId, String conversationUserName) {
         this.messageType = messageType;
         this.name = name;
-        this.content = content;
-        this.sendDate = sendDate;
+        this.textContent = content;
+        this.time = sendDate;
         this.isSend = isSend;
         this.isRead = isRead;
         this.isGroup = isGroup;
@@ -59,8 +61,8 @@ public class ChatBean {
     public ChatBean(Builder builder) {
         this.messageType = builder.messageType;
         this.name = builder.name;
-        this.content = builder.content;
-        this.sendDate = builder.sendDate;
+        this.textContent = builder.content;
+        this.time = builder.sendDate;
         this.isSend = builder.isSend;
         this.isRead = builder.isRead;
         this.isGroup = builder.isGroup;
@@ -78,7 +80,7 @@ public class ChatBean {
         private String content;
 
         //时间
-        private long sendDate;
+        private Date sendDate;
 
         //true：发出去的消息
         //false：接收到的消息
@@ -113,7 +115,7 @@ public class ChatBean {
             return this;
         }
 
-        public Builder setSendDate(long sendDate) {
+        public Builder setSendDate(Date sendDate) {
             this.sendDate = sendDate;
             return this;
         }
