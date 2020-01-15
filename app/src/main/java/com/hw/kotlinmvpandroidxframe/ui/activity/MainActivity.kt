@@ -13,8 +13,13 @@ import com.hw.kotlinmvpandroidxframe.R
 import com.hw.kotlinmvpandroidxframe.ui.fragment.MineFragment
 import com.hw.messagemodule.service.KotlinMessageSocketService
 import com.hw.messagemodule.ui.fragment.HomeMessageFragment
+import com.hw.provider.eventbus.EventMsg
 import com.hw.provider.router.RouterPath
+import com.hw.provider.router.provider.message.impl.MessageModuleRouteService
 import kotlinx.android.synthetic.main.activity_main.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 @Route(path = RouterPath.Main.PATH_MAIN)
 class MainActivity : BaseActivity() {
@@ -62,6 +67,15 @@ class MainActivity : BaseActivity() {
     override fun bindLayout(): Int = R.layout.activity_main
 
     override fun initView(savedInstanceState: Bundle?, contentView: View) {
+        //初始化数据库
+        MessageModuleRouteService.initDb()
+
+        EventBus.getDefault().register(this)
+
+        initTab()
+    }
+
+    private fun initTab() {
         for (index in mTitles.indices) {
             mTabEntities.add(
                 TabEntity(
@@ -72,9 +86,9 @@ class MainActivity : BaseActivity() {
             )
         }
 
-        fragments.add(HomeMessageFragment.newInstance("",""))
-        fragments.add(HomeConfFragment.newInstance("",""))
-        fragments.add(HomeContactsFragment.newInstance("",""))
+        fragments.add(HomeMessageFragment.newInstance("", ""))
+        fragments.add(HomeConfFragment.newInstance("", ""))
+        fragments.add(HomeContactsFragment.newInstance("", ""))
         fragments.add(MineFragment())
 
         tabLayout.setTabData(mTabEntities, this, R.id.flChange, fragments)
@@ -82,5 +96,27 @@ class MainActivity : BaseActivity() {
     }
 
     override fun doBusiness() {
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        EventBus.getDefault().unregister(this)
+    }
+
+    /**
+     * 主线程中处理事件
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    fun mainEvent(messageEvent: EventMsg<Any>) {
+        when (messageEvent.message) {
+            //更新消息提醒
+            EventMsg.UPDATE_MAIN_NOTIF -> {
+                if (messageEvent.messageData as Boolean) {
+                    tabLayout.showDot(0)
+                } else {
+                    tabLayout.hideMsg(0)
+                }
+            }
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.hw.messagemodule.mvp.contract
 
 import com.hw.baselibrary.common.IBaseView
+import com.hw.messagemodule.data.bean.ChatBeanLastMessage
 
 /**
  *author：pc-20171125
@@ -9,11 +10,15 @@ import com.hw.baselibrary.common.IBaseView
 interface MessageContract {
     //
     interface View: IBaseView{
-
+        //刷新最后一条数据
+        fun refreshLastMessage(list:List<ChatBeanLastMessage>)
     }
 
     //
     interface Presenter{
+        //刷新数据
+        fun queryLastChatBeans()
 
+        fun updateMessageReadStauts(chatBeanLastMessage: ChatBeanLastMessage)
     }
 }

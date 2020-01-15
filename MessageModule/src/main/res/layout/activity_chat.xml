@@ -14,8 +14,17 @@
         android:background="@color/color_418ad5"
         app:leftIcon="@mipmap/bar_icon_back_white"
         app:titleColor="@color/white"
-        app:titleSize="18sp"
-        tools:title="标题" />
+        app:titleSize="18sp" >
+
+        <TextView
+            android:id="@+id/tvName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            tools:text="联系人名称" />
+    </com.hjq.bar.TitleBar>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvMsg"
@@ -53,7 +62,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center_vertical"
-            android:visibility="gone"
+            android:visibility="visible"
             tools:visibility="visible" />
     </FrameLayout>
 </LinearLayout>

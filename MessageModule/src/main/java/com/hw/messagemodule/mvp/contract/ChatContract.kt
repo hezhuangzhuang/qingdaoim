@@ -3,6 +3,7 @@ package com.hw.messagemodule.mvp.contract
 import com.hw.baselibrary.common.IBaseView
 import com.hw.messagemodule.data.bean.ChatBean
 import com.hw.messagemodule.data.bean.MessageBody
+import java.io.File
 
 /**
  *author：pc-20171125
@@ -14,15 +15,42 @@ interface ChatContract {
         fun firstLoadMessage(chatBean: Array<ChatBean>)
 
         //发送消息成功
-        fun sendMessageSuccess(chatBean: ChatBean)
+        fun sendMessageSuccess(messageBody: MessageBody)
 
         //发送消息失败
-        fun sendMessageFaile(errorMsg:String)
+        fun sendMessageFaile(errorMsg: String)
+
+        /**
+         * 上传图片失败
+         */
+        fun uploadFaile(errorMsg: String)
+
+        /**
+         * 上传图片成功
+         */
+        fun uploadSuccess(
+            //图片名称
+            fileName: String,
+            //图片的网络路径
+            filePath: String
+        )
+
+//        //发送图片成功
+//        fun sendImageSuccess(messageBody: MessageBody)
+//
+//        //发送图片失败
+//        fun sendImageFaile(errorMsg: String)
     }
 
     interface Presenter {
-        //发送新消息
+        //发送文本消息
         fun sendMessage(messageBody: MessageBody)
+
+        //发送图片消息
+        fun sendImage(messageBody: MessageBody)
+
+        //上传图片
+        fun uploadPhoto(file: File)
 
     }
 }

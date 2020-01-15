@@ -12,7 +12,7 @@ import dagger.Provides
 class ChatModule {
 
     @Provides
-    fun provideContactsService(): ChatService {
+    fun provideChatService(): ChatService {
         return ChatService()
     }
 

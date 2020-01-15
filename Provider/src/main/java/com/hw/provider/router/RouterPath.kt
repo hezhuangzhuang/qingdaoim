@@ -22,6 +22,12 @@ object RouterPath {
     //通讯录模块
     class Contacts {
         companion object {
+            //联系人详情
+            const val CONTACT_DETAILS="/contacts/contactsDetails"
+            const val FILED_RECEIVE_ID = "FILED_RECEIVE_ID"
+            const val FILED_RECEIVE_NAME = "FILED_RECEIVE_NAME"
+
+            //提供给其他模块调用的服务
             const val CONTACTS_MODULE_SERVICE = "/contacts/service"
         }
     }
@@ -37,6 +43,9 @@ object RouterPath {
     class Chat {
         companion object {
             const val CHAT = "/chat/chat"
+
+            //提供给其他模块调用的服务
+            const val CHAT_MODULE_SERVICE = "/chat/db"
 
             const val FILED_RECEIVE_ID = "FILED_RECEIVE_ID"
             const val FILED_RECEIVE_NAME = "FILED_RECEIVE_NAME"

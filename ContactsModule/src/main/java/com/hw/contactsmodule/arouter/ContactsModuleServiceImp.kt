@@ -6,7 +6,7 @@ import com.hw.baselibrary.common.BaseData
 import com.hw.contactsmodule.mvp.model.ContactsService
 import com.hw.provider.net.respone.contacts.PeopleBean
 import com.hw.provider.router.RouterPath
-import com.hw.provider.router.provider.IContactsModuleService
+import com.hw.provider.router.provider.constacts.IContactsModuleService
 import io.reactivex.Observable
 import javax.inject.Inject
 
@@ -15,7 +15,8 @@ import javax.inject.Inject
  *data:2020/1/9 13:58
  */
 @Route(path = RouterPath.Contacts.CONTACTS_MODULE_SERVICE)
-class ContactsModuleServiceImp @Inject constructor() : IContactsModuleService {
+class ContactsModuleServiceImp @Inject constructor() :
+    IContactsModuleService {
 
     /**
      * 获取所有的联系人

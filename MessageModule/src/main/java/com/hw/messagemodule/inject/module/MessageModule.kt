@@ -1,6 +1,8 @@
 package com.hw.messagemodule.inject.module
 
+import com.hw.messagemodule.mvp.model.MessageService
 import dagger.Module
+import dagger.Provides
 
 /**
  *author：pc-20171125
@@ -9,4 +11,8 @@ import dagger.Module
 @Module
 class MessageModule {
 
+    @Provides
+    fun providesMessageService(): MessageService {
+        return MessageService()
+    }
 }

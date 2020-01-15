@@ -12,13 +12,14 @@ kapt {
     }
 }
 
+apply plugin: 'org.greenrobot.greendao'
+
 android {
-    compileSdkVersion 29
-    buildToolsVersion "29.0.0"
+    compileSdkVersion rootProject.ext.android.compileSdkVersion
 
     defaultConfig {
-        minSdkVersion 17
-        targetSdkVersion 29
+        minSdkVersion rootProject.ext.android.minSdkVersion
+        targetSdkVersion rootProject.ext.android.targetSdkVersion
         versionCode 1
         versionName "1.0"
 
@@ -32,8 +33,20 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
 }
+
+// 配置GreenDao基本参数
+greendao {
+    //数据库版本号，升级时修改
+    schemaVersion 2
+
+    //生成的DAO，DaoMaster和DaoSession的包路径。默认与表实体所在的包路径相同
+    daoPackage 'com.hw.messagemodule.db'
+
+    //生成源文件的路径。默认源文件目录是在build目录中的(build/generated/source/greendao)
+    targetGenDir 'src/main/java'
+}
+
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -56,4 +69,7 @@ dependencies {
 
     //websocket--https://github.com/TooTallNate/Java-WebSocket
     implementation 'org.java-websocket:Java-WebSocket:1.4.0'
+
+    //图片选择-https://github.com/LuckSiege/PictureSelector
+    implementation 'com.github.LuckSiege.PictureSelector:picture_library:v2.4.3'
 }

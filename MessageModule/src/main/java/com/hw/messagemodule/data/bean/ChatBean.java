@@ -1,18 +1,24 @@
 package com.hw.messagemodule.data.bean;
 
+import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Generated;
+import org.greenrobot.greendao.annotation.Id;
+
 import java.util.Date;
 
 /**
  * author：pc-20171125
  * data:2020/1/12 18:24
  */
+@Entity
 public class ChatBean {
     //TODO:消息的id，应该设置自增加, @Id(autoincrement = true)
+    @Id(autoincrement = true)
     public Long id;
 
     /**
      * 显示在列表中的消息类型
-     * 对应MultipleItem
+     * 对应ChatMultipleItem
      */
     public int messageType;
 
@@ -68,6 +74,120 @@ public class ChatBean {
         this.isGroup = builder.isGroup;
         this.conversationId = builder.conversationId;
         this.conversationUserName = builder.conversationUserName;
+    }
+
+    public ChatBeanLastMessage toLastMesage() {
+        return new ChatBeanLastMessage(
+                Long.valueOf(this.conversationId),
+                this.messageType,
+                this.name,
+                this.textContent,
+                this.time,
+                this.isSend,
+                this.isRead,
+                this.isGroup,
+                this.conversationId,
+                this.conversationUserName
+        );
+    }
+
+    @Generated(hash = 1377979473)
+    public ChatBean(Long id, int messageType, String name, String textContent, Date time, boolean isSend, boolean isRead, boolean isGroup,
+                    String conversationId, String conversationUserName) {
+        this.id = id;
+        this.messageType = messageType;
+        this.name = name;
+        this.textContent = textContent;
+        this.time = time;
+        this.isSend = isSend;
+        this.isRead = isRead;
+        this.isGroup = isGroup;
+        this.conversationId = conversationId;
+        this.conversationUserName = conversationUserName;
+    }
+
+    @Generated(hash = 1872716502)
+    public ChatBean() {
+    }
+
+    public Long getId() {
+        return this.id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public int getMessageType() {
+        return this.messageType;
+    }
+
+    public void setMessageType(int messageType) {
+        this.messageType = messageType;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getTextContent() {
+        return this.textContent;
+    }
+
+    public void setTextContent(String textContent) {
+        this.textContent = textContent;
+    }
+
+    public Date getTime() {
+        return this.time;
+    }
+
+    public void setTime(Date time) {
+        this.time = time;
+    }
+
+    public boolean getIsSend() {
+        return this.isSend;
+    }
+
+    public void setIsSend(boolean isSend) {
+        this.isSend = isSend;
+    }
+
+    public boolean getIsRead() {
+        return this.isRead;
+    }
+
+    public void setIsRead(boolean isRead) {
+        this.isRead = isRead;
+    }
+
+    public boolean getIsGroup() {
+        return this.isGroup;
+    }
+
+    public void setIsGroup(boolean isGroup) {
+        this.isGroup = isGroup;
+    }
+
+    public String getConversationId() {
+        return this.conversationId;
+    }
+
+    public void setConversationId(String conversationId) {
+        this.conversationId = conversationId;
+    }
+
+    public String getConversationUserName() {
+        return this.conversationUserName;
+    }
+
+    public void setConversationUserName(String conversationUserName) {
+        this.conversationUserName = conversationUserName;
     }
 
     public static class Builder {
@@ -148,5 +268,21 @@ public class ChatBean {
         public ChatBean builder() {
             return new ChatBean(this);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "ChatBean{" +
+                "id=" + id +
+                ", messageType=" + messageType +
+                ", name='" + name + '\'' +
+                ", textContent='" + textContent + '\'' +
+                ", time=" + time +
+                ", isSend=" + isSend +
+                ", isRead=" + isRead +
+                ", isGroup=" + isGroup +
+                ", conversationId='" + conversationId + '\'' +
+                ", conversationUserName='" + conversationUserName + '\'' +
+                '}';
     }
 }

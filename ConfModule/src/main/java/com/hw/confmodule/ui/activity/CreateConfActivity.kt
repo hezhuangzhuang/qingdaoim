@@ -10,7 +10,7 @@ import com.hw.confmodule.inject.component.DaggerConfComponent
 import com.hw.confmodule.mvp.contract.ConfContract
 import com.hw.confmodule.mvp.presenter.ConfPresenter
 import com.hw.provider.router.RouterPath
-import com.hw.provider.router.provider.impl.ContactsModuleRouteService
+import com.hw.provider.router.provider.constacts.impl.ContactsModuleRouteService
 
 /**
  * 创建会议界面

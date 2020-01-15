@@ -1,5 +1,6 @@
 package com.hw.messagemodule.ui.adapter
 
+import android.animation.ObjectAnimator
 import android.widget.ImageView
 import android.widget.TextView
 import com.chad.library.adapter.base.BaseSectionMultiItemQuickAdapter
@@ -8,6 +9,7 @@ import com.hw.baselibrary.image.ImageLoader
 import com.hw.baselibrary.utils.DateUtils
 import com.hw.messagemodule.R
 import com.hw.messagemodule.data.bean.ChatItem
+import com.hw.messagemodule.utils.Base64Utils
 import com.hw.provider.chat.ChatMultipleItem
 
 /**
@@ -42,19 +44,32 @@ class ChatAdapter : BaseSectionMultiItemQuickAdapter<ChatItem, BaseViewHolder> {
         var tvContent = helper.getView<TextView>(R.id.tv_content)
 
         when (item?.itemType) {
+            //文本消息
             ChatMultipleItem.SEND_TEXT,
             ChatMultipleItem.FORM_TEXT ->
                 setTextContent(helper, item)
 
-            ChatMultipleItem.SEND_VOICE,
+            //发送语音消息
+            ChatMultipleItem.SEND_VOICE ->
+                setSendVoiceContent(helper, item)
+            //接收语音消息
             ChatMultipleItem.FORM_VOICE ->
-                setVoiceContent(helper, item)
+                setFormVoiceContent(helper, item)
 
-            ChatMultipleItem.FORM_IMG,
+            //图片
+            ChatMultipleItem.SEND_IMG,
             ChatMultipleItem.FORM_IMG ->
                 setImgContent(helper, item)
 
-
+            //视频呼出
+            ChatMultipleItem.SEND_VIDEO_CALL,
+                //视频呼入
+            ChatMultipleItem.FORM_VIDEO_CALL,
+                //语音呼出
+            ChatMultipleItem.SEND_VOICE_CALL,
+                //语音呼入
+            ChatMultipleItem.FORM_VOICE_CALL ->
+                setCallContent(helper, item)
         }
     }
 
@@ -74,8 +89,10 @@ class ChatAdapter : BaseSectionMultiItemQuickAdapter<ChatItem, BaseViewHolder> {
     /**
      * 设置语音消息内容
      */
-    private fun setVoiceContent(helper: BaseViewHolder, item: ChatItem) {
+    private fun setSendVoiceContent(helper: BaseViewHolder, item: ChatItem) {
+        //语音文件添加点击事件播放
         helper.addOnClickListener(R.id.fl_voice)
+
         //判断是否是语音文件
         val isVoice =
             item!!.chatBean.textContent.endsWith(".voice") || item.chatBean.textContent.endsWith(".m4a")
@@ -92,11 +109,46 @@ class ChatAdapter : BaseSectionMultiItemQuickAdapter<ChatItem, BaseViewHolder> {
 
             helper.setImageResource(R.id.iv_voice, R.mipmap.ic_file)
                 .setText(R.id.tv_name, item.chatBean.name)
-            helper.setText(R.id.tv_duration, fileName)
-            helper.setText(
-                R.id.tv_time,
-                DateUtils.getTimeStringAutoShort2(item.chatBean.time, false)
-            )
+                .setText(R.id.tv_duration, fileName)
+                .setText(
+                    R.id.tv_time,
+                    DateUtils.getTimeStringAutoShort2(item.chatBean.time, false)
+                )
+        }
+    }
+
+    /**
+     * 设置语音消息内容
+     */
+    private fun setFormVoiceContent(helper: BaseViewHolder, item: ChatItem) {
+        //语音文件添加点击事件播放
+        helper.addOnClickListener(R.id.fl_voice)
+        //判断是否是语音文件
+        val isVoice =
+            item!!.chatBean.textContent.endsWith(".voice") || item.chatBean.textContent.endsWith(".m4a")
+        if (isVoice) {
+            helper.setImageResource(R.id.iv_voice, R.drawable.audio_animation_right_list)
+                .setText(R.id.tv_duration, "")
+                .setText(R.id.tv_name, item.chatBean.name)
+                .setText(
+                    R.id.tv_time, DateUtils.getTimeStringAutoShort2(item.chatBean.time, false)
+                )
+            val view = helper.getView<ImageView>(R.id.iv_voice)
+            val animator = ObjectAnimator.ofFloat(view, "rotation", 0f, 180.0f)
+            animator.duration = 10
+            animator.start()
+        } else {
+            val temp = item.chatBean.textContent
+            val endP = temp.lastIndexOf(".")
+            val filetype = temp.substring(endP)
+            val fileName = temp.substring(temp.lastIndexOf("/") + 1, endP)
+            helper.setImageResource(R.id.iv_voice, R.mipmap.ic_file)
+                .setText(R.id.tv_name, item.chatBean.name)
+                .setText(R.id.tv_duration, Base64Utils.decode(fileName) + filetype)
+                .setText(
+                    R.id.tv_time,
+                    DateUtils.getTimeStringAutoShort2(item.chatBean.time, false)
+                )
         }
     }
 
@@ -105,10 +157,47 @@ class ChatAdapter : BaseSectionMultiItemQuickAdapter<ChatItem, BaseViewHolder> {
      */
     private fun setTextContent(helper: BaseViewHolder, item: ChatItem) {
         helper.setText(R.id.tv_name, item.chatBean.name)
-        helper.setText(
-            R.id.tv_time,
-            DateUtils.getTimeStringAutoShort2(item.chatBean.time, true)
+            .setText(R.id.tv_content, item.chatBean.textContent)
+            .setText(
+                R.id.tv_time,
+                DateUtils.getTimeStringAutoShort2(item.chatBean.time, true)
+            )
+
+    }
+
+    /**
+     * 设置文本消息内容
+     */
+    private fun setCallContent(
+        helper: BaseViewHolder,
+        item: ChatItem
+    ) {
+        helper.setText(R.id.tv_name, item.chatBean.name)
+            .setText(R.id.tv_time, DateUtils.getTimeStringAutoShort2(item.chatBean.time, true))
+            .setText(R.id.tv_content, item.chatBean.textContent)
+
+        var tvContent = helper.getView<TextView>(R.id.tv_content)
+        tvContent.setCompoundDrawablesRelativeWithIntrinsicBounds(
+            getLefeRes(item.itemType),
+            0,
+            0,
+            0
         )
-        helper.setText(R.id.tv_content, item.chatBean.textContent)
+    }
+
+    private fun getLefeRes(itemType: Int): Int {
+        //视频呼叫
+        ChatMultipleItem.SEND_VIDEO_CALL
+        return R.mipmap.ic_chat_send_video_call
+
+        ChatMultipleItem.FORM_VIDEO_CALL
+        return R.mipmap.ic_chat_form_video_call
+
+        ChatMultipleItem.SEND_VOICE_CALL
+        return R.mipmap.ic_chat_send_voice_call
+
+        ChatMultipleItem.FORM_VOICE_CALL
+        return R.mipmap.ic_chat_form_voice_call
+
     }
 }

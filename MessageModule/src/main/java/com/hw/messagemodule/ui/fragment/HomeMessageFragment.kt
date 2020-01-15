@@ -5,19 +5,28 @@ import android.os.Bundle
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.alibaba.android.arouter.launcher.ARouter
+import com.chad.library.adapter.base.BaseQuickAdapter
+import com.chad.library.adapter.base.BaseViewHolder
 import com.gyf.immersionbar.ImmersionBar
 import com.hjq.bar.OnTitleBarListener
 import com.hw.baselibrary.utils.ToastHelper
 import com.hw.messagemodule.R
+import com.hw.messagemodule.data.bean.ChatBeanLastMessage
+import com.hw.messagemodule.inject.component.DaggerMessageComponent
+import com.hw.messagemodule.inject.module.MessageModule
 import com.hw.messagemodule.mvp.contract.MessageContract
 import com.hw.messagemodule.mvp.presenter.MessagePresenter
 import com.hw.messagemodule.ui.adapter.HomeMessageAdapter
+import com.hw.provider.eventbus.EventBusUtils
+import com.hw.provider.eventbus.EventMsg
 import com.hw.provider.router.RouterPath
 import kotlinx.android.synthetic.main.fragment_message.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import com.hw.baselibrary.ui.fragment.BaseMvpFragment as BaseMvpFragment1
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+//TODO: Rename parameter arguments, choose names that match
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
@@ -29,10 +38,17 @@ class HomeMessageFragment : BaseMvpFragment1<MessagePresenter>(), MessageContrac
     private lateinit var messageAdapter: HomeMessageAdapter
 
     override fun injectComponent() {
+        DaggerMessageComponent.builder()
+            .activityComponent(mActivityComponent)
+            .messageModule(MessageModule())
+            .build()
+            .inject(this)
 
+        mPresenter.mRootView = this
     }
 
     override fun initData(bundle: Bundle?) {
+        EventBus.getDefault().register(this)
         initAdapter()
     }
 
@@ -54,6 +70,8 @@ class HomeMessageFragment : BaseMvpFragment1<MessagePresenter>(), MessageContrac
     }
 
     override fun doLazyBusiness() {
+        //获取最新的消息
+        mPresenter.queryLastChatBeans()
     }
 
     override fun onError(text: String) {
@@ -67,26 +85,62 @@ class HomeMessageFragment : BaseMvpFragment1<MessagePresenter>(), MessageContrac
      * 初始化适配器
      */
     private fun initAdapter() {
-        messageAdapter = HomeMessageAdapter(R.layout.item_home_message, initTempData())
+        messageAdapter =
+            HomeMessageAdapter(R.layout.item_home_message, ArrayList<ChatBeanLastMessage>())
         messageAdapter.setOnItemClickListener { adapter, view, position ->
-            ARouter.getInstance()
-                .build(RouterPath.Chat.CHAT)
-                .withString(RouterPath.Chat.FILED_RECEIVE_ID,"0000010001")
-                .withString(RouterPath.Chat.FILED_RECEIVE_NAME,"田虎")
-                .withBoolean(RouterPath.Chat.FILED_IS_GROUP,false)
-                .navigation()
+            //进入聊天界面
+            startChatActivity(adapter, position)
         }
         rvList.layoutManager = LinearLayoutManager(activity)
         rvList.adapter = messageAdapter
     }
 
-    private fun initTempData(): ArrayList<String> {
-        var array = ArrayList<String>()
-        array.add("第一条数据")
-        array.add("第二条数据")
-        array.add("第三条数据")
-        array.add("第四条数据")
-        return array
+    /**
+     * 跳转到聊天界面
+     */
+    private fun startChatActivity(
+        adapter: BaseQuickAdapter<Any, BaseViewHolder>,
+        position: Int
+    ) {
+        val chatBeanLastMessage = adapter.getItem(position) as ChatBeanLastMessage
+        //刷新消息阅读状态
+        chatBeanLastMessage.isRead = true
+        mPresenter.updateMessageReadStauts(chatBeanLastMessage)
+
+        messageAdapter.notifyItemChanged(position)
+
+        ARouter.getInstance()
+            .build(RouterPath.Chat.CHAT)
+            .withString(RouterPath.Chat.FILED_RECEIVE_ID, chatBeanLastMessage.conversationId)
+            .withString(
+                RouterPath.Chat.FILED_RECEIVE_NAME,
+                chatBeanLastMessage.conversationUserName
+            )
+            .withBoolean(RouterPath.Chat.FILED_IS_GROUP, chatBeanLastMessage.isGroup)
+            .navigation()
+
+        //刷新首页的消息提醒
+        showMainShowRead()
+    }
+
+    /**
+     * 刷新界面
+     */
+    override fun refreshLastMessage(list: List<ChatBeanLastMessage>) {
+        messageAdapter.replaceData(list)
+
+        //刷新首页的消息提醒
+        showMainShowRead()
+    }
+
+    /**
+     * 判断
+     */
+    fun showMainShowRead() {
+        val filter = messageAdapter.data.filter {
+            !it.isRead
+        }
+        EventBusUtils.sendMessage(EventMsg.UPDATE_MAIN_NOTIF, filter.size > 0)
     }
 
     private var param1: String? = null
@@ -98,6 +152,11 @@ class HomeMessageFragment : BaseMvpFragment1<MessagePresenter>(), MessageContrac
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        EventBus.getDefault().unregister(this)
     }
 
     companion object {
@@ -119,4 +178,32 @@ class HomeMessageFragment : BaseMvpFragment1<MessagePresenter>(), MessageContrac
                 }
             }
     }
+
+    /**
+     * 主线程中处理事件
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    fun mainEvent(messageEvent: EventMsg<Any>) {
+        when (messageEvent.message) {
+            //刷新消息
+            EventMsg.REFRESH_HOME_MESSAGE ->
+                //查询消息
+                mPresenter.queryLastChatBeans()
+
+            //更新消息阅读状态
+            EventMsg.UPDATE_MESSAGE_READ_STATUS -> {
+                //获得传递过来的用户id
+                val userId = messageEvent.messageData as String
+                //遍历消息查看是否有未读消息
+                messageAdapter.data.forEach { chatBean ->
+                    if (chatBean.conversationId == userId) {
+                        chatBean.isRead = true
+                        return@forEach
+                    }
+                }
+                messageAdapter.notifyDataSetChanged()
+            }
+        }
+    }
 }
+

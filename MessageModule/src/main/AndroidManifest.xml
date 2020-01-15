@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.hw.messagemodule">
 
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
-    <application>
+    <application
+        tools:overrideLibrary="com.luck.picture.lib">
+
         <service
             android:name=".service.KotlinMessageSocketService"
             android:enabled="true"
             android:exported="true"></service>
-        <service
-            android:name=".service.MessageSocketService"
-            android:enabled="true"
-            android:exported="true" />
 
-        <activity android:name=".ui.activity.ChatActivity" />
+        <!--聊天界面-->
+        <activity
+            android:name=".ui.activity.ChatActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+
     </application>
 
 </manifest>

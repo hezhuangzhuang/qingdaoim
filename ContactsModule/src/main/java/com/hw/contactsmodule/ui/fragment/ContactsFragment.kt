@@ -4,14 +4,12 @@ package com.hw.contactsmodule.ui.fragment
 import android.os.Bundle
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.alibaba.android.arouter.launcher.ARouter
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.entity.MultiItemEntity
 import com.hw.baselibrary.ui.fragment.BaseMvpFragment
 import com.hw.baselibrary.utils.ToastHelper
 import com.hw.contactsmodule.R
-import com.hw.provider.net.respone.contacts.GroupChatBean
-import com.hw.provider.net.respone.contacts.OrganizationBean
-import com.hw.provider.net.respone.contacts.PeopleBean
 import com.hw.contactsmodule.inject.component.DaggerContactsComponent
 import com.hw.contactsmodule.inject.module.ContactsModule
 import com.hw.contactsmodule.mvp.contract.ContactsContract
@@ -20,6 +18,10 @@ import com.hw.contactsmodule.ui.adapter.AllPeopleAdapter
 import com.hw.contactsmodule.ui.adapter.GroupChatAdapter
 import com.hw.contactsmodule.ui.adapter.OrganizationAdapter
 import com.hw.contactsmodule.ui.adapter.item.OrganizationItem
+import com.hw.provider.net.respone.contacts.GroupChatBean
+import com.hw.provider.net.respone.contacts.OrganizationBean
+import com.hw.provider.net.respone.contacts.PeopleBean
+import com.hw.provider.router.RouterPath
 import kotlinx.android.synthetic.main.fragment_contacts.*
 import com.hw.contactsmodule.ui.adapter.OrganizationAdapter.onClildClickLis as onClildClickLis1
 
@@ -122,7 +124,12 @@ class ContactsFragment : BaseMvpFragment<ContactsPresenter>(), ContactsContract.
         allPeopleAdapter = AllPeopleAdapter(R.layout.item_all_people, ArrayList<PeopleBean>())
         allPeopleAdapter.setOnItemClickListener(object : BaseQuickAdapter.OnItemClickListener {
             override fun onItemClick(adapter: BaseQuickAdapter<*, *>?, view: View?, position: Int) {
-                ToastHelper.showShort(allPeopleAdapter.getItem(position)!!.name)
+                val peopleBean = allPeopleAdapter.getItem(position)!!
+                ARouter.getInstance()
+                    .build(RouterPath.Contacts.CONTACT_DETAILS)
+                    .withString(RouterPath.Contacts.FILED_RECEIVE_ID, peopleBean.sip)
+                    .withString(RouterPath.Contacts.FILED_RECEIVE_NAME, peopleBean.name)
+                    .navigation()
             }
         })
         rvList.layoutManager = LinearLayoutManager(mActivity)

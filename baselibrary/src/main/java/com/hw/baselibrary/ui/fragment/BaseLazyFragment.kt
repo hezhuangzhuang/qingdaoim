@@ -12,6 +12,7 @@ import com.gyf.immersionbar.ImmersionBar
 import com.hjq.bar.TitleBar
 import com.hw.baselibrary.common.IBaseView
 import com.hw.baselibrary.ui.activity.BaseActivity
+import com.hw.baselibrary.widgets.ProgressLoading
 import com.trello.rxlifecycle2.components.support.RxFragment
 
 /**
@@ -28,7 +29,7 @@ abstract class BaseLazyFragment : RxFragment(), IBaseView {
     protected lateinit var mActivity: Activity
     protected lateinit var mInflater: LayoutInflater
     protected lateinit var mContentView: View
-//    protected lateinit var mLoadingDialog: ProgressLoading
+    protected lateinit var mLoadingDialog: ProgressLoading
 
     /** 标题栏对象  */
     protected var mTitleBar: TitleBar? = null
@@ -92,7 +93,7 @@ abstract class BaseLazyFragment : RxFragment(), IBaseView {
         Log.d(TAG, "onActivityCreated")
         super.onActivityCreated(savedInstanceState)
 
-//        mLoadingDialog = ProgressLoading.create(mActivity)
+        mLoadingDialog = ProgressLoading.create(mActivity)
 
         initView(savedInstanceState, mContentView)
         initTitleBar()
@@ -124,14 +125,14 @@ abstract class BaseLazyFragment : RxFragment(), IBaseView {
         显示加载框，默认实现
      */
     override fun showLoading() {
-//        mLoadingDialog?.showLoading()
+        mLoadingDialog?.showLoading()
     }
 
     /*
         隐藏加载框，默认实现
      */
     override fun dismissLoading() {
-//        mLoadingDialog?.hideLoading()
+        mLoadingDialog?.hideLoading()
     }
 
     protected fun initTitleBar() {

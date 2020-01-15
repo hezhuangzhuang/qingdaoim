@@ -63,7 +63,7 @@ abstract class BaseActivity : RxAppCompatActivity(), IBaseView, OnTitleBarListen
         AppManager.instance.addActivity(this)
     }
 
-     fun setRootLayout(layoutId: Int) {
+    fun setRootLayout(layoutId: Int) {
         if (layoutId <= 0) return
         mContentView = LayoutInflater.from(this).inflate(layoutId, null)
         setContentView(mContentView)
@@ -137,6 +137,7 @@ abstract class BaseActivity : RxAppCompatActivity(), IBaseView, OnTitleBarListen
             // 设置标题栏沉浸
             if (getTitleId() > 0) {
                 ImmersionBar.setTitleBar(this, findViewById(getTitleId()) as View)
+
             } else if (mTitleBar != null) {
                 ImmersionBar.setTitleBar(this, mTitleBar)
             }
@@ -145,15 +146,16 @@ abstract class BaseActivity : RxAppCompatActivity(), IBaseView, OnTitleBarListen
 
     /**
      * 是否使用沉浸式状态栏
+     * open
      */
-    fun isStatusBarEnabled(): Boolean {
+    open fun isStatusBarEnabled(): Boolean {
         return true
     }
 
     /**
      * 获取状态栏沉浸的配置对象
      */
-    fun getStatusBarConfig(): ImmersionBar {
+    open fun getStatusBarConfig(): ImmersionBar {
         return mImmersionBar
     }
 
