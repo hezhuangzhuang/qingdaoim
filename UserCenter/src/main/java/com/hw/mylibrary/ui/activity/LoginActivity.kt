@@ -2,7 +2,9 @@ package com.hw.mylibrary.ui.activity
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.widget.Toast
 import com.alibaba.android.arouter.facade.annotation.Route
 import com.alibaba.android.arouter.launcher.ARouter
 import com.hw.baselibrary.constant.PermissionConstants
@@ -42,7 +44,6 @@ class LoginActivity : BaseMvpActivity<LoginPresenter>(), LoginContract.View {
     override fun initView(savedInstanceState: Bundle?, contentView: View) {
         etUser.setText(SPStaticUtils.getString(UserContants.USER_NAME))
         etPwd.setText(SPStaticUtils.getString(UserContants.PASS_WORD))
-
     }
 
     override fun doBusiness() {
@@ -63,11 +64,9 @@ class LoginActivity : BaseMvpActivity<LoginPresenter>(), LoginContract.View {
                     //登录的请求
                     loginRequest()
                 }
-
                 override fun onDenied(
                     permissionsDeniedForever: List<String>,
-                    permissionsDenied: List<String>
-                ) {
+                    permissionsDenied: List<String>) {
                     LogUtils.d(permissionsDeniedForever, permissionsDenied)
                     if (!permissionsDeniedForever.isEmpty()) {
                         return
@@ -124,13 +123,40 @@ class LoginActivity : BaseMvpActivity<LoginPresenter>(), LoginContract.View {
         //华为登录地址
         SPStaticUtils.put(UserContants.HUAWEI_SMC_IP, userInfo.data.scIp)
         SPStaticUtils.put(UserContants.HUAWEI_SMC_PORT, userInfo.data.scPort)
-
-
     }
 
     override fun loginFail(error: String) {
         ToastHelper.showShort(error)
     }
 
+    /*华为登录相关start*/
+    var mActions = arrayOf<String>(
+        CustomBroadcastConstants.LOGIN_SUCCESS,
+        CustomBroadcastConstants.LOGIN_FAILED,
+        CustomBroadcastConstants.LOGOUT
+    )
 
+    private val loginReceiver = object : LocBroadcastReceiver {
+        override fun onReceive(broadcastName: String, obj: Any) {
+            Log.i(TAG, "loginReceiver-->$broadcastName")
+            when (broadcastName) {
+                CustomBroadcastConstants.LOGIN_SUCCESS -> {
+
+                }
+
+                CustomBroadcastConstants.LOGIN_FAILED -> {
+                    DialogUtils.dismissProgressDialog(this@LoginActivity)
+                    val errorMessage = obj as String
+                    LogUtil.i(UIConstants.DEMO_TAG, "login failed,$errorMessage")
+                    Toast.makeText(this@LoginActivity, "华为平台登录失败：$errorMessage", Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                CustomBroadcastConstants.LOGOUT -> LogUtil.i(UIConstants.DEMO_TAG, "logout success")
+
+                else -> {
+                }
+            }
+        }
+    }
 }

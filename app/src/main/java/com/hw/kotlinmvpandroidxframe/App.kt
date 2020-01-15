@@ -3,6 +3,7 @@ package com.hw.kotlinmvpandroidxframe
 import androidx.multidex.MultiDex
 import com.hw.baselibrary.common.BaseApp
 import com.hw.baselibrary.image.ImageLoader
+import com.hw.huaweivclib.inter.HuaweiInitImp
 import com.hw.kotlinmvpandroidxframe.ui.activity.LauncherActivity
 import com.zxy.recovery.core.Recovery
 
@@ -19,7 +20,11 @@ class App :BaseApp() {
 
         ImageLoader.init(this)
 
+        //65535
         MultiDex.install(this);
+
+        //初始化华为
+        HuaweiInitImp.initHuawei(this,BuildConfig.APPLICATION_ID)
     }
 
     /**

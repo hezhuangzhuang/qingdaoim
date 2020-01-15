@@ -32,6 +32,16 @@ import static android.Manifest.permission.EXPAND_STATUS_BAR;
  */
 public class NotificationUtils {
 
+    //视频通话时的notifId
+    public static final int VIDEO_ID = 0X100;
+
+    //语音通话时的notifId
+    public static final int AUDIO_ID = 0X101;
+
+    //来电时的notif
+    public static final int CALL_IN_ID = 0X102;
+
+
     public interface Func1<Ret, Par> {
         Ret call(Par param);
     }

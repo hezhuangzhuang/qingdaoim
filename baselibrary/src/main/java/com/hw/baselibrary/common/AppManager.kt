@@ -18,6 +18,31 @@ class AppManager private constructor() {
         }
     }
 
+    fun getCurActivity(): Activity? {
+        if (activityStack.isEmpty()) {
+            return null
+        }
+        var lastElement: Activity? = activityStack.lastElement()
+        if (null == lastElement) {
+            popup()
+
+            lastElement = getCurActivity()
+        }
+        return lastElement
+    }
+
+    fun popup() {
+        if (activityStack.isEmpty()) {
+            return
+        }
+
+        val activity = activityStack.pop()
+        if (null != activity) {
+//            LogUtil.d(UIConstants.DEMO_TAG, activity!!.getLocalClassName())
+            activity!!.finish()
+        }
+    }
+
     /**
      * activity入栈
      */
@@ -31,6 +56,23 @@ class AppManager private constructor() {
     fun pushActivity(activity: Activity) {
         activity.finish()
         activityStack.remove(activity)
+    }
+
+    /**
+     * 结束指定类名的activity
+     *
+     * @param cls
+     */
+    fun pushActivity(cls: Class<*>) {
+        var activity: Activity? = null
+        for (a in activityStack) {
+            if (a.javaClass == cls) {
+                activity = a
+                break
+            }
+        }
+        if (activity != null)
+            pushActivity(activity)
     }
 
     /**
