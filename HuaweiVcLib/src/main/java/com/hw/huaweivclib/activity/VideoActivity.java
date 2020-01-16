@@ -240,6 +240,7 @@ public class VideoActivity extends BaseActivity implements LocBroadcastReceiver,
         if (CallMgr.getInstance().muteMic(mCallID, !currentMuteStatus)) {
             mCallFunc.setMuteStatus(!currentMuteStatus);
             setMicStatus();
+
         }
     }
 
