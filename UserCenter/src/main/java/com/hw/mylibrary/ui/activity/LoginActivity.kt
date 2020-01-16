@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import com.alibaba.android.arouter.facade.annotation.Route
 import com.alibaba.android.arouter.launcher.ARouter
 import com.hw.baselibrary.constant.PermissionConstants
@@ -20,7 +19,11 @@ import com.hw.mylibrary.injection.component.DaggerUserComponent
 import com.hw.mylibrary.injection.module.UserModule
 import com.hw.mylibrary.mvp.contract.LoginContract
 import com.hw.mylibrary.mvp.presenter.LoginPresenter
+import com.hw.provider.huawei.commonservice.localbroadcast.CustomBroadcastConstants
+import com.hw.provider.huawei.commonservice.localbroadcast.LocBroadcast
+import com.hw.provider.huawei.commonservice.localbroadcast.LocBroadcastReceiver
 import com.hw.provider.router.RouterPath
+import com.hw.provider.router.provider.huawei.impl.HuaweiModuleService
 import com.hw.provider.user.UserContants
 import kotlinx.android.synthetic.main.activity_login.*
 
@@ -64,9 +67,11 @@ class LoginActivity : BaseMvpActivity<LoginPresenter>(), LoginContract.View {
                     //登录的请求
                     loginRequest()
                 }
+
                 override fun onDenied(
                     permissionsDeniedForever: List<String>,
-                    permissionsDenied: List<String>) {
+                    permissionsDenied: List<String>
+                ) {
                     LogUtils.d(permissionsDeniedForever, permissionsDenied)
                     if (!permissionsDeniedForever.isEmpty()) {
                         return
@@ -79,6 +84,10 @@ class LoginActivity : BaseMvpActivity<LoginPresenter>(), LoginContract.View {
 
     @SuppressLint("MissingPermission")
     private fun loginRequest() {
+
+        //注册广播
+        LocBroadcast.getInstance().registerBroadcast(loginReceiver, mActions)
+
         var name = etUser.text.toString().trim()
         var pwd = etPwd.text.toString().trim()
         mPresenter.login(name, pwd, PhoneUtils.getDeviceId())
@@ -91,12 +100,15 @@ class LoginActivity : BaseMvpActivity<LoginPresenter>(), LoginContract.View {
         //保存用户信息
         saveUserInfo(userInfo)
 
-        ARouter.getInstance()
-            .build(RouterPath.Main.PATH_MAIN)
-            .navigation()
-
-        ToastHelper.showShort("登录成功")
-        finish()
+        //开始登录华为
+        userInfo.data.apply {
+            HuaweiModuleService.login(
+                sipAccount,
+                sipPassword,
+                scIp,
+                scPort
+            )
+        }
     }
 
     /**
@@ -129,6 +141,13 @@ class LoginActivity : BaseMvpActivity<LoginPresenter>(), LoginContract.View {
         ToastHelper.showShort(error)
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+
+        //取消注册广播
+        LocBroadcast.getInstance().unRegisterBroadcast(loginReceiver, mActions)
+    }
+
     /*华为登录相关start*/
     var mActions = arrayOf<String>(
         CustomBroadcastConstants.LOGIN_SUCCESS,
@@ -137,22 +156,26 @@ class LoginActivity : BaseMvpActivity<LoginPresenter>(), LoginContract.View {
     )
 
     private val loginReceiver = object : LocBroadcastReceiver {
-        override fun onReceive(broadcastName: String, obj: Any) {
+        override fun onReceive(broadcastName: String?, obj: Any?) {
             Log.i(TAG, "loginReceiver-->$broadcastName")
             when (broadcastName) {
                 CustomBroadcastConstants.LOGIN_SUCCESS -> {
+                    ToastHelper.showShort("登录成功")
 
+                    ARouter.getInstance()
+                        .build(RouterPath.Main.PATH_MAIN)
+                        .navigation()
+
+                    finish()
                 }
 
                 CustomBroadcastConstants.LOGIN_FAILED -> {
-                    DialogUtils.dismissProgressDialog(this@LoginActivity)
-                    val errorMessage = obj as String
-                    LogUtil.i(UIConstants.DEMO_TAG, "login failed,$errorMessage")
-                    Toast.makeText(this@LoginActivity, "华为平台登录失败：$errorMessage", Toast.LENGTH_SHORT)
-                        .show()
+                    ToastHelper.showShort("登录华为失败")
                 }
 
-                CustomBroadcastConstants.LOGOUT -> LogUtil.i(UIConstants.DEMO_TAG, "logout success")
+                CustomBroadcastConstants.LOGOUT -> {
+                    ToastHelper.showShort("登出")
+                }
 
                 else -> {
                 }

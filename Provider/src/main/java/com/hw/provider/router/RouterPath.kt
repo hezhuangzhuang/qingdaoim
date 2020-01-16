@@ -53,4 +53,12 @@ object RouterPath {
 
         }
     }
+
+    //华为会议模块
+    class Huawei {
+        companion object {
+            const val HUAWEI_MODULE_SERVICE = "/huawei/service"
+        }
+    }
+
 }

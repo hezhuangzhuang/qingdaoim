@@ -30,9 +30,9 @@ class LoginPresenter @Inject constructor() : BasePresenter<LoginContract.View>()
                     if (NetWorkContants.RESPONSE_CODE == baseDate.responseCode) {
                         loginSuccess(baseDate)
                     } else {
+                        dismissLoading()
                         loginFail(baseDate.message)
                     }
-                    dismissLoading()
                 }
             }, { e ->
                 mRootView?.apply {

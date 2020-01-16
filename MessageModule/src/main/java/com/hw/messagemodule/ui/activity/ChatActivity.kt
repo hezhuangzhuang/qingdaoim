@@ -32,6 +32,7 @@ import com.hw.provider.chat.ChatMultipleItem
 import com.hw.provider.eventbus.EventBusUtils
 import com.hw.provider.eventbus.EventMsg
 import com.hw.provider.router.RouterPath
+import com.hw.provider.router.provider.huawei.impl.HuaweiModuleService
 import com.hw.provider.user.UserContants
 import com.luck.picture.lib.PictureSelector
 import com.luck.picture.lib.config.PictureConfig
@@ -53,13 +54,13 @@ import java.io.File
 class ChatActivity : BaseMvpActivity<ChatPresenter>(), ChatContract.View, View.OnClickListener {
 
     //收件人id
-    public var receiveId: String? = null
+    public lateinit var receiveId: String
 
     //收件人名称
-    public var receiveName: String? = null
+    public lateinit var receiveName: String
 
     //是否是群聊
-    public var isGroup: Boolean? = false
+    public var isGroup: Boolean = false
 
     //当前登录的账号
     val account = SPStaticUtils.getString(UserContants.HUAWEI_ACCOUNT, "")
@@ -206,9 +207,9 @@ class ChatActivity : BaseMvpActivity<ChatPresenter>(), ChatContract.View, View.O
         val msg = MessageBody(
             account,
             disPlayName,
-            receiveId!!,
-            receiveName!!,
-            if (isGroup!!) {
+            receiveId,
+            receiveName,
+            if (isGroup) {
                 MessageBody.TYPE_COMMON
             } else MessageBody.TYPE_PERSONAL,
             messageReal
@@ -263,12 +264,22 @@ class ChatActivity : BaseMvpActivity<ChatPresenter>(), ChatContract.View, View.O
                 startCameraAct()
 
             //视频会议
-            R.id.tvVideoCall ->
-                ToastHelper.showShort("视频会议")
+            R.id.tvVideoCall ->{
+                if(isGroup){
+
+                }else{
+                    HuaweiModuleService.callSite(receiveId, true)
+                }
+            }
+
 
             //语音会议
             R.id.tvAudioCall ->
-                ToastHelper.showShort("语音会议")
+                if(isGroup){
+
+                }else{
+                    HuaweiModuleService.callSite(receiveId, false)
+                }
 
             //文件
             R.id.tvFile ->

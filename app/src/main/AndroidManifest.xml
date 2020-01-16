@@ -16,7 +16,13 @@
         tools:overrideLibrary="com.luck.picture.lib"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".ui.activity.LauncherActivity"/>
+        <activity android:name=".ui.activity.LauncherActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
         <!-- 适配华为（huawei）刘海屏 -->
         <meta-data

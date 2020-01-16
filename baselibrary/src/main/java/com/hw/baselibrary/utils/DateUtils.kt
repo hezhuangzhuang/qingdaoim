@@ -23,6 +23,9 @@ object DateUtils {
     val FORMAT_DATE_CHINA = "yyyy年MM月dd日"
     val FORMAT_DATE_TIME_CHINA = "yyyy年MM月dd日 HH:mm"
 
+    // 显示聊天记录的格式
+    val CHAT_TIME = "mm:ss"
+
     private val sdf = SimpleDateFormat()
     private val YEAR = 365 * 24 * 60 * 60// 年
     private val MONTH = 30 * 24 * 60 * 60// 月
@@ -88,6 +91,8 @@ object DateUtils {
      * currentTime要转换的long类型的时间
      * formatType要转换的string类型的时间格式
      */
+    //TODO:加了@JvmStatic之后，在java类中可以直接通过DateUtils.longToString调用
+    @JvmStatic
     fun longToString(currentTime: Long, formatType: String): String {
         val strTime: String
         // long类型转成Date类型
