@@ -9,7 +9,6 @@ import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
 import com.gyf.immersionbar.ImmersionBar
 import com.hjq.bar.OnTitleBarListener
-import com.hw.baselibrary.utils.ToastHelper
 import com.hw.messagemodule.R
 import com.hw.messagemodule.data.bean.ChatBeanLastMessage
 import com.hw.messagemodule.inject.component.DaggerMessageComponent
@@ -20,6 +19,7 @@ import com.hw.messagemodule.ui.adapter.HomeMessageAdapter
 import com.hw.provider.eventbus.EventBusUtils
 import com.hw.provider.eventbus.EventMsg
 import com.hw.provider.router.RouterPath
+import com.hw.provider.widget.SelectCreateDialog
 import kotlinx.android.synthetic.main.fragment_message.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -36,6 +36,10 @@ private const val ARG_PARAM2 = "param2"
 class HomeMessageFragment : BaseMvpFragment1<MessagePresenter>(), MessageContract.View {
     //自己初始化
     private lateinit var messageAdapter: HomeMessageAdapter
+
+    private val selectCreateDialog: SelectCreateDialog by lazy {
+        SelectCreateDialog(activity)
+    }
 
     override fun injectComponent() {
         DaggerMessageComponent.builder()
@@ -64,7 +68,8 @@ class HomeMessageFragment : BaseMvpFragment1<MessagePresenter>(), MessageContrac
             }
 
             override fun onRightClick(v: View?) {
-                ToastHelper.showShort("点击右侧按钮")
+                selectCreateDialog.setBackground(null)
+                selectCreateDialog.showPopupWindow(v)
             }
         })
     }
@@ -100,8 +105,7 @@ class HomeMessageFragment : BaseMvpFragment1<MessagePresenter>(), MessageContrac
      */
     private fun startChatActivity(
         adapter: BaseQuickAdapter<Any, BaseViewHolder>,
-        position: Int
-    ) {
+        position: Int) {
         val chatBeanLastMessage = adapter.getItem(position) as ChatBeanLastMessage
         //刷新消息阅读状态
         chatBeanLastMessage.isRead = true
@@ -202,6 +206,9 @@ class HomeMessageFragment : BaseMvpFragment1<MessagePresenter>(), MessageContrac
                     }
                 }
                 messageAdapter.notifyDataSetChanged()
+
+                //更新首页的未读状态
+                showMainShowRead()
             }
         }
     }

@@ -7,6 +7,7 @@ import android.os.IBinder
 import com.google.gson.Gson
 import com.hw.baselibrary.net.Urls
 import com.hw.baselibrary.utils.LogUtils
+import com.hw.baselibrary.utils.NetWorkUtils
 import com.hw.baselibrary.utils.ToastHelper
 import com.hw.baselibrary.utils.sharedpreferences.SPStaticUtils
 import com.hw.messagemodule.data.bean.*
@@ -28,11 +29,15 @@ class KotlinMessageSocketService : Service() {
     }
 
     companion object {
+        //0：断开，1：连接，2：正在连接
+        var socketStatus: Int = 0
+
         private val url by lazy {
             Urls.WEBSOCKET_URL + "/im/websocket/im/client?sip=" + SPStaticUtils.getString(
                 UserContants.HUAWEI_ACCOUNT
             )
         }
+
         private val gson by lazy {
             Gson()
         }
@@ -50,7 +55,19 @@ class KotlinMessageSocketService : Service() {
                 if (e is WebsocketNotConnectedException) {
                     //开始连接
                     //TODO:没有网络时，此处会报错
-                    kotlinMessageSocketClient.connect()
+                    try {
+                        if (NetWorkUtils.isConnected() && 2 != socketStatus) {
+                            socketStatus = 2
+                            val reconnectBlocking = kotlinMessageSocketClient.reconnectBlocking()
+                            //如果连接失败则把标识符设成0
+                            if (!reconnectBlocking) {
+                                //断开
+                                socketStatus = 0
+                            }
+                        }
+                    } catch (e: Exception) {
+                        LogUtils.e("MessageSocketService-->sendMessage-->${e.message}")
+                    }
                 }
                 ToastHelper.showShort("消息发送失败")
                 return false
@@ -99,11 +116,13 @@ class KotlinMessageSocketService : Service() {
                 override fun onOpen(handshakedata: ServerHandshake?) {
                     super.onOpen(handshakedata)
                     LogUtils.e("MessageSocketService-->onOpen-->$handshakedata")
+                    socketStatus = 1;
                 }
 
                 override fun onClose(code: Int, reason: String?, remote: Boolean) {
                     super.onClose(code, reason, remote)
                     LogUtils.e("MessageSocketService-->onClose-->$reason")
+                    socketStatus = 0;
                 }
 
                 override fun onError(ex: Exception?) {
@@ -146,6 +165,13 @@ class KotlinMessageSocketService : Service() {
         }
 
         //点对点聊天
+        saveMessage(message)
+    }
+
+    /**
+     * 保存消息
+     */
+    private fun saveMessage(message: MessageBody?) {
         if (message!!.type == MessageBody.TYPE_PERSONAL) {
             //保存消息到数据库
             saveChatBeanToDb(message)
@@ -168,10 +194,12 @@ class KotlinMessageSocketService : Service() {
      * 处理离线消息
      */
     private fun disposeOfflineMessage(webSocketResult: WebSocketResult?) {
-        var array: Array<Any> = webSocketResult!!.data as Array<Any>;
+        var array: ArrayList<Any> = webSocketResult!!.data as ArrayList<Any>;
         array.forEach { item ->
-            var body: MessageBody = item as MessageBody
-            EventBusUtils.sendMessage(EventMsg.RECEIVE_SINGLE_MESSAGE, body)
+            var message: MessageBody? = null
+            message = gson.fromJson(gson.toJson(item), MessageBody::class.java)
+            //保存消息
+            saveMessage(message)
         }
     }
 

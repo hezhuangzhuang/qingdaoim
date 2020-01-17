@@ -56,21 +56,6 @@ object NetWorkUtils {
     }
 
     /**
-     * 查看网络是否连接
-     *
-     * Return whether network is connected.
-     *
-     * Must hold `<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />`
-     *
-     * @return `true`: connected<br></br>`false`: disconnected
-     */
-    @RequiresPermission(ACCESS_NETWORK_STATE)
-    fun isConnected(): Boolean {
-        val info = getActiveNetworkInfo()
-        return info != null && info.isConnected
-    }
-
-    /**
      * ping网络查看网络是否可用
      *
      * Return whether network is available using ping.
@@ -84,6 +69,21 @@ object NetWorkUtils {
     @RequiresPermission(INTERNET)
     fun isAvailableByPing(): Boolean {
         return isAvailableByPing(null)
+    }
+
+    /**
+     * 查看网络是否连接
+     *
+     * Return whether network is connected.
+     *
+     * Must hold `<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />`
+     *
+     * @return `true`: connected<br></br>`false`: disconnected
+     */
+    @RequiresPermission(ACCESS_NETWORK_STATE)
+    fun isConnected(): Boolean {
+        val info = getActiveNetworkInfo()
+        return info != null && info.isConnected
     }
 
     /**

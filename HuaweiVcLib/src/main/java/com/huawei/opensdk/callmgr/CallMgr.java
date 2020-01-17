@@ -344,7 +344,8 @@ public class CallMgr extends TupCallBackBaseNotify implements ICallMgr {
         reSetRenderer();
 
         //创建一路呼叫
-        TupCall call = isVideoCall ? TupMgr.getInstance().getCallManagerIns().makeVideoCall(toNumber)
+        TupCall call = isVideoCall ?
+                TupMgr.getInstance().getCallManagerIns().makeVideoCall(toNumber)
                 : TupMgr.getInstance().getCallManagerIns().makeCall(toNumber);
         if (call != null) {
             Session newSession = new Session(call);

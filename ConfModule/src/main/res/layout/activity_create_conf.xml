@@ -13,7 +13,7 @@
         android:layout_height="?android:attr/actionBarSize"
         android:background="@color/color_418ad5"
         app:backButton="false"
-        app:leftTitle="返回"
+        app:leftIcon="@mipmap/bar_icon_back_white"
         app:rightColor="@color/white"
         app:rightSize="16sp"
         app:rightTitle="召集会议">
@@ -22,26 +22,74 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="选择与会人"
+            android:text="添加与会人"
             android:textColor="@color/white"
             android:textSize="18sp" />
     </com.hjq.bar.TitleBar>
 
-    <com.flyco.tablayout.SlidingTabLayout
-        android:id="@+id/tbLayout"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clContent"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:background="@color/white"
-        app:tl_indicator_color="@color/color_418ad5"
-        app:tl_indicator_corner_radius="@dimen/tab_indicator_corner_tiny_radius"
-        app:tl_indicator_height="2dp"
-        app:tl_indicator_width="@dimen/tab_indicator_center_width"
-        app:tl_indicator_width_equal_title="false"
-        app:tl_tab_padding="@dimen/tab_bar_item_padding"
-        app:tl_tab_space_equal="true"
-        app:tl_textSelectColor="@color/color_418ad5"
-        app:tl_textUnselectColor="@color/color_999"
-        app:tl_textsize="16sp" />
+        android:background="@color/white">
+
+        <Space
+            android:id="@+id/centerSpace"
+            android:layout_width="0dp"
+            android:layout_height="0dp" />
+
+        <TextView
+            android:id="@+id/tvVideoConf"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_toLeftOf="@id/centerSpace"
+            android:gravity="center"
+            android:text="视频会议"
+            android:textColor="@color/color_418ad5"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/tvVoiceConf" />
+
+        <TextView
+            android:id="@+id/tvVoiceConf"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="语音会议"
+            android:textColor="@color/color_999"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintLeft_toRightOf="@id/tvVideoConf"
+            app:layout_constraintRight_toRightOf="parent" />
+
+        <View
+            android:id="@+id/viewVideo"
+            android:layout_width="35dp"
+            android:layout_height="2dp"
+            android:layout_alignBaseline="@id/tvVideoConf"
+            android:layout_alignParentBottom="true"
+            android:background="@color/color_418ad5"
+            app:layout_constraintBottom_toBottomOf="@id/tvVideoConf"
+            app:layout_constraintLeft_toLeftOf="@id/tvVideoConf"
+            app:layout_constraintRight_toRightOf="@id/tvVideoConf" />
+
+        <View
+            android:id="@+id/viewVoice"
+            android:layout_width="35dp"
+            android:layout_height="2dp"
+            android:layout_alignBaseline="@id/tvVideoConf"
+            android:layout_alignParentBottom="true"
+            android:background="@color/color_418ad5"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/tvVoiceConf"
+            app:layout_constraintLeft_toLeftOf="@id/tvVoiceConf"
+            app:layout_constraintRight_toRightOf="@id/tvVoiceConf" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/color_e5e5e5" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -65,9 +113,10 @@
             android:layout_height="match_parent"
             android:background="@null"
             android:ellipsize="end"
-            android:hint="请输入默认名称"
+            android:hint="请输入会议名称"
             android:singleLine="true"
-            android:textColor="@color/color_bbb"
+            android:textColorHint="@color/color_bbb"
+            android:textColor="@color/color_333"
             android:textSize="16sp" />
     </LinearLayout>
 
@@ -100,8 +149,11 @@
             android:background="@null"
             android:ellipsize="end"
             android:hint="请输入会议接入码"
+            android:inputType="number"
+            android:maxLength="4"
             android:singleLine="true"
-            android:textColor="@color/color_bbb"
+            android:textColorHint="@color/color_bbb"
+            android:textColor="@color/color_333"
             android:textSize="16sp" />
     </LinearLayout>
 
@@ -124,6 +176,9 @@
             android:drawableLeft="@mipmap/ic_create_conf_search"
             android:drawablePadding="6dp"
             android:hint="搜索"
+            android:textSize="14sp"
+            android:textColorHint="@color/color_bbb"
+            android:textColor="@color/color_333"
             android:padding="8dp" />
 
     </FrameLayout>
@@ -142,31 +197,33 @@
         android:orientation="horizontal">
 
         <TextView
-            android:layout_centerVertical="true"
             android:id="@+id/tvAllSelect"
             android:layout_width="wrap_content"
-            android:paddingRight="15dp"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:paddingLeft="15dp"
-            android:gravity="center_vertical"
-            android:textColor="@color/color_418ad5"
             android:layout_height="match_parent"
-            android:text="全选" />
+            android:layout_centerVertical="true"
+            android:drawableLeft="@mipmap/ic_blue_check_false"
+            android:gravity="center_vertical"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:drawablePadding="8dp"
+            android:text="全选"
+            android:textColor="@color/color_418ad5"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
         <TextView
-            android:layout_alignParentRight="true"
-            android:layout_gravity="right"
-            android:textColor="@color/color_418ad5"
-            android:layout_centerVertical="true"
-            android:gravity="center_vertical"
-            android:text="已选择"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:paddingRight="15dp"
-            android:paddingLeft="15dp"
-            android:id="@+id/tvSelect"
+            android:id="@+id/tvSelectNumber"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="right"
+            android:gravity="center_vertical"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:text="已选择"
+            android:textColor="@color/color_418ad5"
+            android:textSize="16sp"
+            android:textStyle="bold" />
     </RelativeLayout>
 </LinearLayout>

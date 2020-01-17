@@ -4,7 +4,9 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import com.alibaba.android.arouter.facade.Postcard
 import com.alibaba.android.arouter.facade.annotation.Route
+import com.alibaba.android.arouter.facade.callback.NavigationCallback
 import com.alibaba.android.arouter.launcher.ARouter
 import com.hw.baselibrary.constant.PermissionConstants
 import com.hw.baselibrary.ui.activity.BaseMvpActivity
@@ -14,7 +16,6 @@ import com.hw.baselibrary.utils.PhoneUtils
 import com.hw.baselibrary.utils.ToastHelper
 import com.hw.baselibrary.utils.sharedpreferences.SPStaticUtils
 import com.hw.mylibrary.R
-import com.hw.mylibrary.data.bean.LoginBean
 import com.hw.mylibrary.injection.component.DaggerUserComponent
 import com.hw.mylibrary.injection.module.UserModule
 import com.hw.mylibrary.mvp.contract.LoginContract
@@ -22,6 +23,7 @@ import com.hw.mylibrary.mvp.presenter.LoginPresenter
 import com.hw.provider.huawei.commonservice.localbroadcast.CustomBroadcastConstants
 import com.hw.provider.huawei.commonservice.localbroadcast.LocBroadcast
 import com.hw.provider.huawei.commonservice.localbroadcast.LocBroadcastReceiver
+import com.hw.provider.net.respone.user.LoginBean
 import com.hw.provider.router.RouterPath
 import com.hw.provider.router.provider.huawei.impl.HuaweiModuleService
 import com.hw.provider.user.UserContants
@@ -84,7 +86,6 @@ class LoginActivity : BaseMvpActivity<LoginPresenter>(), LoginContract.View {
 
     @SuppressLint("MissingPermission")
     private fun loginRequest() {
-
         //注册广播
         LocBroadcast.getInstance().registerBroadcast(loginReceiver, mActions)
 
@@ -116,7 +117,7 @@ class LoginActivity : BaseMvpActivity<LoginPresenter>(), LoginContract.View {
      */
     private fun saveUserInfo(userInfo: LoginBean) {
         //是否登录
-        SPStaticUtils.put(UserContants.HAS_LOGIN, false)
+        SPStaticUtils.put(UserContants.HAS_LOGIN, true)
 
         //显示的名称
         SPStaticUtils.put(UserContants.DISPLAY_NAME, userInfo.data.name)
@@ -160,13 +161,26 @@ class LoginActivity : BaseMvpActivity<LoginPresenter>(), LoginContract.View {
             Log.i(TAG, "loginReceiver-->$broadcastName")
             when (broadcastName) {
                 CustomBroadcastConstants.LOGIN_SUCCESS -> {
+                    dismissLoading()
+
                     ToastHelper.showShort("登录成功")
 
                     ARouter.getInstance()
                         .build(RouterPath.Main.PATH_MAIN)
-                        .navigation()
+                        .navigation(application,object :NavigationCallback{
+                            override fun onLost(postcard: Postcard?) {
+                            }
 
-                    finish()
+                            override fun onFound(postcard: Postcard?) {
+                            }
+
+                            override fun onInterrupt(postcard: Postcard?) {
+                            }
+
+                            override fun onArrival(postcard: Postcard?) {
+                                finish()
+                            }
+                        })
                 }
 
                 CustomBroadcastConstants.LOGIN_FAILED -> {

@@ -1,7 +1,7 @@
 package com.hw.huaweivclib.net;
 
-import com.hw.baselibrary.common.BaseData;
-import com.hw.provider.net.respone.contacts.PeopleBean;
+import com.hw.huaweivclib.net.respone.BaseData;
+import com.hw.huaweivclib.net.respone.ConfBeanRespone;
 
 import io.reactivex.Observable;
 import retrofit2.http.Headers;
@@ -18,7 +18,7 @@ public interface ConfControlApi {
      */
     @Headers({"Content-Type: application/json", "Accept: application/json"})
     @POST("conf/scheduleConf")
-    Observable<BaseData<PeopleBean>> createConf(
+    Observable<BaseData> createConf(
             @Query("confName") String confName,
             @Query("duration") String duration,
             @Query("accessCode") String accessCode,
@@ -27,4 +27,108 @@ public interface ConfControlApi {
             @Query("groupId") String groupId,
             @Query("confMediaType") int confMediaType
     );
+
+    /**
+     * 设置麦克风静音
+     */
+    @Headers({"Content-Type: application/json", "Accept: application/json"})
+    @POST("conf/setSiteMute")
+    Observable<BaseData> setSiteMute(
+            @Query("smcConfId") String smcConfId,
+            @Query("siteUri") String siteUri,
+            @Query("isMute") String isMute
+    );
+
+    /**
+     * 设置扬声器静音
+     */
+    @Headers({"Content-Type: application/json", "Accept: application/json"})
+    @POST("conf/setSitesQuiet")
+    Observable<BaseData> setSitesQuiet(
+            @Query("smcConfId") String smcConfId,
+            @Query("siteUri") String siteUri,
+            @Query("isQuiet") String isQuiet
+    );
+
+    /**
+     * 离开会议
+     */
+    @Headers({"Content-Type: application/json", "Accept: application/json"})
+    @POST("conf/disconnectSite")
+    Observable<BaseData> leaveConf(
+            @Query("smcConfId") String smcConfId,
+            @Query("siteUri") String siteUri
+    );
+
+    /**
+     * 结束会议
+     */
+    @Headers({"Content-Type: application/json", "Accept: application/json"})
+    @POST("conf/stopConf")
+    Observable<BaseData> stopConf(
+            @Query("smcConfId") String smcConfId
+    );
+
+    /**
+     * 切换会议模式
+     */
+    @Headers({"Content-Type: application/json", "Accept: application/json"})
+    @POST("conf/changeConfMode")
+    Observable<BaseData> changeConfMode(
+            @Query("smcConfId") String smcConfId,
+            @Query("confMode") String confMode
+    );
+
+    /**
+     * 查询会议详情
+     */
+    @Headers({"Content-Type: application/json", "Accept: application/json"})
+    @POST("conf/queryBySmcConfIdOrAccessCode")
+    Observable<ConfBeanRespone> queryConfDetail(
+            @Query("accessCode") String accessCode
+    );
+
+    /**
+     * 广播会场
+     */
+    @Headers({"Content-Type: application/json", "Accept: application/json"})
+    @POST("conf/setBroadcastSite")
+    Observable<ConfBeanRespone> setBroadcastSite(
+            @Query("smcConfId") String smcConfId,
+            @Query("siteUri") String siteUri,
+            @Query("isBroadcast") String isBroadcast
+    );
+
+    /**
+     * 呼叫会场
+     */
+    @Headers({"Content-Type: application/json", "Accept: application/json"})
+    @POST("conf/connectSite")
+    Observable<ConfBeanRespone> connectSite(
+            @Query("smcConfId") String smcConfId,
+            @Query("siteUri") String siteUri
+    );
+
+    /**
+     * 选看会场
+     */
+    @Headers({"Content-Type: application/json", "Accept: application/json"})
+    @POST("conf/setVideoSource")
+    Observable<BaseData> setVideoSource(
+            @Query("smcConfId") String smcConfId,
+            @Query("siteUri") String siteUri,
+            @Query("videoSourceUri") String videoSourceUri
+    );
+
+    /**
+     * 添加会场
+     */
+    @Headers({"Content-Type: application/json", "Accept: application/json"})
+    @POST("conf/addSiteToConf")
+    Observable<ConfBeanRespone> addSiteToConf(
+            @Query("smcConfId") String smcConfId,
+            @Query("siteUri") String siteUri
+    );
+
+
 }

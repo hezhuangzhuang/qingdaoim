@@ -9,6 +9,7 @@ object RouterPath {
     class UserCenter {
         companion object {
             const val PATH_LOGIN = "/userCenter/login"
+            const val USER_MODULE_SERVICE = "/userCenter/service"
         }
     }
 

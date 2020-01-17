@@ -4,9 +4,11 @@ package com.hw.contactsmodule.ui.fragment
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import com.hjq.bar.OnTitleBarListener
 import com.hw.baselibrary.adapter.MyPagerAdapter
 import com.hw.baselibrary.ui.fragment.BaseFragment
 import com.hw.contactsmodule.R
+import com.hw.provider.widget.SelectCreateDialog
 import kotlinx.android.synthetic.main.fragment_home_contacts.*
 
 // TODO: Rename parameter arguments, choose names that match
@@ -17,6 +19,9 @@ private const val ARG_PARAM2 = "param2"
 /**
  */
 class HomeContactsFragment : BaseFragment(){
+    private val selectCreateDialog: SelectCreateDialog by lazy {
+        SelectCreateDialog(activity)
+    }
 
     val currentIndex = 0
 
@@ -37,9 +42,19 @@ class HomeContactsFragment : BaseFragment(){
     override fun bindLayout(): Int = R.layout.fragment_home_contacts
 
     override fun initView(savedInstanceState: Bundle?, contentView: View) {
+        titleBar.setOnTitleBarListener(object : OnTitleBarListener {
+            override fun onLeftClick(v: View?) {
+            }
 
+            override fun onTitleClick(v: View?) {
+            }
+
+            override fun onRightClick(v: View?) {
+                selectCreateDialog.setBackground(null)
+                selectCreateDialog.showPopupWindow(v)
+            }
+        })
     }
-
 
     private fun initTab() {
         mFragments.add(ContactsFragment.newInstance(ContactsFragment.TYPE_ALL_PEOPLE))

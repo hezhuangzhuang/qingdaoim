@@ -37,7 +37,10 @@ ext {
             recoveryVersion         : "1.0.0",
 
             //eventbus
-            eventBusVersion         : "3.1.1"
+            eventBusVersion         : "3.1.1",
+
+            //eventbus
+            basePopupVersion         : "2.2.1"
     ]
 
     supportDeps = [
@@ -87,6 +90,9 @@ ext {
 
     //eventbus
     eventbus = "org.greenrobot:eventbus:$dependVersion.eventBusVersion"
+
+    //popupwindow
+    basePopup = "com.github.razerdp:BasePopup:$dependVersion.basePopupVersion"
 
     supportLibs = supportDeps.values()
     networkLibs = retrofit.values()

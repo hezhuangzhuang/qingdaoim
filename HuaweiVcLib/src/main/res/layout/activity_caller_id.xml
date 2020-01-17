@@ -37,7 +37,6 @@
         android:textColor="@color/white_60"
         android:textSize="16sp"/>
 
-
     <TextView
         android:id="@+id/tv_hang_up"
         android:layout_width="wrap_content"

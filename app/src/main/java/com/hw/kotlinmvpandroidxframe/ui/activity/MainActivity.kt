@@ -1,5 +1,6 @@
 package com.hw.kotlinmvpandroidxframe.ui.activity
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
@@ -10,9 +11,9 @@ import com.hw.baselibrary.ui.activity.BaseActivity
 import com.hw.confmodule.ui.fragment.HomeConfFragment
 import com.hw.contactsmodule.ui.fragment.HomeContactsFragment
 import com.hw.kotlinmvpandroidxframe.R
-import com.hw.kotlinmvpandroidxframe.ui.fragment.MineFragment
 import com.hw.messagemodule.service.KotlinMessageSocketService
 import com.hw.messagemodule.ui.fragment.HomeMessageFragment
+import com.hw.mylibrary.ui.fragment.MineFragment
 import com.hw.provider.eventbus.EventMsg
 import com.hw.provider.router.RouterPath
 import com.hw.provider.router.provider.message.impl.MessageModuleRouteService
@@ -89,7 +90,7 @@ class MainActivity : BaseActivity() {
         fragments.add(HomeMessageFragment.newInstance("", ""))
         fragments.add(HomeConfFragment.newInstance("", ""))
         fragments.add(HomeContactsFragment.newInstance("", ""))
-        fragments.add(MineFragment())
+        fragments.add(MineFragment.newInstance("1","2"))
 
         tabLayout.setTabData(mTabEntities, this, R.id.flChange, fragments)
         tabLayout.currentTab = currentTab
@@ -118,5 +119,15 @@ class MainActivity : BaseActivity() {
                 }
             }
         }
+    }
+
+    /**
+     * 保存数据状态
+     *
+     * @param outState
+     */
+    @SuppressLint("MissingSuperCall")
+    override fun onSaveInstanceState(outState: Bundle) {
+        //        super.onSaveInstanceState(outState);
     }
 }

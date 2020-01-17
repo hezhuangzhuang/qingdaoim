@@ -27,4 +27,6 @@
     <color name="tran">#00000000</color>
     <color name="color_ccc">#ccc</color>
     <color name="color_red">#ff0000</color>
+    <color name="white_60">#60ffffff</color>
+    <color name="color_444">#444</color>
 </resources>

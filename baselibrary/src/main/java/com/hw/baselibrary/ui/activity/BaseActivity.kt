@@ -2,10 +2,7 @@ package com.hw.baselibrary.ui.activity
 
 import android.app.Activity
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.Window
+import android.view.*
 import com.gyf.immersionbar.ImmersionBar
 import com.hjq.bar.OnTitleBarListener
 import com.hjq.bar.TitleBar
@@ -54,6 +51,9 @@ abstract class BaseActivity : RxAppCompatActivity(), IBaseView, OnTitleBarListen
     override fun onCreate(savedInstanceState: Bundle?) {
         mActivity = this
         super.onCreate(savedInstanceState)
+        //初次进入界面时隐藏软键盘
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
         initData(intent.extras)
         setRootLayout(bindLayout())
         initView(savedInstanceState, mContentView)

@@ -4,9 +4,11 @@ package com.hw.confmodule.ui.fragment
 import android.os.Bundle
 import android.view.View
 import com.alibaba.android.arouter.launcher.ARouter
+import com.hjq.bar.OnTitleBarListener
 import com.hw.baselibrary.ui.fragment.BaseFragment
 import com.hw.confmodule.R
 import com.hw.provider.router.RouterPath
+import com.hw.provider.widget.SelectCreateDialog
 import kotlinx.android.synthetic.main.fragment_home_conf.*
 
 // TODO: Rename parameter arguments, choose names that match
@@ -18,6 +20,11 @@ private const val ARG_PARAM2 = "param2"
  * 会议界面
  */
 class HomeConfFragment : BaseFragment() {
+
+    private val selectCreateDialog: SelectCreateDialog by lazy {
+        SelectCreateDialog(activity)
+    }
+
     override fun initData(bundle: Bundle?) {
     }
 
@@ -29,6 +36,19 @@ class HomeConfFragment : BaseFragment() {
                 .build(RouterPath.Conf.CREATE_CONF)
                 .navigation()
         }
+
+        titleBar.setOnTitleBarListener(object : OnTitleBarListener {
+            override fun onLeftClick(v: View?) {
+            }
+
+            override fun onTitleClick(v: View?) {
+            }
+
+            override fun onRightClick(v: View?) {
+                selectCreateDialog.setBackground(null)
+                selectCreateDialog.showPopupWindow(v)
+            }
+        })
     }
 
     override fun onError(text: String) {

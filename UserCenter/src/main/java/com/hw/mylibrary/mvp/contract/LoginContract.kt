@@ -1,7 +1,7 @@
 package com.hw.mylibrary.mvp.contract
 
 import com.hw.baselibrary.common.IBaseView
-import com.hw.mylibrary.data.bean.LoginBean
+import com.hw.provider.net.respone.user.LoginBean
 
 /**
  *author：Thinkpad

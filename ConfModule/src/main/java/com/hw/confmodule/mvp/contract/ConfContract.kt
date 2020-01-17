@@ -1,6 +1,7 @@
 package com.hw.confmodule.mvp.contract
 
 import com.hw.baselibrary.common.IBaseView
+import com.hw.provider.net.respone.contacts.PeopleBean
 
 /**
  *author：pc-20171125
@@ -8,16 +9,30 @@ import com.hw.baselibrary.common.IBaseView
  */
 interface ConfContract {
 
-    interface View :IBaseView{
+    interface View : IBaseView {
         //创建会议成功
         fun createConfSuccess()
 
         //创建会议失败
         fun createConfFaile()
+
+        //查询人员成功
+        fun queryPeopleSuccess(allPeople: List<PeopleBean>)
+
+        //查询人员失败
+        fun queryPeopleError(errorMsg: String)
     }
 
-    interface Presenter{
+    interface Presenter {
         //创建会议
-        fun createConf()
+        fun createConf(confName: String,
+                       duration: String,
+                       accessCode: String,
+                       memberSipList: String,
+                       groupId: String,
+                       type: Int)
+
+        //获取所有联系人
+        fun queryAllPeople()
     }
 }

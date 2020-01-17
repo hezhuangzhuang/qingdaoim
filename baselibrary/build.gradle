@@ -95,12 +95,14 @@ dependencies {
     //eventbus
     api rootProject.ext.eventbus
 
+    //popupwindow
+    api rootProject.ext.basePopup
+
     //Dagger2
     api rootProject.ext.daggerApi
     kapt rootProject.ext.daggerCompiler
 
     //ARouter
     api rootProject.ext.arouterApi
-
 }
 

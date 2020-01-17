@@ -86,4 +86,9 @@ public class LoadingActivity extends BaseMediaActivity {
         tvName = (TextView) findViewById(R.id.tv_name);
         ivLoading = (ImageView) findViewById(R.id.iv_loading);
     }
+
+    @Override
+    public void setListeners() {
+
+    }
 }

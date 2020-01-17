@@ -1,4 +1,4 @@
-package com.hw.mylibrary.data.bean
+package com.hw.provider.net.respone.user
 
 data class LoginBean(
     val data: Data,

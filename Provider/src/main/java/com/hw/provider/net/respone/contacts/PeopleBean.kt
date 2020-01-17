@@ -7,13 +7,13 @@ import java.io.Serializable
  *author：pc-20171125
  *data:2020/1/8 16:10
  */
-class PeopleBean(
-    val id: String,
-    val sip: String,
-    val sipAccount: String,
-    val name: String,
-    val firstLetter: String,
-    val isCheck: Boolean = false
+data class PeopleBean(
+    var id: String,
+    var sip: String,
+    var sipAccount: String,
+    var name: String,
+    var firstLetter: String,
+    var isCheck: Boolean = false
 ) : Serializable, MultiItemEntity {
 
     override fun getItemType(): Int {

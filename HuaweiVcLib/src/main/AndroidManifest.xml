@@ -42,6 +42,34 @@
             </intent-filter>
         </activity>
 
+        <!--点对点呼叫界面-->
+        <activity
+            android:name=".activity.VideoActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask"
+            android:screenOrientation="landscape">
+            <intent-filter>
+                <action android:name="android.intent.action.video_activity"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.sdkdemo"/>
+            </intent-filter>
+        </activity>
+
+        <!--会议界面-->
+        <activity
+            android:name=".activity.VideoConfActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask"
+            android:screenOrientation="landscape">
+            <intent-filter>
+                <action android:name="android.intent.action.conf_video_activity"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.sdkdemo"/>
+            </intent-filter>
+        </activity>
+
         <service
             android:name=".service.AudioStateWatchService"
             android:enabled="true"

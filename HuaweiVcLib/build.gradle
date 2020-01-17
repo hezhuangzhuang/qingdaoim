@@ -70,4 +70,7 @@ dependencies {
 
     //Arouter-每个使用到的模块都需要引入--arouterCompiler
     kapt rootProject.ext.arouterCompiler
+
+
+    implementation 'com.afollestad.material-dialogs:core:0.9.1.0'
 }

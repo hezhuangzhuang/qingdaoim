@@ -2,9 +2,11 @@ package com.hw.messagemodule.ui.activity
 
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.content.res.Configuration
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.MotionEvent
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -145,6 +147,7 @@ class ChatActivity : BaseMvpActivity<ChatPresenter>(), ChatContract.View, View.O
     override fun setListeners() {
         titleBar.setOnTitleBarListener(object : OnTitleBarListener {
             override fun onLeftClick(v: View?) {
+                KeyboardUtils.hideSoftInput(etContent)
                 finish()
             }
 
@@ -192,7 +195,21 @@ class ChatActivity : BaseMvpActivity<ChatPresenter>(), ChatContract.View, View.O
         tvAudioCall.setOnClickListener(this)
         //文件
         tvFile.setOnClickListener(this)
+
+        //在触摸列表时候隐藏软键盘
+        rvMsg.setOnTouchListener { v, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    isTouch = true
+                    KeyboardUtils.hideSoftInput(etContent)
+                }
+            }
+            false
+        }
     }
+
+    //是否是touch
+    var isTouch = false
 
     /**
      * 获取发送的消息
@@ -221,12 +238,10 @@ class ChatActivity : BaseMvpActivity<ChatPresenter>(), ChatContract.View, View.O
     }
 
     override fun onDestroy() {
-        super.onDestroy()
-        //隐藏软键盘
-        KeyboardUtils.hideSoftInput(etContent)
         //更新当前聊天人的阅读状态
         EventBusUtils.sendMessage(EventMsg.UPDATE_MESSAGE_READ_STATUS, receiveId!!)
         EventBus.getDefault().unregister(this)
+        super.onDestroy()
     }
 
     /**
@@ -264,20 +279,19 @@ class ChatActivity : BaseMvpActivity<ChatPresenter>(), ChatContract.View, View.O
                 startCameraAct()
 
             //视频会议
-            R.id.tvVideoCall ->{
-                if(isGroup){
+            R.id.tvVideoCall -> {
+                if (isGroup) {
 
-                }else{
+                } else {
                     HuaweiModuleService.callSite(receiveId, true)
                 }
             }
 
-
             //语音会议
             R.id.tvAudioCall ->
-                if(isGroup){
+                if (isGroup) {
 
-                }else{
+                } else {
                     HuaweiModuleService.callSite(receiveId, false)
                 }
 
@@ -551,6 +565,7 @@ class ChatActivity : BaseMvpActivity<ChatPresenter>(), ChatContract.View, View.O
 
         chatAdapter.addData(ChatItem(sendChatBean))
 
+        //滑动到底部
         smoothScrollToBottom()
     }
 
@@ -559,5 +574,10 @@ class ChatActivity : BaseMvpActivity<ChatPresenter>(), ChatContract.View, View.O
      */
     override fun sendMessageFaile(errorMsg: String) {
         ToastHelper.showShort(errorMsg)
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        ToastHelper.showShort("Configuration")
     }
 }

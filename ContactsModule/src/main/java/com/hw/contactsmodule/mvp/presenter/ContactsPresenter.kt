@@ -31,7 +31,10 @@ class ContactsPresenter @Inject constructor() : BasePresenter<ContactsContract.V
                     dismissLoading()
                     if (NetWorkContants.RESPONSE_CODE == baseData.responseCode) {
                         if (baseData.data.size > 0) {
-                            showAllPeople(baseData.data)
+                            val filter = baseData.data.filter {
+                                it.sip != SPStaticUtils.getString(UserContants.HUAWEI_ACCOUNT)
+                            }
+                            showAllPeople(filter)
                         } else {
                             showEmptyView()
                         }

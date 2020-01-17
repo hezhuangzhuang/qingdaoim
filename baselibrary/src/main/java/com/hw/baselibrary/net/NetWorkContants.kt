@@ -7,5 +7,6 @@ package com.hw.baselibrary.net
 object NetWorkContants {
     const val SUCCESS = "success";
 
+
     const val RESPONSE_CODE= 1;
 }

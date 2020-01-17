@@ -1,6 +1,6 @@
 package com.hw.mylibrary.data.api
 
-import com.hw.mylibrary.data.bean.LoginBean
+import com.hw.provider.net.respone.user.LoginBean
 import io.reactivex.Observable
 import retrofit2.http.Headers
 import retrofit2.http.POST

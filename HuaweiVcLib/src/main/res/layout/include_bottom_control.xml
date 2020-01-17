@@ -18,7 +18,7 @@
         android:layout_marginRight="50dp"
         android:layout_toLeftOf="@id/tv_hang_up"
         android:drawablePadding="8dp"
-        android:drawableTop="@mipmap/icon_mic"
+        android:drawableTop="@mipmap/ic_mic_open"
         android:gravity="center"
         android:text="麦克风"
         android:textColor="@color/white"

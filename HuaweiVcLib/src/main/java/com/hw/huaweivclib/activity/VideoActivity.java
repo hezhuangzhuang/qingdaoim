@@ -158,13 +158,11 @@ public class VideoActivity extends BaseActivity implements LocBroadcastReceiver,
         SPStaticUtils.put(UIConstants.IS_AUTO_ANSWER, false);
 
         reSetRenderer();
-
     }
 
     private void cancleNotif() {
         NotificationUtils.cancel(NotificationUtils.VIDEO_ID);
     }
-
 
     private void reSetRenderer() {
         Log.e("hme-video", "清空渲染器");
@@ -240,14 +238,13 @@ public class VideoActivity extends BaseActivity implements LocBroadcastReceiver,
         if (CallMgr.getInstance().muteMic(mCallID, !currentMuteStatus)) {
             mCallFunc.setMuteStatus(!currentMuteStatus);
             setMicStatus();
-
         }
     }
 
     private void setMicStatus() {
         boolean currentMuteStatus = mCallFunc.isMuteStatus();
         //更新状态静音按钮状态
-        tvMic.setCompoundDrawablesWithIntrinsicBounds(0, currentMuteStatus ? R.mipmap.icon_mic_close : R.mipmap.icon_mic, 0, 0);
+        tvMic.setCompoundDrawablesWithIntrinsicBounds(0, currentMuteStatus ? R.mipmap.ic_mic_close : R.mipmap.ic_mic_open, 0, 0);
     }
 
     /**

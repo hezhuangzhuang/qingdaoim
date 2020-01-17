@@ -4,7 +4,7 @@ import com.hw.baselibrary.net.RetrofitManager
 import com.hw.baselibrary.net.Urls
 import com.hw.baselibrary.rx.scheduler.CustomCompose
 import com.hw.mylibrary.data.api.LoginApi
-import com.hw.mylibrary.data.bean.LoginBean
+import com.hw.provider.net.respone.user.LoginBean
 import io.reactivex.Observable
 import javax.inject.Inject
 

@@ -10,8 +10,7 @@ import com.hw.provider.router.provider.message.IMessageModuleService
 object MessageModuleRouteService {
 
     //初始化数据库
-    fun initDb(){
-        val navigation = ARouter.getInstance().navigation(IMessageModuleService::class.java)
-        navigation.initDb()
+    fun initDb() {
+        ARouter.getInstance().navigation(IMessageModuleService::class.java).initDb()
     }
 }

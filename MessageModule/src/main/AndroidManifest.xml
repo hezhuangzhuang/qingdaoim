@@ -17,6 +17,7 @@
         <activity
             android:name=".ui.activity.ChatActivity"
             android:launchMode="singleTop"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:screenOrientation="portrait" />
 
     </application>

@@ -1,8 +1,10 @@
 package com.hw.messagemodule.db;
 
 import com.hw.baselibrary.common.BaseApp;
+import com.hw.baselibrary.utils.sharedpreferences.SPStaticUtils;
 import com.hw.messagemodule.data.bean.ChatBean;
 import com.hw.messagemodule.data.bean.ChatBeanLastMessage;
+import com.hw.provider.user.UserContants;
 
 import org.greenrobot.greendao.query.QueryBuilder;
 
@@ -28,6 +30,9 @@ public class GreenDaoUtil {
 
     public synchronized static DaoSession getmDaoSession() {
         if (null == mDaoSession) {
+            if (null == mDaoMaster) {
+                initDataBase(SPStaticUtils.getString(UserContants.HUAWEI_ACCOUNT));
+            }
             mDaoSession = mDaoMaster.newSession();
         }
         return mDaoSession;

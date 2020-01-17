@@ -1,23 +1,37 @@
 package com.hw.kotlinmvpandroidxframe.ui.activity
 
 import android.os.Bundle
+import android.os.Handler
+import android.util.Log
 import android.view.View
+import com.alibaba.android.arouter.facade.Postcard
+import com.alibaba.android.arouter.facade.callback.NavigationCallback
 import com.alibaba.android.arouter.launcher.ARouter
 import com.hw.baselibrary.common.BaseApp
 import com.hw.baselibrary.constant.PermissionConstants
+import com.hw.baselibrary.net.NetWorkContants
 import com.hw.baselibrary.ui.activity.BaseActivity
 import com.hw.baselibrary.utils.LogUtils
 import com.hw.baselibrary.utils.PermissionUtils
+import com.hw.baselibrary.utils.PhoneUtils
+import com.hw.baselibrary.utils.ToastHelper
+import com.hw.baselibrary.utils.sharedpreferences.SPStaticUtils
 import com.hw.huaweivclib.inter.HuaweiInitImp
 import com.hw.kotlinmvpandroidxframe.BuildConfig
 import com.hw.kotlinmvpandroidxframe.R
+import com.hw.provider.huawei.commonservice.localbroadcast.CustomBroadcastConstants
+import com.hw.provider.huawei.commonservice.localbroadcast.LocBroadcast
+import com.hw.provider.huawei.commonservice.localbroadcast.LocBroadcastReceiver
 import com.hw.provider.router.RouterPath
+import com.hw.provider.router.provider.huawei.impl.HuaweiModuleService
+import com.hw.provider.router.provider.user.impl.UserModuleRouteService
+import com.hw.provider.user.UserContants
 
 class LauncherActivity : BaseActivity() {
     override fun initData(bundle: Bundle?) {
     }
 
-    override fun bindLayout(): Int =R.layout.activity_launcher
+    override fun bindLayout(): Int = R.layout.activity_launcher
 
     override fun initView(savedInstanceState: Bundle?, contentView: View) {
     }
@@ -27,13 +41,42 @@ class LauncherActivity : BaseActivity() {
 //            .rationale { shouldRequest -> DialogHelper.showRationaleDialog(shouldRequest) }
             .callback(object : PermissionUtils.FullCallback {
                 override fun onGranted(permissionsGranted: List<String>) {
+                    //注册广播
+                    LocBroadcast.getInstance().registerBroadcast(loginReceiver, mActions)
 
                     //初始化华为
                     HuaweiInitImp.initHuawei(BaseApp.context, BuildConfig.APPLICATION_ID)
 
-                    ARouter.getInstance()
-                        .build(RouterPath.UserCenter.PATH_LOGIN)
-                        .navigation()
+                    //是否已登录
+                    val hasLogin = SPStaticUtils.getBoolean(UserContants.HAS_LOGIN)
+
+                    val userName = SPStaticUtils.getString(UserContants.USER_NAME)
+                    val pwd = SPStaticUtils.getString(UserContants.PASS_WORD)
+
+                    if (hasLogin) {
+                        val login =
+                            UserModuleRouteService.login(userName, pwd, PhoneUtils.getDeviceId())
+                        login.subscribe({ baseDate ->
+                            if (NetWorkContants.RESPONSE_CODE == baseDate.responseCode) {
+                                //开始登录华为
+                                baseDate.data.apply {
+                                    HuaweiModuleService.login(
+                                        sipAccount,
+                                        sipPassword,
+                                        scIp,
+                                        scPort
+                                    )
+                                }
+                            } else {
+                                startLoginActivity()
+                            }
+                        }, {
+                            startLoginActivity()
+                        })
+                    } else {
+                        //跳转到登录界面
+                        startLoginActivity()
+                    }
                 }
 
                 override fun onDenied(
@@ -50,9 +93,73 @@ class LauncherActivity : BaseActivity() {
             .request()
     }
 
+    private fun startLoginActivity() {
+        Handler().postDelayed(Runnable {
+            ARouter.getInstance()
+                .build(RouterPath.UserCenter.PATH_LOGIN)
+                .navigation()
+            finish()
+        }, 1000)
+    }
+
     override fun setListeners() {
     }
 
     override fun onError(text: String) {
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        //取消注册广播
+        LocBroadcast.getInstance().unRegisterBroadcast(loginReceiver, mActions)
+    }
+
+    /*华为登录相关start*/
+    var mActions = arrayOf<String>(
+        CustomBroadcastConstants.LOGIN_SUCCESS,
+        CustomBroadcastConstants.LOGIN_FAILED,
+        CustomBroadcastConstants.LOGOUT
+    )
+
+    private val loginReceiver = object : LocBroadcastReceiver {
+        override fun onReceive(broadcastName: String?, obj: Any?) {
+            Log.i(TAG, "loginReceiver-->$broadcastName")
+            when (broadcastName) {
+                CustomBroadcastConstants.LOGIN_SUCCESS -> {
+                    dismissLoading()
+
+                    ToastHelper.showShort("登录成功")
+
+                    ARouter.getInstance()
+                        .build(RouterPath.Main.PATH_MAIN)
+                        .navigation(application,object : NavigationCallback {
+                            override fun onLost(postcard: Postcard?) {
+                            }
+
+                            override fun onFound(postcard: Postcard?) {
+                            }
+
+                            override fun onInterrupt(postcard: Postcard?) {
+                            }
+
+                            override fun onArrival(postcard: Postcard?) {
+                                finish()
+                            }
+                        })
+                }
+
+                CustomBroadcastConstants.LOGIN_FAILED -> {
+                    ToastHelper.showShort("登录华为失败")
+                }
+
+                CustomBroadcastConstants.LOGOUT -> {
+                    ToastHelper.showShort("登出")
+                }
+
+                else -> {
+                }
+            }
+        }
     }
 }

@@ -17,7 +17,7 @@ import javax.inject.Inject
 @Route(path = RouterPath.Contacts.CONTACTS_MODULE_SERVICE)
 class ContactsModuleServiceImp @Inject constructor() :
     IContactsModuleService {
-
+    
     /**
      * 获取所有的联系人
      */
