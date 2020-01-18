@@ -32,8 +32,19 @@ public class HuaweiModuleServiceImp implements IHuaweiModuleService {
     }
 
     @Override
-    public void createConfNetWork(@NotNull String confName, @NotNull String duration, @NotNull String accessCode, @NotNull String memberSipList, @NotNull String groupId, int type) {
-        HuaweiCallImp.createConfNetWork(confName, duration, accessCode, memberSipList, groupId, type);
+    public void createConfNetWork(@NotNull String confName,
+                                  @NotNull String duration,
+                                  @NotNull String accessCode,
+                                  @NotNull String memberSipList,
+                                  @NotNull String groupId,
+                                  @NotNull int type) {
+        HuaweiCallImp.createConfNetWork(
+                confName,
+                duration,
+                accessCode,
+                memberSipList,
+                groupId,
+                type);
     }
 
     @Override

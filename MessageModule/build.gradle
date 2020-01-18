@@ -12,8 +12,6 @@ kapt {
     }
 }
 
-apply plugin: 'org.greenrobot.greendao'
-
 android {
     compileSdkVersion rootProject.ext.android.compileSdkVersion
 
@@ -33,18 +31,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-}
-
-// 配置GreenDao基本参数
-greendao {
-    //数据库版本号，升级时修改
-    schemaVersion 2
-
-    //生成的DAO，DaoMaster和DaoSession的包路径。默认与表实体所在的包路径相同
-    daoPackage 'com.hw.messagemodule.db'
-
-    //生成源文件的路径。默认源文件目录是在build目录中的(build/generated/source/greendao)
-    targetGenDir 'src/main/java'
 }
 
 

@@ -6,7 +6,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.WindowManager;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.huawei.opensdk.callmgr.CallInfo;
@@ -17,12 +16,23 @@ import com.huawei.opensdk.ecsdk.utils.ActivityUtil;
 import com.huawei.opensdk.ecsdk.utils.IntentConstant;
 import com.hw.baselibrary.ui.activity.BaseActivity;
 import com.hw.baselibrary.utils.NotificationUtils;
+import com.hw.baselibrary.utils.ToastHelper;
 import com.hw.baselibrary.utils.sharedpreferences.SPStaticUtils;
+import com.hw.provider.chat.bean.ChatBean;
+import com.hw.provider.chat.bean.ConstactsBean;
+import com.hw.provider.chat.bean.MessageBody;
+import com.hw.provider.chat.bean.MessageReal;
+import com.hw.provider.chat.utils.GreenDaoUtil;
+import com.hw.provider.chat.utils.MessageUtils;
+import com.hw.provider.eventbus.EventBusUtils;
+import com.hw.provider.eventbus.EventMsg;
 import com.hw.provider.huawei.commonservice.common.LocContext;
 import com.hw.provider.huawei.commonservice.localbroadcast.CustomBroadcastConstants;
 import com.hw.provider.huawei.commonservice.localbroadcast.LocBroadcast;
 import com.hw.provider.huawei.commonservice.localbroadcast.LocBroadcastReceiver;
 import com.hw.provider.huawei.commonservice.util.LogUtil;
+import com.hw.provider.router.provider.message.impl.MessageModuleRouteService;
+import com.hw.provider.user.UserContants;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -184,7 +194,7 @@ public abstract class BaseMediaActivity extends BaseActivity implements LocBroad
 
             case CustomBroadcastConstants.CONF_CALL_CONNECTED:
 //                PreferencesHelper.saveData(UIConstants.IS_AUTO_ANSWER, false);
-                SPStaticUtils.put(UIConstants.IS_AUTO_ANSWER,false);
+                SPStaticUtils.put(UIConstants.IS_AUTO_ANSWER, false);
 
                 CallInfo callInfo = (CallInfo) obj;
                 LogUtil.i(UIConstants.DEMO_TAG, "呼叫内容:" + callInfo.toString());
@@ -195,63 +205,52 @@ public abstract class BaseMediaActivity extends BaseActivity implements LocBroad
                 intent.putExtra(UIConstants.CALL_ID, callInfo.getCallID());
                 intent.putExtra(UIConstants.PEER_NUMBER, callInfo.getPeerNumber());
 
-//                PreferencesHelper.saveData(UIConstants.CALL_INFO, callInfo);
-
-                SPStaticUtils.put(UIConstants.IS_AUTO_ANSWER,gson.toJson(callInfo));
+                SPStaticUtils.put(UIConstants.CALL_INFO, gson.toJson(callInfo));
 
                 ActivityUtil.startActivity(LocContext.getContext(), intent);
                 finishActivityLine(191);
                 break;
 
             case CustomBroadcastConstants.ACTION_CALL_END:
+                //486：挂断
                 if (obj instanceof CallInfo) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             CallInfo params = (CallInfo) obj;
                             if (403 == params.getReasonCode() || 603 == params.getReasonCode()) {
-                                Toast.makeText(BaseMediaActivity.this, "对方已拒接", Toast.LENGTH_SHORT).show();
+                                ToastHelper.INSTANCE.showShort("对方已拒接");
+                                if (params.isCaller()) {
+                                    //发送消息
+                                    sendTextMsg("已拒绝", "对方已拒绝", params.getPeerNumber(), params.isVideoCall());
+                                }
                                 finishActivityLine(202);
                             } else if (404 == params.getReasonCode()) {
-                                Toast.makeText(BaseMediaActivity.this, "对方不在线", Toast.LENGTH_SHORT).show();
+                                ToastHelper.INSTANCE.showShort("对方不在线");
                                 finishActivityLine(208);
-                                //getMainThreadHandler().postDelayed(new Runnable() {
-//                                    @Override
-//                                    public void run() {
-//                                        finishActivityLine(208);
-//                                    }
-//                                }, 3000);
                             } else if (486 == params.getReasonCode()) {
-                                Toast.makeText(BaseMediaActivity.this, "对方正忙", Toast.LENGTH_SHORT).show();
+                                ToastHelper.INSTANCE.showShort("对方正忙");
                                 //主叫
                                 if (params.isCaller()) {
                                     //发送消息
-                                    sendTextMsg("已挂断", params.getPeerNumber(), params.isVideoCall());
+                                    sendTextMsg("忙线未接听", "对方正忙", params.getPeerNumber(), params.isVideoCall());
                                 }
-
-                                //保存消息到本地
-                                saveLocalMessage("对方正忙", params.getPeerNumber(), params.isVideoCall());
 
                                 finishActivityLine(208);
                             } else if (0 == params.getReasonCode()) {
-                                Toast.makeText(BaseMediaActivity.this, "通话结束", Toast.LENGTH_SHORT).show();
+                                ToastHelper.INSTANCE.showShort("通话结束");
+
                                 //如果是主叫
                                 if (params.isCaller()) {
                                     //发送消息
-                                    //保存消息到本地
-                                    saveLocalMessage("已取消", params.getPeerNumber(), params.isVideoCall());
+                                    sendTextMsg("对方已取消", "已取消", params.getPeerNumber(), params.isVideoCall());
                                 }
-//                                else {
-//                                    保存消息到本地
-//                                    saveLocalMessage("已挂断", params.getPeerNumber(), params.isVideoCall());
-//                                }
                                 finishActivityLine(262);
                             } else {
                                 finishActivityLine(210);
                             }
 
                             //删除notif
-                            //NotificationUtils.cancelAll();
                             NotificationUtils.cancel(NotificationUtils.CALL_IN_ID);
                             NotificationUtils.cancel(NotificationUtils.AUDIO_ID);
                             NotificationUtils.cancel(NotificationUtils.VIDEO_ID);
@@ -280,81 +279,88 @@ public abstract class BaseMediaActivity extends BaseActivity implements LocBroad
     }
 
     /**
-     * 发送消息
+     * 获取发送的消息
      *
      * @param textMsg
      * @param peerNumber
+     * @param isVideoCall
+     * @return
      */
-    private boolean sendTextMsg(String textMsg,
+    private MessageBody getMessageBody(String textMsg,
+                                       String peerNumber,
+                                       boolean isVideoCall) {
+        String sendId = SPStaticUtils.getString(UserContants.HUAWEI_ACCOUNT);
+        String sendName = SPStaticUtils.getString(UserContants.DISPLAY_NAME);
+
+        ConstactsBean constactsBean = GreenDaoUtil.queryByHuaweiIdConstactsBean(peerNumber);
+        String receiveName = peerNumber;
+
+        //是否获取到用户名
+        if (null != constactsBean) {
+            receiveName = constactsBean.name;
+        }
+
+        MessageReal messageReal = new MessageReal(
+                textMsg,
+                isVideoCall ? MessageReal.Companion.getTYPE_VIDEO_CALL() : MessageReal.Companion.getTYPE_VOICE_CALL(),
+                ""
+        );
+
+        MessageBody messageBody = new MessageBody(
+                sendId,
+                sendName,
+                peerNumber,
+                receiveName,
+                MessageBody.Companion.getTYPE_PERSONAL(),
+                messageReal
+        );
+
+        return messageBody;
+    }
+
+
+    /**
+     * 发送消息
+     *
+     * @param sendMsg     发出去的消息
+     * @param saveMsg     保存在本地的消息
+     * @param peerNumber  收件人名称
+     * @param isVideoCall true：视频呼叫
+     * @return
+     */
+    private boolean sendTextMsg(String sendMsg,
+                                String saveMsg,
                                 String peerNumber,
                                 boolean isVideoCall) {
 
-//        String account = LoginCenter.getInstance().getAccount();
-//
-//        String disPlayName = PreferenceUtil.getString(this, Constant.DISPLAY_NAME, "");
-//
-//        MessageReal messageReal = new MessageReal(
-//                textMsg,
-//                isVideoCall ? MessageReal.TYPE_VIDEO_CALL : MessageReal.TYPE_VOICE_CALL,
-//                "");
-//
-//        MessageBody msg = new MessageBody(
-//                account,
-////                Constant.CurrDisPlayName,
-//                disPlayName,
-//                peerNumber,
-//                peerNumber,
-//                messageReal,
-//                MessageBody.TYPE_PERSONAL
-//        );
-//        return MsgIOServer.sendMsg(msg);
+        MessageBody messageBody = getMessageBody(sendMsg, peerNumber, isVideoCall);
+
+        //是否发送成功
+        boolean sendSuccess = MessageModuleRouteService.INSTANCE.sendMessage(messageBody);
+
+        //发送成功
+        if (sendSuccess) {
+            //将消息转换成chatbean
+            ChatBean sendChatBean = MessageUtils.INSTANCE.sendMessageToChatBean(messageBody);
+            //设置消息的内容
+            sendChatBean.textContent = saveMsg;
+
+            //插入到数据库
+            GreenDaoUtil.insertChatBean(sendChatBean);
+
+            //插入到最后消息数据
+            GreenDaoUtil.insertLastChatBean(sendChatBean.toLastMesage());
+
+            //刷新首页消息
+            EventBusUtils.INSTANCE.sendMessage(EventMsg.Companion.getREFRESH_HOME_MESSAGE(), "");
+            //修改消息内容
+            messageBody.getReal().setMessage(sendChatBean.textContent);
+
+            //聊天界面更新消息
+            EventBusUtils.INSTANCE.sendMessage(EventMsg.Companion.getSEND_SINGLE_MESSAGE(), messageBody);
+        }
 
         return false;
-    }
-
-    /**
-     * 保存消息到数据库
-     *
-     * @param textMsg
-     * @param peerNumber
-     */
-    private void saveLocalMessage(String textMsg,
-                                  String peerNumber,
-                                  boolean isVideoCall) {
-//        String disPlayName = PreferenceUtil.getString(this, Constant.DISPLAY_NAME, "");
-//
-//        ChatBean sendMsg = new ChatBean(
-//                isVideoCall ? MultipleItem.SEND_VIDEO_CALL : MultipleItem.SEND_VOICE_CALL,
-////                Constant.CurrDisPlayName,
-//                disPlayName,
-//                new Date(),
-//                textMsg);
-//        sendMsg.sendId = LoginCenter.getInstance().getAccount();
-//        sendMsg.sendName = disPlayName;
-//        sendMsg.receiveId = peerNumber;
-//        sendMsg.receiveName = peerNumber;
-//        sendMsg.isSend = true;
-//        sendMsg.isRead = false;
-//        sendMsg.conversationId = peerNumber;//会话id
-//        sendMsg.conversationUserName = peerNumber;//会话id
-//        ChatItem chatItem = new ChatItem(sendMsg);
-//
-//        //保存消息列表
-//        DBUtils.recordSaveIten(chatItem);
-//        //保存到最近的消息列表
-//        DBUtils.saveLMItem(chatItem);
-//
-//        //更新单个消息
-//        EventMsg eventMsg = new EventMsg();
-//        eventMsg.setMessageData(sendMsg);
-//        eventMsg.setMsg(EventMsg.RECEIVE_SINGLE_MESSAGE);
-//        EventBus.getDefault().post(eventMsg);
-//
-//        //更新首页消息
-//        eventMsg = new EventMsg();
-//        eventMsg.setMessageData(sendMsg);
-//        eventMsg.setMsg(EventMsg.UPDATE_HOME);
-//        EventBus.getDefault().post(eventMsg);
     }
 
     @Override
@@ -368,17 +374,17 @@ public abstract class BaseMediaActivity extends BaseActivity implements LocBroad
 
         CallInfo callInfo = gson.fromJson(SPStaticUtils.getString(UIConstants.CALL_INFO), CallInfo.class);
 
-//        CallInfo callInfo = PreferencesHelper.getData(, CallInfo.class);
-        Log.i(TAG, "120-->" + callInfo.toString());
-        mCallNumber = callInfo.getPeerNumber();
-        mDisplayName = callInfo.getPeerDisplayName();
-        mIsVideoCall = callInfo.isVideoCall();
-        mCallID = callInfo.getCallID();
-        mConfID = callInfo.getConfID();
-        mIsConfCall = callInfo.isFocus();
-        mIsCaller = callInfo.isCaller();
+        if (null != callInfo) {
+            Log.i(TAG, "120-->" + callInfo.toString());
+            mCallNumber = callInfo.getPeerNumber();
+            mDisplayName = callInfo.getPeerDisplayName();
+            mIsVideoCall = callInfo.isVideoCall();
+            mCallID = callInfo.getCallID();
+            mConfID = callInfo.getConfID();
+            mIsConfCall = callInfo.isFocus();
+            mIsCaller = callInfo.isCaller();
+        }
     }
-
 
 
     @Override

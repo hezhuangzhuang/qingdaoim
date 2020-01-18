@@ -1,7 +1,7 @@
 package com.hw.messagemodule.mvp.contract
 
 import com.hw.baselibrary.common.IBaseView
-import com.hw.messagemodule.data.bean.ChatBeanLastMessage
+import com.hw.provider.chat.bean.ChatBeanLastMessage
 
 /**
  *author：pc-20171125

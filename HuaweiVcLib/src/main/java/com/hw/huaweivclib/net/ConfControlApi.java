@@ -2,8 +2,11 @@ package com.hw.huaweivclib.net;
 
 import com.hw.huaweivclib.net.respone.BaseData;
 import com.hw.huaweivclib.net.respone.ConfBeanRespone;
+import com.hw.huaweivclib.net.respone.CreateConfResponeBean;
 
 import io.reactivex.Observable;
+import okhttp3.RequestBody;
+import retrofit2.http.Body;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
@@ -25,8 +28,19 @@ public interface ConfControlApi {
             @Query("sites") String sites,
             @Query("creatorUri") String creatorUri,
             @Query("groupId") String groupId,
-            @Query("confMediaType") int confMediaType
+            @Query("confMediaType") String confMediaType
     );
+
+    /**
+     * 创建会议
+     */
+    @Headers({"Content-Type: application/json", "Accept: application/json"})
+    @POST("conf/scheduleConf")
+    Observable<CreateConfResponeBean> createConf(
+            @Body RequestBody body
+    );
+
+
 
     /**
      * 设置麦克风静音
@@ -93,7 +107,7 @@ public interface ConfControlApi {
      */
     @Headers({"Content-Type: application/json", "Accept: application/json"})
     @POST("conf/setBroadcastSite")
-    Observable<ConfBeanRespone> setBroadcastSite(
+    Observable<BaseData> setBroadcastSite(
             @Query("smcConfId") String smcConfId,
             @Query("siteUri") String siteUri,
             @Query("isBroadcast") String isBroadcast
@@ -104,7 +118,7 @@ public interface ConfControlApi {
      */
     @Headers({"Content-Type: application/json", "Accept: application/json"})
     @POST("conf/connectSite")
-    Observable<ConfBeanRespone> connectSite(
+    Observable<BaseData> connectSite(
             @Query("smcConfId") String smcConfId,
             @Query("siteUri") String siteUri
     );
@@ -125,7 +139,7 @@ public interface ConfControlApi {
      */
     @Headers({"Content-Type: application/json", "Accept: application/json"})
     @POST("conf/addSiteToConf")
-    Observable<ConfBeanRespone> addSiteToConf(
+    Observable<BaseData> addSiteToConf(
             @Query("smcConfId") String smcConfId,
             @Query("siteUri") String siteUri
     );

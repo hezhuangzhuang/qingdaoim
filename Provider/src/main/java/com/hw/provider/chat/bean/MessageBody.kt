@@ -1,4 +1,4 @@
-package com.hw.messagemodule.data.bean
+package com.hw.provider.chat.bean
 
 /**
  *author：pc-20171125
@@ -16,7 +16,8 @@ data class MessageBody(
     var receiveName: String,
     // 1:私聊；2:群聊
     var type: Int,
-    var real: MessageReal) {
+    var real: MessageReal
+) {
 
     companion object {
         /**

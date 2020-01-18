@@ -14,6 +14,9 @@ data class EventMsg<T>(
         //收到消息
         val RECEIVE_SINGLE_MESSAGE = "RECEIVE_SINGLE_MESSAGE"
 
+        //发出的消息更新，一般是视频之后发送
+        val SEND_SINGLE_MESSAGE = "SEND_SINGLE_MESSAGE"
+
         //刷新首页消息
         val REFRESH_HOME_MESSAGE = "REFRESH_HOME_MESSAGE"
 
@@ -22,6 +25,12 @@ data class EventMsg<T>(
 
         //更新首页消息提醒
         val UPDATE_MAIN_NOTIF = "UPDATE_MAIN_NOTIF"
+
+        //网络连接成功
+        val NET_WORK_CONNECT = "NET_WORK_CONNECT"
+
+        //网络连接断开
+        val NET_WORK_DISCONNECT = "NET_WORK_DISCONNECT"
     }
 
 }

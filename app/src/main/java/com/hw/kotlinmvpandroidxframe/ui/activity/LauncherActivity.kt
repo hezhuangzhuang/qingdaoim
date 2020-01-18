@@ -37,7 +37,7 @@ class LauncherActivity : BaseActivity() {
     }
 
     override fun doBusiness() {
-        PermissionUtils.permission(PermissionConstants.STORAGE)
+        PermissionUtils.permission(PermissionConstants.STORAGE, PermissionConstants.CAMERA)
 //            .rationale { shouldRequest -> DialogHelper.showRationaleDialog(shouldRequest) }
             .callback(object : PermissionUtils.FullCallback {
                 override fun onGranted(permissionsGranted: List<String>) {
@@ -133,7 +133,7 @@ class LauncherActivity : BaseActivity() {
 
                     ARouter.getInstance()
                         .build(RouterPath.Main.PATH_MAIN)
-                        .navigation(application,object : NavigationCallback {
+                        .navigation(application, object : NavigationCallback {
                             override fun onLost(postcard: Postcard?) {
                             }
 
@@ -151,6 +151,22 @@ class LauncherActivity : BaseActivity() {
 
                 CustomBroadcastConstants.LOGIN_FAILED -> {
                     ToastHelper.showShort("登录华为失败")
+                    ARouter.getInstance()
+                        .build(RouterPath.UserCenter.PATH_LOGIN)
+                        .navigation(application, object : NavigationCallback {
+                            override fun onLost(postcard: Postcard?) {
+                            }
+
+                            override fun onFound(postcard: Postcard?) {
+                            }
+
+                            override fun onInterrupt(postcard: Postcard?) {
+                            }
+
+                            override fun onArrival(postcard: Postcard?) {
+                                finish()
+                            }
+                        })
                 }
 
                 CustomBroadcastConstants.LOGOUT -> {

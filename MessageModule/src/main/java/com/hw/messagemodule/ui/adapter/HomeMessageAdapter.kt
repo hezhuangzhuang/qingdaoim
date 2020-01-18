@@ -4,7 +4,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
 import com.hw.baselibrary.utils.DateUtils
 import com.hw.messagemodule.R
-import com.hw.messagemodule.data.bean.ChatBeanLastMessage
+import com.hw.provider.chat.bean.ChatBeanLastMessage
 import com.hw.provider.chat.ChatMultipleItem
 
 /**

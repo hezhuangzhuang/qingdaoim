@@ -1,8 +1,8 @@
 package com.hw.messagemodule.mvp.contract
 
 import com.hw.baselibrary.common.IBaseView
-import com.hw.messagemodule.data.bean.ChatBean
-import com.hw.messagemodule.data.bean.MessageBody
+import com.hw.provider.chat.bean.ChatBean
+import com.hw.provider.chat.bean.MessageBody
 import java.io.File
 
 /**

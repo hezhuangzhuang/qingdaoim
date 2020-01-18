@@ -18,6 +18,8 @@ import com.hw.contactsmodule.ui.adapter.AllPeopleAdapter
 import com.hw.contactsmodule.ui.adapter.GroupChatAdapter
 import com.hw.contactsmodule.ui.adapter.OrganizationAdapter
 import com.hw.contactsmodule.ui.adapter.item.OrganizationItem
+import com.hw.provider.chat.bean.ConstactsBean
+import com.hw.provider.chat.utils.GreenDaoUtil
 import com.hw.provider.net.respone.contacts.GroupChatBean
 import com.hw.provider.net.respone.contacts.OrganizationBean
 import com.hw.provider.net.respone.contacts.PeopleBean
@@ -170,6 +172,17 @@ class ContactsFragment : BaseMvpFragment<ContactsPresenter>(), ContactsContract.
      */
     private fun initGroupChatAdapter() {
         groupChatAdapter = GroupChatAdapter(R.layout.item_group_chat, ArrayList<GroupChatBean>())
+        groupChatAdapter.setOnItemClickListener(object : BaseQuickAdapter.OnItemClickListener {
+            override fun onItemClick(adapter: BaseQuickAdapter<*, *>?, view: View?, position: Int) {
+                val peopleBean = groupChatAdapter.getItem(position)!!
+                ARouter.getInstance()
+                    .build(RouterPath.Chat.CHAT)
+                    .withString(RouterPath.Chat.FILED_RECEIVE_ID, peopleBean.id.toString())
+                    .withString(RouterPath.Chat.FILED_RECEIVE_NAME, peopleBean.groupName)
+                    .withBoolean(RouterPath.Chat.FILED_IS_GROUP,true)
+                    .navigation()
+            }
+        })
         rvList.layoutManager = LinearLayoutManager(mActivity)
         rvList.adapter = groupChatAdapter
     }
@@ -187,8 +200,18 @@ class ContactsFragment : BaseMvpFragment<ContactsPresenter>(), ContactsContract.
         ToastHelper.showShort("onError:" + text)
     }
 
+    /**
+     * 全部联系人获取完毕
+     */
     override fun showAllPeople(allPeople: List<PeopleBean>) {
         allPeopleAdapter.replaceData(allPeople)
+
+        var constactsBean: ConstactsBean? = null
+        allPeople.forEach {
+            constactsBean = ConstactsBean(it.sip, it.name)
+
+            GreenDaoUtil.insertConstactsBean(constactsBean)
+        }
     }
 
     //显示组织结构

@@ -1,9 +1,9 @@
-package com.hw.messagemodule.utils
+package com.hw.provider.chat.utils
 
-import com.hw.messagemodule.data.bean.ChatBean
-import com.hw.messagemodule.data.bean.MessageBody
-import com.hw.messagemodule.data.bean.MessageReal
 import com.hw.provider.chat.ChatMultipleItem
+import com.hw.provider.chat.bean.ChatBean
+import com.hw.provider.chat.bean.MessageBody
+import com.hw.provider.chat.bean.MessageReal
 import java.util.*
 
 /**
@@ -18,7 +18,11 @@ object MessageUtils {
     fun receiveMessageToChatBean(messageBody: MessageBody): ChatBean {
         return ChatBean.Builder()
             //消息类型,发送消息
-            .setMessageType(getReceiveMessageType(messageBody.real.type))
+            .setMessageType(
+                getReceiveMessageType(
+                    messageBody.real.type
+                )
+            )
             //发送人名称
             .setName(messageBody.sendName)
             //发送时间

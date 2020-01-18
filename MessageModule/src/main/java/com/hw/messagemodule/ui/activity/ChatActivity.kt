@@ -18,19 +18,19 @@ import com.hw.baselibrary.utils.LogUtils
 import com.hw.baselibrary.utils.ToastHelper
 import com.hw.baselibrary.utils.sharedpreferences.SPStaticUtils
 import com.hw.messagemodule.R
-import com.hw.messagemodule.data.bean.ChatBean
 import com.hw.messagemodule.data.bean.ChatItem
-import com.hw.messagemodule.data.bean.MessageBody
-import com.hw.messagemodule.data.bean.MessageReal
-import com.hw.messagemodule.db.GreenDaoUtil
 import com.hw.messagemodule.inject.component.DaggerChatComponent
 import com.hw.messagemodule.inject.module.ChatModule
 import com.hw.messagemodule.mvp.contract.ChatContract
 import com.hw.messagemodule.mvp.presenter.ChatPresenter
 import com.hw.messagemodule.ui.adapter.ChatAdapter
 import com.hw.messagemodule.utils.GlideEngine
-import com.hw.messagemodule.utils.MessageUtils
 import com.hw.provider.chat.ChatMultipleItem
+import com.hw.provider.chat.bean.ChatBean
+import com.hw.provider.chat.bean.MessageBody
+import com.hw.provider.chat.bean.MessageReal
+import com.hw.provider.chat.utils.GreenDaoUtil
+import com.hw.provider.chat.utils.MessageUtils
 import com.hw.provider.eventbus.EventBusUtils
 import com.hw.provider.eventbus.EventMsg
 import com.hw.provider.router.RouterPath
@@ -50,7 +50,7 @@ import java.io.File
 
 
 /**
- * 聊天界面
+ * 聊天界面c
  */
 @Route(path = RouterPath.Chat.CHAT)
 class ChatActivity : BaseMvpActivity<ChatPresenter>(), ChatContract.View, View.OnClickListener {
@@ -202,6 +202,7 @@ class ChatActivity : BaseMvpActivity<ChatPresenter>(), ChatContract.View, View.O
                 MotionEvent.ACTION_DOWN -> {
                     isTouch = true
                     KeyboardUtils.hideSoftInput(etContent)
+                    flEmotionView.visibility = View.GONE
                 }
             }
             false
@@ -328,9 +329,13 @@ class ChatActivity : BaseMvpActivity<ChatPresenter>(), ChatContract.View, View.O
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     fun mainEvent(messageEvent: EventMsg<Any>) {
         when (messageEvent.message) {
-            //刷新消息
+            //刷新收到的消息
             EventMsg.RECEIVE_SINGLE_MESSAGE ->
                 refreshReceiveMessage(messageEvent.messageData as MessageBody)
+
+            //刷新发出的消息
+            EventMsg.SEND_SINGLE_MESSAGE ->
+                refreshSendMessage(messageEvent.messageData as MessageBody)
         }
     }
 
@@ -346,6 +351,21 @@ class ChatActivity : BaseMvpActivity<ChatPresenter>(), ChatContract.View, View.O
             formChatBean.isRead = true
 
             chatAdapter.addData(ChatItem(formChatBean))
+            //滑动底部
+            smoothScrollToBottom()
+        }
+    }
+
+    /**
+     * 刷新收到的消息
+     */
+    private fun refreshSendMessage(messageBody: MessageBody) {
+        //判断收到的消息是否是当前聊天
+        if (account == messageBody.sendId) {
+            //发出的消息转成chatbean
+            var sendChatBean = MessageUtils.sendMessageToChatBean(messageBody)
+
+            chatAdapter.addData(ChatItem(sendChatBean))
             //滑动底部
             smoothScrollToBottom()
         }

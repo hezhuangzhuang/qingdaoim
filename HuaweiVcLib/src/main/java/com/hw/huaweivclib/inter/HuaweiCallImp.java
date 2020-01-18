@@ -13,10 +13,14 @@ import com.hw.baselibrary.utils.sharedpreferences.SPStaticUtils;
 import com.hw.huaweivclib.activity.LoadingActivity;
 import com.hw.huaweivclib.net.ConfControlApi;
 import com.hw.huaweivclib.net.respone.BaseData;
-import com.hw.provider.huawei.commonservice.common.LocContext;
+import com.hw.huaweivclib.net.respone.CreateConfResponeBean;
 import com.hw.provider.user.UserContants;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import io.reactivex.functions.Consumer;
+import okhttp3.RequestBody;
 
 /**
  * author：pc-20171125
@@ -61,17 +65,41 @@ public class HuaweiCallImp {
         SPStaticUtils.put(UIConstants.IS_AUTO_ANSWER, true);
 
         //显示等待界面
-        LoadingActivity.startActivty(LocContext.getContext(), confName);
+        LoadingActivity.startActivty(BaseApp.context, confName);
 
-        RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.FILE_URL)
-                .createConf(confName, duration, accessCode, memberSipList, createUri, groupId, type)
+        JSONObject jsonObject = new JSONObject();
+        try {
+//            @Query("confName") String confName,
+//            @Query("duration") String duration,
+//            @Query("accessCode") String accessCode,
+//            @Query("sites") String sites,
+//            @Query("creatorUri") String creatorUri,
+//            @Query("groupId") String groupId,
+//            @Query("confMediaType") String confMediaType
+            jsonObject.put("confName", confName);
+            jsonObject.put("duration", duration);
+            jsonObject.put("accessCode", accessCode);
+            jsonObject.put("sites", memberSipList);
+            jsonObject.put("creatorUri", createUri);
+            jsonObject.put("groupId", groupId);
+            jsonObject.put("confMediaType", type);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        RequestBody body = RequestBody.create(Urls.INSTANCE.getMEDIA_TYPE(), jsonObject.toString());
+
+        RetrofitManager.INSTANCE.create(ConfControlApi.class,
+                Urls.FILE_URL
+        )
+                .createConf(body)
                 .compose(new CustomCompose())
-                .subscribe(new Consumer<BaseData>() {
+                .subscribe(new Consumer<CreateConfResponeBean>() {
                     @Override
-                    public void accept(BaseData baseData) throws Exception {
+                    public void accept(CreateConfResponeBean baseData) throws Exception {
                         //请求成功
                         if (null != baseData && BaseData.SUCEESS_CODE == baseData.code) {
-
+                            ToastHelper.INSTANCE.showShort("会议召集成功");
                         } else {
                             AppManager.Companion.getInstance().pushActivity(LoadingActivity.class);
                             ToastHelper.INSTANCE.showShort(baseData.msg);

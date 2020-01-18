@@ -1,7 +1,7 @@
 package com.hw.messagemodule.mvp.model
 
-import com.hw.messagemodule.data.bean.ChatBeanLastMessage
-import com.hw.messagemodule.db.GreenDaoUtil
+import com.hw.provider.chat.bean.ChatBeanLastMessage
+import com.hw.provider.chat.utils.GreenDaoUtil
 import javax.inject.Inject
 
 /**

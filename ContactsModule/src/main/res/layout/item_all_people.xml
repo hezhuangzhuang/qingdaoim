@@ -10,7 +10,7 @@
         android:id="@+id/ivHead"
         android:layout_width="45dp"
         android:layout_height="45dp"
-        android:layout_marginRight="17dp"
+        android:layout_marginRight="15dp"
         android:src="@mipmap/ic_personal_head_one" />
 
     <TextView

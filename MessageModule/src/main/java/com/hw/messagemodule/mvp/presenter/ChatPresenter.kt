@@ -3,7 +3,8 @@ package com.hw.messagemodule.mvp.presenter
 import com.hazz.kotlinmvp.net.exception.ExceptionHandle
 import com.hw.baselibrary.common.BasePresenter
 import com.hw.baselibrary.net.NetWorkContants
-import com.hw.messagemodule.data.bean.MessageBody
+import com.hw.baselibrary.utils.NetWorkUtils
+import com.hw.provider.chat.bean.MessageBody
 import com.hw.messagemodule.mvp.contract.ChatContract
 import com.hw.messagemodule.mvp.model.ChatService
 import java.io.File
@@ -23,6 +24,10 @@ class ChatPresenter @Inject constructor() : BasePresenter<ChatContract.View>(),
      * 发送消息
      */
     override fun sendMessage(messageBody: MessageBody) {
+        if (!NetWorkUtils.isConnected()) {
+            mRootView.sendMessageFaile("网络异常,发送失败")
+            return
+        }
         //是否发送成功
         val sendSuccess = chatService.sendMessage(messageBody)
         checkViewAttached()

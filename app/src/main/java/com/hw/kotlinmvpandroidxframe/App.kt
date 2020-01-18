@@ -4,6 +4,7 @@ import androidx.multidex.MultiDex
 import com.hw.baselibrary.common.BaseApp
 import com.hw.baselibrary.image.ImageLoader
 import com.hw.kotlinmvpandroidxframe.ui.activity.LauncherActivity
+import com.tencent.bugly.crashreport.CrashReport
 import com.zxy.recovery.core.Recovery
 
 /**
@@ -14,6 +15,9 @@ class App :BaseApp() {
 
     override fun onCreate() {
         super.onCreate()
+
+        //腾讯bug线上搜集工具
+        CrashReport.initCrashReport(applicationContext, "9455fd103f", false)
 
         initCrashHandler()
 

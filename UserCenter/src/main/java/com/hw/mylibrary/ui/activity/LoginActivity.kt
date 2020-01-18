@@ -184,6 +184,7 @@ class LoginActivity : BaseMvpActivity<LoginPresenter>(), LoginContract.View {
                 }
 
                 CustomBroadcastConstants.LOGIN_FAILED -> {
+                    dismissLoading()
                     ToastHelper.showShort("登录华为失败")
                 }
 

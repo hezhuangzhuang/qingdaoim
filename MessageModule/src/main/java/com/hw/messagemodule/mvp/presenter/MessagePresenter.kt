@@ -1,7 +1,7 @@
 package com.hw.messagemodule.mvp.presenter
 
 import com.hw.baselibrary.common.BasePresenter
-import com.hw.messagemodule.data.bean.ChatBeanLastMessage
+import com.hw.provider.chat.bean.ChatBeanLastMessage
 import com.hw.messagemodule.mvp.contract.MessageContract
 import com.hw.messagemodule.mvp.model.MessageService
 import javax.inject.Inject

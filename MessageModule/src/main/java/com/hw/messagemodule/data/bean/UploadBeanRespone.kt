@@ -16,7 +16,6 @@ data class UploadBeanRespone(
      * data : {"fileName":"会控.jpg","filePath":"http://113.57.147.178:9021/upload/f4897559-bc1c-40a9-9ca7-c7ac3e807500.jpg"}
      */
 
-
     data class DataBean(
         var fileName: String,
         var filePath: String

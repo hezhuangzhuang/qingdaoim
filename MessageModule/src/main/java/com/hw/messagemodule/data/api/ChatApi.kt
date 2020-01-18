@@ -1,11 +1,10 @@
 package com.hw.messagemodule.data.api
 
+import com.hw.messagemodule.data.bean.PingBean
 import com.hw.messagemodule.data.bean.UploadBeanRespone
 import io.reactivex.Observable
 import okhttp3.MultipartBody
-import retrofit2.http.Multipart
-import retrofit2.http.POST
-import retrofit2.http.Part
+import retrofit2.http.*
 
 /**
  *author：pc-20171125
@@ -17,5 +16,15 @@ interface ChatApi {
      */
     @Multipart
     @POST("fileAction_uploadFile.action")
-    abstract fun upload(@Part file: MultipartBody.Part): Observable<UploadBeanRespone>
+    fun upload(@Part file: MultipartBody.Part): Observable<UploadBeanRespone>
+
+    /**
+     * 心跳
+     */
+    @Headers("Content-Type: application/json", "Accept: application/json")//需要添加头
+    @POST("im/mobile/heartMap")
+    fun ping(
+        @Query("sip")      sip: String,
+        @Query("deviceID") deviceID: String
+    ): Observable<PingBean>
 }

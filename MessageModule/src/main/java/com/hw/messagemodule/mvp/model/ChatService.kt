@@ -4,9 +4,10 @@ import com.hw.baselibrary.net.RetrofitManager
 import com.hw.baselibrary.net.Urls
 import com.hw.baselibrary.rx.scheduler.CustomCompose
 import com.hw.messagemodule.data.api.ChatApi
-import com.hw.messagemodule.data.bean.MessageBody
+import com.hw.messagemodule.data.bean.PingBean
 import com.hw.messagemodule.data.bean.UploadBeanRespone
 import com.hw.messagemodule.service.KotlinMessageSocketService
+import com.hw.provider.chat.bean.MessageBody
 import io.reactivex.Observable
 import okhttp3.MediaType
 import okhttp3.MultipartBody
@@ -48,4 +49,16 @@ class ChatService @Inject constructor() {
             .compose(CustomCompose())
     }
 
+    /**
+     * 心跳的接口
+     */
+    fun ping(
+        sip: String,
+        deviceID: String
+    ): Observable<PingBean> {
+        return RetrofitManager
+            .create(ChatApi::class.java, Urls.WEBSOCKET_URL)
+            .ping(sip, deviceID)
+            .compose(CustomCompose())
+    }
 }

@@ -13,7 +13,7 @@
         android:layout_marginTop="12dp"
         android:layout_marginRight="15dp"
         android:layout_marginBottom="8dp"
-        android:src="@mipmap/ic_personal_head_one" />
+        android:src="@mipmap/ic_group_head_one" />
 
     <TextView
         android:id="@+id/tvName"
@@ -21,7 +21,6 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@id/ivHead"
         android:layout_alignBottom="@id/ivHead"
-        android:layout_marginLeft="15dp"
         android:layout_toRightOf="@id/ivHead"
         android:gravity="center"
         android:textColor="@color/color_333"

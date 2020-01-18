@@ -15,6 +15,7 @@ import android.text.format.Formatter
 import android.util.Log
 import androidx.annotation.RequiresPermission
 import com.hw.baselibrary.common.BaseApp
+import com.hw.baselibrary.net.networkmonitor.NetType
 import java.net.InetAddress
 import java.net.NetworkInterface
 import java.net.SocketException
@@ -531,5 +532,25 @@ object NetWorkUtils {
         val wm = BaseApp.context.getSystemService(Context.WIFI_SERVICE) as WifiManager
             ?: return ""
         return Formatter.formatIpAddress(wm.dhcpInfo.serverAddress)
+    }
+
+
+    /**
+     * 获取当前的网络类型
+     */
+    fun getNetType(): NetType {
+        val connMgr = BaseApp.context
+            .getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            ?: return NetType.NONE
+        //获取当前激活的网络连接状态
+        val networkInfo = connMgr.activeNetworkInfo ?: return NetType.NONE
+
+        val nType = networkInfo.type
+        if (nType == ConnectivityManager.TYPE_MOBILE) {
+            return NetType.MOBILE
+        } else if (nType == ConnectivityManager.TYPE_WIFI) {
+            return NetType.WIFI
+        }
+        return NetType.NONE
     }
 }

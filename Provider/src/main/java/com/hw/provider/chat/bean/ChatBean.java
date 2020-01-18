@@ -1,4 +1,4 @@
-package com.hw.messagemodule.data.bean;
+package com.hw.provider.chat.bean;
 
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;

@@ -11,6 +11,7 @@ import com.alibaba.android.arouter.facade.annotation.Route
 import com.hjq.bar.OnTitleBarListener
 import com.hw.baselibrary.ui.activity.BaseMvpActivity
 import com.hw.baselibrary.utils.DateUtils
+import com.hw.baselibrary.utils.KeyboardUtils
 import com.hw.baselibrary.utils.ToastHelper
 import com.hw.baselibrary.utils.sharedpreferences.SPStaticUtils
 import com.hw.confmodule.R
@@ -21,7 +22,6 @@ import com.hw.confmodule.mvp.presenter.ConfPresenter
 import com.hw.confmodule.ui.adapter.CreateConfAdapter
 import com.hw.provider.net.respone.contacts.PeopleBean
 import com.hw.provider.router.RouterPath
-import com.hw.provider.router.provider.constacts.impl.ContactsModuleRouteService
 import com.hw.provider.user.UserContants
 import kotlinx.android.synthetic.main.activity_create_conf.*
 
@@ -65,12 +65,6 @@ class CreateConfActivity : BaseMvpActivity<ConfPresenter>(), ConfContract.View {
     }
 
     override fun initData(bundle: Bundle?) {
-        ContactsModuleRouteService.getAllPeople()
-            .subscribe({ baseData ->
-                ToastHelper.showShort("${baseData.data.size}")
-            }, {
-                ToastHelper.showShort(it.toString())
-            })
     }
 
     override fun bindLayout(): Int = R.layout.activity_create_conf
@@ -151,6 +145,7 @@ class CreateConfActivity : BaseMvpActivity<ConfPresenter>(), ConfContract.View {
 
         titleBar.setOnTitleBarListener(object : OnTitleBarListener {
             override fun onLeftClick(v: View?) {
+                KeyboardUtils.hideSoftInput(etConfName)
                 finish()
             }
 
@@ -159,7 +154,6 @@ class CreateConfActivity : BaseMvpActivity<ConfPresenter>(), ConfContract.View {
                     ToastHelper.showShort("参会人员不能为空")
                     return
                 }
-                ToastHelper.showShort("${selectPeoples.size}")
                 //会议名称
                 var confName: String =
                     if (etConfName.text.isEmpty()) etConfName.hint.toString() else etConfName.text.toString()
@@ -175,6 +169,7 @@ class CreateConfActivity : BaseMvpActivity<ConfPresenter>(), ConfContract.View {
 
                 //添加已选会场
                 selectUri += SPStaticUtils.getString(UserContants.HUAWEI_ACCOUNT)
+
                 mPresenter.createConf(confName, "120", accessCode, selectUri, "1", isVideoConf)
             }
 

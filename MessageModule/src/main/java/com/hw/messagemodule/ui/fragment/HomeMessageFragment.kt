@@ -10,12 +10,12 @@ import com.chad.library.adapter.base.BaseViewHolder
 import com.gyf.immersionbar.ImmersionBar
 import com.hjq.bar.OnTitleBarListener
 import com.hw.messagemodule.R
-import com.hw.messagemodule.data.bean.ChatBeanLastMessage
 import com.hw.messagemodule.inject.component.DaggerMessageComponent
 import com.hw.messagemodule.inject.module.MessageModule
 import com.hw.messagemodule.mvp.contract.MessageContract
 import com.hw.messagemodule.mvp.presenter.MessagePresenter
 import com.hw.messagemodule.ui.adapter.HomeMessageAdapter
+import com.hw.provider.chat.bean.ChatBeanLastMessage
 import com.hw.provider.eventbus.EventBusUtils
 import com.hw.provider.eventbus.EventMsg
 import com.hw.provider.router.RouterPath

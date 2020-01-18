@@ -1,10 +1,13 @@
 package com.hw.baselibrary.net
 
+import okhttp3.MediaType
+
 /**
  *author：pc-20171125
  *data:2019/11/8 11:51
  */
 object Urls{
+    val MEDIA_TYPE = MediaType.parse("application/json; charset=utf-8")
 
     const val BASE_URL = "http://61.182.50.12:8085/xjdj/"
 

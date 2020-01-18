@@ -52,6 +52,7 @@ import com.hw.baselibrary.net.Urls;
 import com.hw.baselibrary.rx.scheduler.CustomCompose;
 import com.hw.baselibrary.ui.activity.BaseActivity;
 import com.hw.baselibrary.utils.DisplayUtil;
+import com.hw.baselibrary.utils.LogUtils;
 import com.hw.baselibrary.utils.NotificationUtils;
 import com.hw.baselibrary.utils.ToastHelper;
 import com.hw.baselibrary.utils.sharedpreferences.SPStaticUtils;
@@ -219,28 +220,30 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
 
     @Override
     protected void onDestroy() {
-        unQueryConfInfoSubscribe();
+        try {
+            unQueryConfInfoSubscribe();
 
-        cancleNotif();
+            cancleNotif();
 
-        SPStaticUtils.put(UIConstants.IS_CREATE, false);
-        SPStaticUtils.put(UIConstants.IS_AUTO_ANSWER, false);
+            SPStaticUtils.put(UIConstants.IS_CREATE, false);
+            SPStaticUtils.put(UIConstants.IS_AUTO_ANSWER, false);
 
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                callClosed();
-            }
-        });
-        super.onDestroy();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    callClosed();
+                }
+            });
 
-        LocBroadcast.getInstance().unRegisterBroadcast(this, mActions);
-        mHandler.removeCallbacksAndMessages(null);
-        setAutoRotation(this, false, "163");
-
-        MeetingMgr.getInstance().setCurrentConferenceCallID(0);
-
-        reSetRenderer();
+            LocBroadcast.getInstance().unRegisterBroadcast(this, mActions);
+            mHandler.removeCallbacksAndMessages(null);
+            setAutoRotation(this, false, "163");
+            super.onDestroy();
+//        MeetingMgr.getInstance().setCurrentConferenceCallID(0);
+            reSetRenderer();
+        } catch (Exception e) {
+            LogUtils.i(getLine(245) + e.getMessage());
+        }
     }
 
 
@@ -389,10 +392,11 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
         }
     }
 
-    public void finishActivity(String lineNumber) {
+    public void finishActivity(final String lineNumber) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                ToastHelper.INSTANCE.showShort(lineNumber);
                 finish();
             }
         });
@@ -745,7 +749,6 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
         return siteList;
     }
 
-
     /************************添加会场-start*****************************/
     private BottomSheetDialog addAddtendDialog;
     private TextView tvAddCancle;
@@ -997,7 +1000,7 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
                         confControlDialog.dismiss();
 
                         //获取会场
-                        List<PeopleBean> list = baseData.getDataList();
+                        List<PeopleBean> list = baseData.getData();
                         List<ConfControlUserBean> data = new ArrayList<>();
                         for (PeopleBean temp : list) {
                             data.add(new ConfControlUserBean(temp.getId(), temp.getName(), temp.getSip(), 0, false));
@@ -1007,7 +1010,7 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
-
+                        ToastHelper.INSTANCE.showShort(getLine(1009) + throwable.getMessage());
                     }
                 });
     }
@@ -1169,8 +1172,8 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
     /**
      * 呼叫会场
      *
-     * @param siteUri 呼叫的会场号码
-     *                connectSite
+     * @param otherSiteUri 呼叫的会场号码
+     *                     connectSite
      */
     private void setSiteCallRequest(String otherSiteUri) {
         RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.FILE_URL)
@@ -1197,8 +1200,8 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
     /**
      * 选看会场
      *
-     * @param siteUri 选看会场
-     *                connectSite
+     * @param otherSiteUri 选看会场
+     *                     connectSite
      */
     private void setWatchSite(String otherSiteUri, boolean showToast) {
         if (0 != confMode) {
@@ -1227,7 +1230,7 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
                                 confControlAdapter.notifyDataSetChanged();
                             }
                         } else {
-                            ToastHelper.INSTANCE.showShort(baseData.msg);
+//                            ToastHelper.INSTANCE.showShort(baseData.msg);
                         }
                     }
                 }, new Consumer<Throwable>() {
@@ -1241,8 +1244,8 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
     /**
      * 挂断
      *
-     * @param siteUri 挂断的会场号码
-     *                connectSite
+     * @param otherSiteUri 挂断的会场号码
+     *                     connectSite
      */
     private void setSiteDisconnectRequest(String otherSiteUri) {
         RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.FILE_URL)
@@ -1338,7 +1341,6 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
         tvEndConf.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                unQueryConfInfoSubscribe();
                 endConfReuqest();
             }
         });
@@ -1346,7 +1348,6 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
         tvLeaveConf.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                unQueryConfInfoSubscribe();
                 leaveConfRequest();
             }
         });
@@ -1354,7 +1355,6 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
         tvAppointChair.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                unQueryConfInfoSubscribe();
                 startAppointChairActivity();
             }
         });
@@ -1496,8 +1496,6 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
                         ToastHelper.INSTANCE.showShort(getLine(1495) + throwable.getMessage());
                     }
                 });
-
-
     }
 
     private static Intent intent = new Intent(IntentConstant.VIDEO_CONF_ACTIVITY_ACTION);
@@ -1582,6 +1580,7 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
         Intent intent = getIntent();
 
         mCallInfo = gson.fromJson(SPStaticUtils.getString(UIConstants.CALL_INFO), CallInfo.class);
+        LogUtils.i(mCallInfo.toString());
         isCreate = SPStaticUtils.getBoolean(UIConstants.IS_CREATE, false);
 
         siteUri = SPStaticUtils.getString(UserContants.HUAWEI_ACCOUNT);

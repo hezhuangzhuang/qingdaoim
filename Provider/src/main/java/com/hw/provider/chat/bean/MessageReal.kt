@@ -1,4 +1,4 @@
-package com.hw.messagemodule.data.bean
+package com.hw.provider.chat.bean
 
 /**
  *author：pc-20171125

@@ -185,19 +185,26 @@ class ChatAdapter : BaseSectionMultiItemQuickAdapter<ChatItem, BaseViewHolder> {
         )
     }
 
+    /**
+     * 获取左边的显示内容
+     */
     private fun getLefeRes(itemType: Int): Int {
-        //视频呼叫
-        ChatMultipleItem.SEND_VIDEO_CALL
-        return R.mipmap.ic_chat_send_video_call
+        when(itemType){
+            //视频呼叫
+            ChatMultipleItem.SEND_VIDEO_CALL->
+                return R.mipmap.ic_chat_send_video_call
 
-        ChatMultipleItem.FORM_VIDEO_CALL
-        return R.mipmap.ic_chat_form_video_call
+            ChatMultipleItem.FORM_VIDEO_CALL->
+                return R.mipmap.ic_chat_form_video_call
 
-        ChatMultipleItem.SEND_VOICE_CALL
-        return R.mipmap.ic_chat_send_voice_call
+            ChatMultipleItem.SEND_VOICE_CALL->
+                return R.mipmap.ic_chat_send_voice_call
 
-        ChatMultipleItem.FORM_VOICE_CALL
-        return R.mipmap.ic_chat_form_voice_call
+            ChatMultipleItem.FORM_VOICE_CALL->
+                return R.mipmap.ic_chat_form_voice_call
 
+            else->
+                return R.mipmap.ic_chat_send_video_call
+        }
     }
 }

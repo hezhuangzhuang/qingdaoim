@@ -1,9 +1,15 @@
-package com.hw.messagemodule.db;
+package com.hw.provider.chat.utils;
 
 import com.hw.baselibrary.common.BaseApp;
 import com.hw.baselibrary.utils.sharedpreferences.SPStaticUtils;
-import com.hw.messagemodule.data.bean.ChatBean;
-import com.hw.messagemodule.data.bean.ChatBeanLastMessage;
+import com.hw.provider.chat.bean.ChatBean;
+import com.hw.provider.chat.bean.ChatBeanLastMessage;
+import com.hw.provider.chat.bean.ConstactsBean;
+import com.hw.provider.db.ChatBeanDao;
+import com.hw.provider.db.ChatBeanLastMessageDao;
+import com.hw.provider.db.ConstactsBeanDao;
+import com.hw.provider.db.DaoMaster;
+import com.hw.provider.db.DaoSession;
 import com.hw.provider.user.UserContants;
 
 import org.greenrobot.greendao.query.QueryBuilder;
@@ -13,6 +19,7 @@ import java.util.List;
 /**
  * author：pc-20171125
  * data:2020/1/14 20:32
+ * 数据库的操作类
  */
 public class GreenDaoUtil {
     private static DaoMaster.DevOpenHelper mSQLiteOpenHelper;
@@ -28,7 +35,7 @@ public class GreenDaoUtil {
         mDaoMaster = new DaoMaster(mSQLiteOpenHelper.getWritableDatabase());
     }
 
-    public synchronized static DaoSession getmDaoSession() {
+    public synchronized static DaoSession getDaoSession() {
         if (null == mDaoSession) {
             if (null == mDaoMaster) {
                 initDataBase(SPStaticUtils.getString(UserContants.HUAWEI_ACCOUNT));
@@ -51,7 +58,7 @@ public class GreenDaoUtil {
      * @param chatBean
      */
     public static long insertChatBean(ChatBean chatBean) {
-        return getmDaoSession().getChatBeanDao().insert(chatBean);
+        return getDaoSession().getChatBeanDao().insert(chatBean);
     }
 
     /**
@@ -61,7 +68,7 @@ public class GreenDaoUtil {
      * @return
      */
     public static List<ChatBean> queryByIdChatBeans(String id) {
-        return getmDaoSession().getChatBeanDao()
+        return getDaoSession().getChatBeanDao()
                 .queryBuilder()
                 .where(ChatBeanDao.Properties.ConversationId.eq(id))
                 .list();
@@ -73,7 +80,7 @@ public class GreenDaoUtil {
      * @param chatBeanLastMessage
      */
     public static void insertLastChatBean(ChatBeanLastMessage chatBeanLastMessage) {
-        getmDaoSession()
+        getDaoSession()
                 .getChatBeanLastMessageDao()
                 .insertOrReplace(chatBeanLastMessage);
     }
@@ -82,10 +89,32 @@ public class GreenDaoUtil {
      * 获取最后一条数据的消息列表
      */
     public static List<ChatBeanLastMessage> queryLastChatBeans() {
-        return getmDaoSession()
+        return getDaoSession()
                 .getChatBeanLastMessageDao()
                 .queryBuilder()
                 .orderDesc(ChatBeanLastMessageDao.Properties.Time)
                 .list();
     }
+
+    /**
+     * 保存联系人
+     *
+     * @param constactsBean
+     * @return
+     */
+    public static long insertConstactsBean(ConstactsBean constactsBean) {
+        return getDaoSession()
+                .getConstactsBeanDao()
+                .insertOrReplace(constactsBean);
+    }
+
+    /**
+     * 通过华为id查询联系人
+     */
+    public static ConstactsBean queryByHuaweiIdConstactsBean(String accountId) {
+        return getDaoSession().getConstactsBeanDao().queryBuilder()
+                .where(ConstactsBeanDao.Properties.Sip.eq(accountId))
+                .unique();
+    }
+
 }

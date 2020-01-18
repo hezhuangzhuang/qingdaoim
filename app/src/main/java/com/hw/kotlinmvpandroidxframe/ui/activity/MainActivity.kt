@@ -7,16 +7,23 @@ import androidx.fragment.app.Fragment
 import com.alibaba.android.arouter.facade.annotation.Route
 import com.flyco.tablayout.bean.TabEntity
 import com.flyco.tablayout.listener.CustomTabEntity
+import com.hw.baselibrary.net.networkmonitor.NetType
+import com.hw.baselibrary.net.networkmonitor.Network
+import com.hw.baselibrary.net.networkmonitor.NetworkManager
 import com.hw.baselibrary.ui.activity.BaseActivity
+import com.hw.baselibrary.utils.LogUtils
+import com.hw.baselibrary.utils.sharedpreferences.SPStaticUtils
 import com.hw.confmodule.ui.fragment.HomeConfFragment
 import com.hw.contactsmodule.ui.fragment.HomeContactsFragment
 import com.hw.kotlinmvpandroidxframe.R
 import com.hw.messagemodule.service.KotlinMessageSocketService
 import com.hw.messagemodule.ui.fragment.HomeMessageFragment
 import com.hw.mylibrary.ui.fragment.MineFragment
+import com.hw.provider.chat.utils.GreenDaoUtil
+import com.hw.provider.eventbus.EventBusUtils
 import com.hw.provider.eventbus.EventMsg
 import com.hw.provider.router.RouterPath
-import com.hw.provider.router.provider.message.impl.MessageModuleRouteService
+import com.hw.provider.user.UserContants
 import kotlinx.android.synthetic.main.activity_main.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -24,6 +31,8 @@ import org.greenrobot.eventbus.ThreadMode
 
 @Route(path = RouterPath.Main.PATH_MAIN)
 class MainActivity : BaseActivity() {
+    var TAG = MainActivity::javaClass.name
+
     override fun setListeners() {
     }
 
@@ -62,14 +71,72 @@ class MainActivity : BaseActivity() {
     private var currentTab = 0
 
     override fun initData(bundle: Bundle?) {
+        //初始化网络监听
+        NetworkManager.init()
+        NetworkManager.registerObserver(this)
         KotlinMessageSocketService.startService(this)
+    }
+
+    @Network(netType = NetType.AUTO)
+    fun onNetChanged(netType: NetType) {
+        when (netType) {
+            NetType.WIFI -> {
+                LogUtils.e(TAG, "AUTO监控：WIFI CONNECT")
+            }
+
+            NetType.MOBILE -> {
+                LogUtils.e(TAG, "AUTO监控：MOBILE CONNECT")
+            }
+
+            NetType.AUTO -> {
+                LogUtils.e(TAG, "AUTO监控：AUTO CONNECT")
+            }
+
+            NetType.NONE -> {
+                LogUtils.e(TAG, "AUTO监控：NONE CONNECT")
+            }
+
+            else -> {
+            }
+        }
+    }
+
+    @Network(netType = NetType.WIFI)
+    fun onWifiChanged(netType: NetType) {
+        when (netType) {
+            NetType.WIFI -> {
+                LogUtils.e(TAG, "wifi监控：WIFI CONNECT")
+                EventBusUtils.sendMessage(EventMsg.NET_WORK_CONNECT,"")
+            }
+
+            NetType.NONE -> {
+                LogUtils.e(TAG, "wifi监控：NONE CONNECT")
+                EventBusUtils.sendMessage(EventMsg.NET_WORK_DISCONNECT,"")
+            }
+        }
+    }
+
+    @Network(netType = NetType.MOBILE)
+    fun onMobileChanged(netType: NetType) {
+        when (netType) {
+            NetType.MOBILE -> {
+                LogUtils.e(TAG, "Mobile监控：MOBILE CONNECT")
+                EventBusUtils.sendMessage(EventMsg.NET_WORK_CONNECT,"")
+            }
+
+            NetType.NONE -> {
+                LogUtils.e(TAG, "Mobile监控：NONE CONNECT")
+                EventBusUtils.sendMessage(EventMsg.NET_WORK_DISCONNECT,"")
+            }
+        }
     }
 
     override fun bindLayout(): Int = R.layout.activity_main
 
     override fun initView(savedInstanceState: Bundle?, contentView: View) {
         //初始化数据库
-        MessageModuleRouteService.initDb()
+//        MessageModuleRouteService.initDb()
+        GreenDaoUtil.initDataBase(SPStaticUtils.getString(UserContants.HUAWEI_ACCOUNT))
 
         EventBus.getDefault().register(this)
 
@@ -90,7 +157,7 @@ class MainActivity : BaseActivity() {
         fragments.add(HomeMessageFragment.newInstance("", ""))
         fragments.add(HomeConfFragment.newInstance("", ""))
         fragments.add(HomeContactsFragment.newInstance("", ""))
-        fragments.add(MineFragment.newInstance("1","2"))
+        fragments.add(MineFragment.newInstance("1", "2"))
 
         tabLayout.setTabData(mTabEntities, this, R.id.flChange, fragments)
         tabLayout.currentTab = currentTab

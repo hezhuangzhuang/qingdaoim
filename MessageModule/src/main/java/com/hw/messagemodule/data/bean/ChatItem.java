@@ -1,6 +1,7 @@
 package com.hw.messagemodule.data.bean;
 
 import com.chad.library.adapter.base.entity.SectionMultiEntity;
+import com.hw.provider.chat.bean.ChatBean;
 
 /**
  * author：pc-20171125
