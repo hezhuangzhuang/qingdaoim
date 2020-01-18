@@ -285,7 +285,7 @@ class KotlinMessageSocketService : Service() {
             message = gson.fromJson(gson.toJson(webSocketResult!!.data), MessageBody::class.java)
         }
 
-        //点对点聊天
+        //保存消息
         saveMessage(message)
     }
 
@@ -306,6 +306,7 @@ class KotlinMessageSocketService : Service() {
      * 保存消息
      */
     private fun saveMessage(message: MessageBody?) {
+        //点对点聊天
         if (message!!.type == MessageBody.TYPE_PERSONAL) {
             //保存消息到数据库
             saveChatBeanToDb(message)
@@ -334,12 +335,19 @@ class KotlinMessageSocketService : Service() {
      */
     fun saveChatBeanToDb(messageBody: MessageBody) {
         //将messagebody转换成chatbean
-        val formMessage: ChatBean = MessageUtils.receiveMessageToChatBean(messageBody)
+        val formMessage: ChatBean =
+            //群聊
+            if (messageBody.type == MessageBody.TYPE_COMMON)
+                MessageUtils.receiveGroupMessageToChatBean(messageBody)
+            else
+                MessageUtils.receiveMessageToChatBean(messageBody)
+
         //插入到数据库
         val insertChatBean = GreenDaoUtil.insertChatBean(formMessage)
 
         //将chatbean转成lastchatbean
         val lastMessage: ChatBeanLastMessage = formMessage.toLastMesage()
+
         //更新最后一条数据
         GreenDaoUtil.insertLastChatBean(lastMessage)
     }

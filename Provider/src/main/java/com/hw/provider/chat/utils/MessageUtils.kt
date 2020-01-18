@@ -13,7 +13,7 @@ import java.util.*
  */
 object MessageUtils {
     /**
-     * 将接收到的messagebody转成chatbean对象
+     * 将接收到的点对点messagebody转成chatbean对象
      */
     fun receiveMessageToChatBean(messageBody: MessageBody): ChatBean {
         return ChatBean.Builder()
@@ -43,7 +43,7 @@ object MessageUtils {
     }
 
     /**
-     * 将发出的messagebody转成chatbean对象
+     * 将发出的点对点messagebody转成chatbean对象
      */
     fun sendMessageToChatBean(messageBody: MessageBody): ChatBean {
         return ChatBean.Builder()
@@ -69,9 +69,39 @@ object MessageUtils {
     }
 
     /**
+     * 将接收到的群聊messagebody转成chatbean对象
+     */
+    fun receiveGroupMessageToChatBean(messageBody: MessageBody): ChatBean {
+        return ChatBean.Builder()
+            //消息类型,发送消息
+            .setMessageType(
+                getReceiveMessageType(
+                    messageBody.real.type
+                )
+            )
+            //发送人名称
+            .setName(messageBody.sendName)
+            //发送时间
+            .setSendDate(Date())
+            //消息内容
+            .setContent(getMessageContent(messageBody))
+            //是否发送
+            .setSend(false)
+            //会话id
+            .setConversationId(messageBody.receiveId)
+            //会话名称
+            .setConversationUserName(messageBody.receiveName)
+            //是否群聊
+            .setGroup(true)
+            //是否已读
+            .setRead(false)
+            .builder()
+    }
+
+    /**
      * 获取收到消息的类型
      */
-     fun getReceiveMessageType(type: Int): Int {
+    fun getReceiveMessageType(type: Int): Int {
         when (type) {
             //文字
             MessageReal.TYPE_STR ->
@@ -97,10 +127,11 @@ object MessageUtils {
                 return ChatMultipleItem.FORM_TEXT
         }
     }
+
     /**
      * 获取收到消息的类型
      */
-     fun getSendMessageType(type: Int): Int {
+    fun getSendMessageType(type: Int): Int {
         when (type) {
             //文字
             MessageReal.TYPE_STR ->
@@ -130,7 +161,7 @@ object MessageUtils {
     /**
      * 获取消息的内容
      */
-     fun getMessageContent(messageBody: MessageBody): String {
+    fun getMessageContent(messageBody: MessageBody): String {
         when (messageBody.real.type) {
             //文字
             MessageReal.TYPE_STR ->
