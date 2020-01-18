@@ -63,10 +63,12 @@ class KotlinMessageSocketService : Service() {
                             if (!reconnectBlocking) {
                                 //断开
                                 socketStatus = 0
+                            }else{//如果连接成功则再次发送
+                                sendMessage(message)
                             }
                         }
                     } catch (e: Exception) {
-                        LogUtils.e("MessageSocketService-->sendMessage-->${e.message}")
+                        LogUtils.e("MessageSocketService-->sendMessage-->error-->${e.message}")
                     }
                 }
                 ToastHelper.showShort("消息发送失败")
