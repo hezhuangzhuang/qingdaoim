@@ -1,5 +1,6 @@
 package com.hw.messagemodule.mvp.model
 
+import com.hw.baselibrary.lastChar
 import com.hw.baselibrary.net.RetrofitManager
 import com.hw.baselibrary.net.Urls
 import com.hw.baselibrary.rx.scheduler.CustomCompose

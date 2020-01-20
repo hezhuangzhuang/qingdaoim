@@ -12,6 +12,7 @@ import com.hw.baselibrary.net.networkmonitor.Network
 import com.hw.baselibrary.net.networkmonitor.NetworkManager
 import com.hw.baselibrary.ui.activity.BaseActivity
 import com.hw.baselibrary.utils.LogUtils
+import com.hw.baselibrary.utils.ToastHelper
 import com.hw.baselibrary.utils.sharedpreferences.SPStaticUtils
 import com.hw.confmodule.ui.fragment.HomeConfFragment
 import com.hw.contactsmodule.ui.fragment.HomeContactsFragment
@@ -31,9 +32,13 @@ import org.greenrobot.eventbus.ThreadMode
 
 @Route(path = RouterPath.Main.PATH_MAIN)
 class MainActivity : BaseActivity() {
+    //
     var TAG = MainActivity::javaClass.name
 
+    var test:String? = null
+
     override fun setListeners() {
+        ToastHelper.showShort(test?:"这是test为空时显示的文字")
     }
 
     override fun onError(text: String) {
