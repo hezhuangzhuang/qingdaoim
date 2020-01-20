@@ -36,7 +36,7 @@ class App :BaseApp() {
      * 异常处理
      */
     private fun initCrashHandler() {
-        //         /本地提示
+        //本地提示
         Recovery.getInstance()
             .debug(true)
             .recoverInBackground(false)
