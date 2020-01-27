@@ -1,5 +1,6 @@
 package com.hw.huaweivclib.net.respone;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
@@ -8,7 +9,7 @@ import java.util.Objects;
  * data:2019/1/7 14:50
  * 会议详情的bean
  */
-public class ConfBeanRespone {
+public class ConfBeanRespone implements Serializable {
 
     /**
      * code : 0
@@ -19,7 +20,7 @@ public class ConfBeanRespone {
     public String msg;
     public DataBean data;
 
-    public static class DataBean {
+    public static class DataBean implements Serializable{
         /**
          * smcConfId : 3710
          * confName : APP_1_android测试会议
@@ -42,7 +43,7 @@ public class ConfBeanRespone {
         public int confMode;//会议模式：0表示主席模式，1表示多画面模式
         public List<SiteStatusInfoListBean> siteStatusInfoList;
 
-        public static class SiteStatusInfoListBean {
+        public static class SiteStatusInfoListBean implements Serializable{
             /**
              * siteUri : 0271101@113.57.147.173
              * siteName : hewei

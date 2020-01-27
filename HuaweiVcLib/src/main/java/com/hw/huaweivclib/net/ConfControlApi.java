@@ -144,5 +144,15 @@ public interface ConfControlApi {
             @Query("siteUri") String siteUri
     );
 
+    /**
+     * 设置主席
+     */
+    @Headers({"Content-Type: application/json", "Accept: application/json"})
+    @POST("conf/forceSetConfChair")
+    Observable<BaseData> setConfChair(
+            @Query("smcConfId") String smcConfId,
+            @Query("siteUri") String siteUri
+    );
+
 
 }

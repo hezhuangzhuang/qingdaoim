@@ -42,6 +42,23 @@ public class HuaweiCallImp {
         return CallMgr.getInstance().startCall(siteNumber, isVideoCall);
     }
 
+    public static int joinConf(String accessCode) {
+        if (!DeviceManager.isNetworkAvailable(BaseApp.context)) {
+            ToastHelper.INSTANCE.showShort("请检查您的网络");
+            return -1;
+        }
+
+        //是否需要自动接听
+        SPStaticUtils.put(UIConstants.IS_AUTO_ANSWER, true);
+
+        //是否是加入会议
+        SPStaticUtils.put(UIConstants.JOIN_CONF, true);
+
+        //显示等待界面
+//        LoadingActivity.startActivty(BaseApp.context, accessCode);
+        return CallMgr.getInstance().startCall(accessCode, true);
+    }
+
     /**
      * @param confName      会议名称
      * @param duration      会议时长，单位(分钟)
@@ -69,13 +86,6 @@ public class HuaweiCallImp {
 
         JSONObject jsonObject = new JSONObject();
         try {
-//            @Query("confName") String confName,
-//            @Query("duration") String duration,
-//            @Query("accessCode") String accessCode,
-//            @Query("sites") String sites,
-//            @Query("creatorUri") String creatorUri,
-//            @Query("groupId") String groupId,
-//            @Query("confMediaType") String confMediaType
             jsonObject.put("confName", confName);
             jsonObject.put("duration", duration);
             jsonObject.put("accessCode", accessCode);

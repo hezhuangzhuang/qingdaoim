@@ -164,7 +164,6 @@ public class CallFunc implements ICallNotification {
                     Intent intent = new Intent(action);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     intent.addCategory(IntentConstant.DEFAULT_CATEGORY);
-                    //intent.putExtra(UIConstants.CALL_INFO, callInfo);
 
 //                    PreferencesHelper.saveData(UIConstants.CALL_INFO, callInfo);
                     SPStaticUtils.put(UIConstants.CALL_INFO,gson.toJson(callInfo));

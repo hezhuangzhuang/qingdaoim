@@ -1,9 +1,16 @@
 package com.hw.kotlinmvpandroidxframe
 
+import android.content.Context
+import androidx.annotation.NonNull
+import androidx.core.content.ContextCompat
 import androidx.multidex.MultiDex
 import com.hw.baselibrary.common.BaseApp
 import com.hw.baselibrary.image.ImageLoader
 import com.hw.kotlinmvpandroidxframe.ui.activity.LauncherActivity
+import com.scwang.smartrefresh.layout.api.*
+import com.scwang.smartrefresh.layout.constant.SpinnerStyle
+import com.scwang.smartrefresh.layout.footer.ClassicsFooter
+import com.scwang.smartrefresh.layout.header.ClassicsHeader
 import com.tencent.bugly.crashreport.CrashReport
 import com.zxy.recovery.core.Recovery
 

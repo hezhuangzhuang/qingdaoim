@@ -8,5 +8,5 @@ object NetWorkContants {
     const val SUCCESS = "success";
 
 
-    const val RESPONSE_CODE= 1;
+    const val RESPONSE_CODE = 1;
 }

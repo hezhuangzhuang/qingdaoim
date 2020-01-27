@@ -31,6 +31,9 @@ data class EventMsg<T>(
 
         //网络连接断开
         val NET_WORK_DISCONNECT = "NET_WORK_DISCONNECT"
+
+        //登出
+        val LOGOUT = "LOGOUT"
     }
 
 }

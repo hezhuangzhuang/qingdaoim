@@ -3,9 +3,13 @@ package com.hw.confmodule.ui.fragment
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Button
+import android.widget.EditText
 import com.alibaba.android.arouter.launcher.ARouter
 import com.hjq.bar.OnTitleBarListener
 import com.hw.baselibrary.ui.fragment.BaseFragment
+import com.hw.baselibrary.utils.ToastHelper
+import com.hw.baselibrary.widgets.BaseDialog
 import com.hw.confmodule.R
 import com.hw.provider.router.RouterPath
 import com.hw.provider.widget.SelectCreateDialog
@@ -22,7 +26,7 @@ private const val ARG_PARAM2 = "param2"
 class HomeConfFragment : BaseFragment() {
 
     private val selectCreateDialog: SelectCreateDialog by lazy {
-        SelectCreateDialog(activity)
+        SelectCreateDialog(mActivity)
     }
 
     override fun initData(bundle: Bundle?) {
@@ -37,11 +41,22 @@ class HomeConfFragment : BaseFragment() {
                 .navigation()
         }
 
+        rl_join.setOnClickListener {
+            showJoinConfDialog()
+        }
+
+        rl_my_conf.setOnClickListener {
+            ARouter.getInstance()
+                .build(RouterPath.Conf.MY_CONF_LIST)
+                .navigation()
+        }
+
         titleBar.setOnTitleBarListener(object : OnTitleBarListener {
             override fun onLeftClick(v: View?) {
             }
 
             override fun onTitleClick(v: View?) {
+                ToastHelper.showShort("11")
             }
 
             override fun onRightClick(v: View?) {
@@ -49,6 +64,36 @@ class HomeConfFragment : BaseFragment() {
                 selectCreateDialog.showPopupWindow(v)
             }
         })
+    }
+
+    private var joinConfDialog: BaseDialog? = null
+
+    private fun showJoinConfDialog() {
+        if (null == joinConfDialog) {
+            joinConfDialog = BaseDialog(mActivity)
+
+            joinConfDialog?.contentView = initJoinConfView()
+        }
+
+        joinConfDialog?.show()
+    }
+
+    private fun initJoinConfView(): View {
+        var view = View.inflate(mActivity, R.layout.diaolog_join_conf, null)
+        val etAccessCode = view.findViewById<EditText>(R.id.et_accessCode)
+        val btJoinConf = view.findViewById<Button>(R.id.bt_confirm)
+        val btCancle = view.findViewById<Button>(R.id.bt_cancle)
+        btJoinConf.setOnClickListener {
+            if(etAccessCode.text.isEmpty()){
+                ToastHelper.showShort("会议接入码不能为空")
+                return@setOnClickListener
+            }
+
+        }
+        btCancle.setOnClickListener {
+            joinConfDialog?.dismiss()
+        }
+        return view
     }
 
     override fun onError(text: String) {

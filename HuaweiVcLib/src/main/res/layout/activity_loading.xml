@@ -13,11 +13,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:padding="12dp"
+        android:layout_marginTop="@dimen/dp_40"
         android:textColor="@color/white"
         android:textSize="16sp"
         tools:text="罗倩倩"/>
-
 
     <ImageView
         android:id="@+id/iv_loading"

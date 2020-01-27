@@ -15,6 +15,7 @@ class GroupChatAdapter : BaseQuickAdapter<GroupChatBean, BaseViewHolder> {
 
     override fun convert(helper: BaseViewHolder, item: GroupChatBean?) {
         helper.setText(R.id.tvName, item?.groupName)
+            .addOnClickListener(R.id.rl_root,R.id.ivCreateConf)
     }
 
 }

@@ -1,5 +1,6 @@
 package com.hw.mylibrary.mvp.model
 
+import com.hw.baselibrary.common.BaseData
 import com.hw.baselibrary.net.RetrofitManager
 import com.hw.baselibrary.net.Urls
 import com.hw.baselibrary.rx.scheduler.CustomCompose
@@ -26,6 +27,18 @@ class UserService @Inject constructor() {
         return RetrofitManager
             .create(LoginApi::class.java, Urls.WEBSOCKET_URL)
             .login(account, password, deviceID)
+            .compose(CustomCompose())
+    }
+
+    /**
+     * 登录
+     */
+    fun logOut(
+        account: String
+    ): Observable<BaseData<String>> {
+        return RetrofitManager
+            .create(LoginApi::class.java, Urls.WEBSOCKET_URL)
+            .logOut(account)
             .compose(CustomCompose())
     }
 

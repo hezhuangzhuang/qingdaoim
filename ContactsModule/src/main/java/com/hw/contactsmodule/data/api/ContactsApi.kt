@@ -43,4 +43,11 @@ interface ContactsApi {
     @Headers("Content-Type: application/json", "Accept: application/json")//需要添加头
     @POST("im/mobile/group/getGroupsByAccount")
      fun getGroupsById(@Query("id") id: Int): Observable<BaseData<GroupChatBean>>
+
+    /**
+     * 根据群组id查询群组人员
+     */
+    @Headers("Content-Type: application/json", "Accept: application/json")//需要添加头
+    @POST("im/mobile/group/getAccounts")
+    abstract fun getGroupIdConstacts(@Query("groupId") Id: String): Observable<BaseData<PeopleBean>>
 }

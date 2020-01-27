@@ -47,4 +47,10 @@ interface IHuaweiModuleService : IProvider {
         groupId: String,
         type: Int
     )
+
+    /**
+     * 加入会议
+     */
+    fun joinConf(accessCode: String)
+
 }

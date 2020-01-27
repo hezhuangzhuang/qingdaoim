@@ -55,4 +55,11 @@ object HuaweiModuleService {
         type: Int) {
         navigation.createConfNetWork(confName, duration, accessCode, memberSipList, groupId, type)
     }
+
+    /**
+     * 呼叫会场
+     */
+    fun callSite(accessCode: String) {
+         navigation.joinConf(accessCode)
+    }
 }

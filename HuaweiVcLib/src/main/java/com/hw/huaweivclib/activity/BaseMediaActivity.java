@@ -278,46 +278,6 @@ public abstract class BaseMediaActivity extends BaseActivity implements LocBroad
         }
     }
 
-    /**
-     * 获取发送的消息
-     *
-     * @param textMsg
-     * @param peerNumber
-     * @param isVideoCall
-     * @return
-     */
-    private MessageBody getMessageBody(String textMsg,
-                                       String peerNumber,
-                                       boolean isVideoCall) {
-        String sendId = SPStaticUtils.getString(UserContants.HUAWEI_ACCOUNT);
-        String sendName = SPStaticUtils.getString(UserContants.DISPLAY_NAME);
-
-        ConstactsBean constactsBean = GreenDaoUtil.queryByHuaweiIdConstactsBean(peerNumber);
-        String receiveName = peerNumber;
-
-        //是否获取到用户名
-        if (null != constactsBean) {
-            receiveName = constactsBean.name;
-        }
-
-        MessageReal messageReal = new MessageReal(
-                textMsg,
-                isVideoCall ? MessageReal.Companion.getTYPE_VIDEO_CALL() : MessageReal.Companion.getTYPE_VOICE_CALL(),
-                ""
-        );
-
-        MessageBody messageBody = new MessageBody(
-                sendId,
-                sendName,
-                peerNumber,
-                receiveName,
-                MessageBody.Companion.getTYPE_PERSONAL(),
-                messageReal
-        );
-
-        return messageBody;
-    }
-
 
     /**
      * 发送消息
@@ -361,6 +321,47 @@ public abstract class BaseMediaActivity extends BaseActivity implements LocBroad
         }
 
         return false;
+    }
+
+
+    /**
+     * 获取发送的消息
+     *
+     * @param textMsg
+     * @param peerNumber
+     * @param isVideoCall
+     * @return
+     */
+    private MessageBody getMessageBody(String textMsg,
+                                       String peerNumber,
+                                       boolean isVideoCall) {
+        String sendId = SPStaticUtils.getString(UserContants.HUAWEI_ACCOUNT);
+        String sendName = SPStaticUtils.getString(UserContants.DISPLAY_NAME);
+
+        ConstactsBean constactsBean = GreenDaoUtil.queryByHuaweiIdConstactsBean(peerNumber);
+        String receiveName = peerNumber;
+
+        //是否获取到用户名
+        if (null != constactsBean) {
+            receiveName = constactsBean.name;
+        }
+
+        MessageReal messageReal = new MessageReal(
+                textMsg,
+                isVideoCall ? MessageReal.Companion.getTYPE_VIDEO_CALL() : MessageReal.Companion.getTYPE_VOICE_CALL(),
+                ""
+        );
+
+        MessageBody messageBody = new MessageBody(
+                sendId,
+                sendName,
+                peerNumber,
+                receiveName,
+                MessageBody.Companion.getTYPE_PERSONAL(),
+                messageReal
+        );
+
+        return messageBody;
     }
 
     @Override

@@ -15,7 +15,7 @@ import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
  *author：pc-20171125
  *data:2019/11/8 09:51
  */
-abstract class BaseActivity : RxAppCompatActivity(), IBaseView, OnTitleBarListener {
+abstract class BaseActivity : RxAppCompatActivity(), IBaseView {
     protected lateinit var mContentView: View
     protected lateinit var mActivity: Activity
 
@@ -85,8 +85,6 @@ abstract class BaseActivity : RxAppCompatActivity(), IBaseView, OnTitleBarListen
             // 懒人模式
             mTitleBar = findTitleBar(getContentView())
         }
-
-        mTitleBar?.setOnTitleBarListener(this)
     }
 
     override fun onDestroy() {
@@ -183,15 +181,6 @@ abstract class BaseActivity : RxAppCompatActivity(), IBaseView, OnTitleBarListen
      */
     fun getContentView(): ViewGroup {
         return findViewById(Window.ID_ANDROID_CONTENT)
-    }
-
-    override fun onLeftClick(v: View?) {
-    }
-
-    override fun onRightClick(v: View?) {
-    }
-
-    override fun onTitleClick(v: View?) {
     }
 
 }

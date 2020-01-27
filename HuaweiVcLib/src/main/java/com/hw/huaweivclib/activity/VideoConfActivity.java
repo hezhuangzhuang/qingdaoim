@@ -32,6 +32,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.alibaba.android.arouter.launcher.ARouter;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -70,12 +71,14 @@ import com.hw.provider.huawei.commonservice.localbroadcast.LocBroadcast;
 import com.hw.provider.huawei.commonservice.localbroadcast.LocBroadcastReceiver;
 import com.hw.provider.huawei.commonservice.util.LogUtil;
 import com.hw.provider.net.respone.contacts.PeopleBean;
+import com.hw.provider.router.RouterPath;
 import com.hw.provider.router.provider.constacts.impl.ContactsModuleRouteService;
 import com.hw.provider.user.UserContants;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -396,7 +399,7 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                ToastHelper.INSTANCE.showShort(lineNumber);
+//                ToastHelper.INSTANCE.showShort(lineNumber);
                 finish();
             }
         });
@@ -484,10 +487,9 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
         } else if (R.id.iv_back_operate == v.getId()) {
             switchCamera();
         } else if (R.id.iv_right_operate == v.getId()) {
-
             if (null != allSiteList) {
                 ToastHelper.INSTANCE.showShort("正在启动会议控制...");
-                List<ConfBeanRespone.DataBean.SiteStatusInfoListBean> onlineSites = getOnlineSites(allSiteList);
+                List<ConfBeanRespone.DataBean.SiteStatusInfoListBean> onlineSites = getOnlineSites();
                 showConfControlDialog(onlineSites, true);
             }
 
@@ -739,10 +741,25 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
      *
      * @param siteStatusInfoList
      */
-    private List<ConfBeanRespone.DataBean.SiteStatusInfoListBean> getOnlineSites(List<ConfBeanRespone.DataBean.SiteStatusInfoListBean> siteStatusInfoList) {
+    private List<ConfBeanRespone.DataBean.SiteStatusInfoListBean> getOnlineSites() {
         List<ConfBeanRespone.DataBean.SiteStatusInfoListBean> siteList = new ArrayList<>();
-        for (ConfBeanRespone.DataBean.SiteStatusInfoListBean siteBean : siteStatusInfoList) {
+        for (ConfBeanRespone.DataBean.SiteStatusInfoListBean siteBean : allSiteList) {
             if (2 == siteBean.siteStatus) {
+                siteList.add(siteBean);
+            }
+        }
+        return siteList;
+    }
+
+    /**
+     * 获取在线的会场并剔除自己
+     *
+     * @param siteStatusInfoList
+     */
+    private List<ConfBeanRespone.DataBean.SiteStatusInfoListBean> getOnlineSitesRemoveSelf() {
+        List<ConfBeanRespone.DataBean.SiteStatusInfoListBean> siteList = new ArrayList<>();
+        for (ConfBeanRespone.DataBean.SiteStatusInfoListBean siteBean : allSiteList) {
+            if (2 == siteBean.siteStatus && !siteBean.siteUri.equals(getCurrentSiteUri())) {
                 siteList.add(siteBean);
             }
         }
@@ -1319,7 +1336,6 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
         exitConfDialog.show();
     }
 
-
     /**
      * 初始化结束会议对话框
      */
@@ -1342,6 +1358,7 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
             @Override
             public void onClick(View v) {
                 endConfReuqest();
+                exitConfDialog.dismiss();
             }
         });
 
@@ -1349,6 +1366,7 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
             @Override
             public void onClick(View v) {
                 leaveConfRequest();
+                exitConfDialog.dismiss();
             }
         });
 
@@ -1356,6 +1374,7 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
             @Override
             public void onClick(View v) {
                 startAppointChairActivity();
+                exitConfDialog.dismiss();
             }
         });
 
@@ -1378,23 +1397,20 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
      * 指定主席
      */
     private void startAppointChairActivity() {
-        ToastHelper.INSTANCE.showShort("跳到指定主席界面");
+        if(getOnlineSitesRemoveSelf().isEmpty()){
+            ToastHelper.INSTANCE.showShort("当前没有在线会场");
+            return;
+        }
         //跳转到指定主席界面
-//        Intent intent = new Intent(this, ChairSelectActivity.class);
-//        intent.putExtra("peerNumber", peerNumber);
-//        intent.putExtra("smcConfId", smcConfId);
-//        startActivity(intent);
-////        startActivityForResult(intent, REQUEST_CODE);
-//        exitConfDialog.dismiss();
+        ARouter.getInstance().build(RouterPath.Huawei.CHAIR_SELECT)
+                .withString(RouterPath.Huawei.FILED_SMC_CONF_ID, smcConfId)
+                .withSerializable(RouterPath.Huawei.FILED_ONLINE_LIST, (Serializable) getOnlineSitesRemoveSelf())
+                .navigation();
     }
-
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        //设置指定主席的标记为false
-//        isAppointChair = false;
-
     }
 
     private Disposable queryConfInfoSubscribe;

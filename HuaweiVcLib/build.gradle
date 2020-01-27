@@ -72,5 +72,5 @@ dependencies {
     kapt rootProject.ext.arouterCompiler
 
 
-    implementation 'com.afollestad.material-dialogs:core:0.9.1.0'
+//    implementation 'com.afollestad.material-dialogs:core:0.9.1.0'
 }

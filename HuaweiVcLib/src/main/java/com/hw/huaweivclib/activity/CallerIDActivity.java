@@ -24,7 +24,6 @@ public class CallerIDActivity extends BaseMediaActivity implements View.OnClickL
     private TextView tvHangUp;
     private TextView tvAnswer;
 
-
     @Override
     public void onClick(View v) {
         if (R.id.tv_hang_up == v.getId()) {

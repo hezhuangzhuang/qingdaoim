@@ -6,6 +6,7 @@ import com.hw.baselibrary.net.NetWorkContants
 import com.hw.baselibrary.utils.sharedpreferences.SPStaticUtils
 import com.hw.contactsmodule.mvp.contract.ContactsContract
 import com.hw.contactsmodule.mvp.model.ContactsService
+import com.hw.provider.router.provider.huawei.impl.HuaweiModuleService
 import com.hw.provider.user.UserContants
 import javax.inject.Inject
 
@@ -16,8 +17,6 @@ import javax.inject.Inject
  */
 class ContactsPresenter @Inject constructor() : BasePresenter<ContactsContract.View>(),
     ContactsContract.Presenter {
-
-
     @Inject
     lateinit var contactsService: ContactsService
 
@@ -121,11 +120,49 @@ class ContactsPresenter @Inject constructor() : BasePresenter<ContactsContract.V
                 }
             },
                 {
+                    mRootView?.apply {
+                        dismissLoading()
+                        showError(ExceptionHandle.handleException(it))
+                    }
+                })
+    }
+
+    override fun createConf(
+        confName: String,
+        duration: String,
+        accessCode: String,
+        groupId: String,
+        type: Int
+    ) {
+
+        checkViewAttached()
+        mRootView?.showLoading()
+
+        contactsService.getGroupIdConstacts(groupId)
+            .subscribe({ baseData ->
+                mRootView?.apply {
+                    if (NetWorkContants.RESPONSE_CODE == baseData.responseCode) {
+
+                        var memberSipList = baseData.data.joinToString { it.sip }
+                        HuaweiModuleService.createConfNetWork(
+                            confName,
+                            duration,
+                            accessCode,
+                            memberSipList,
+                            groupId,
+                            type
+                        )
+                    } else {
+                        showError(baseData.message)
+                    }
+                }
+            }, {
                 mRootView?.apply {
                     dismissLoading()
                     showError(ExceptionHandle.handleException(it))
                 }
             })
-    }
 
+
+    }
 }

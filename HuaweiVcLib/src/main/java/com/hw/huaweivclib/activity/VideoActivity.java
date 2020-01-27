@@ -44,10 +44,20 @@ import com.hw.baselibrary.utils.sharedpreferences.SPStaticUtils;
 import com.hw.huaweivclib.R;
 import com.hw.huaweivclib.service.AudioStateWatchService;
 import com.hw.huaweivclib.widget.DragFrameLayout;
+import com.hw.provider.chat.bean.ChatBean;
+import com.hw.provider.chat.bean.ConstactsBean;
+import com.hw.provider.chat.bean.MessageBody;
+import com.hw.provider.chat.bean.MessageReal;
+import com.hw.provider.chat.utils.GreenDaoUtil;
+import com.hw.provider.chat.utils.MessageUtils;
+import com.hw.provider.eventbus.EventBusUtils;
+import com.hw.provider.eventbus.EventMsg;
 import com.hw.provider.huawei.commonservice.localbroadcast.CustomBroadcastConstants;
 import com.hw.provider.huawei.commonservice.localbroadcast.LocBroadcast;
 import com.hw.provider.huawei.commonservice.localbroadcast.LocBroadcastReceiver;
 import com.hw.provider.huawei.commonservice.util.LogUtil;
+import com.hw.provider.router.provider.message.impl.MessageModuleRouteService;
+import com.hw.provider.user.UserContants;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -359,13 +369,15 @@ public class VideoActivity extends BaseActivity implements LocBroadcastReceiver,
         if (mCallInfo.isCaller()) {
             Long chatTimeLong = System.currentTimeMillis() - startTimeLong;
             String chatTime = DateUtils.longToString(chatTimeLong, "mm:ss");
+//            //发送消息
+//            sendTextMsg("通话时长 " + chatTime, mCallInfo.getPeerNumber());
+//
+//            //保存本地消息
+//            saveLocalMessage("通话时长 " + chatTime, mCallInfo.getPeerNumber());
+
             //发送消息
-            sendTextMsg("通话时长 " + chatTime, mCallInfo.getPeerNumber());
-
-            //保存本地消息
-            saveLocalMessage("通话时长 " + chatTime, mCallInfo.getPeerNumber());
+            sendTextMsg("通话时长 " + chatTime, "通话时长 " + chatTime, mCallInfo.getPeerNumber(), true);
         }
-
 
         runOnUiThread(new Runnable() {
             @Override
@@ -598,8 +610,93 @@ public class VideoActivity extends BaseActivity implements LocBroadcastReceiver,
 //        eventMsg.setMessageData(sendMsg);
 //        eventMsg.setMsg(EventMsg.UPDATE_HOME);
 //        EventBus.getDefault().post(eventMsg);
-
     }
+
+    /**
+     * 发送消息
+     *
+     * @param sendMsg     发出去的消息
+     * @param saveMsg     保存在本地的消息
+     * @param peerNumber  收件人名称
+     * @param isVideoCall true：视频呼叫
+     * @return
+     */
+    private boolean sendTextMsg(String sendMsg,
+                                String saveMsg,
+                                String peerNumber,
+                                boolean isVideoCall) {
+
+        MessageBody messageBody = getMessageBody(sendMsg, peerNumber, isVideoCall);
+
+        //是否发送成功
+        boolean sendSuccess = MessageModuleRouteService.INSTANCE.sendMessage(messageBody);
+
+        //发送成功
+        if (sendSuccess) {
+            //将消息转换成chatbean
+            ChatBean sendChatBean = MessageUtils.INSTANCE.sendMessageToChatBean(messageBody);
+            //设置消息的内容
+            sendChatBean.textContent = saveMsg;
+
+            //插入到数据库
+            GreenDaoUtil.insertChatBean(sendChatBean);
+
+            //插入到最后消息数据
+            GreenDaoUtil.insertLastChatBean(sendChatBean.toLastMesage());
+
+            //刷新首页消息
+            EventBusUtils.INSTANCE.sendMessage(EventMsg.Companion.getREFRESH_HOME_MESSAGE(), "");
+            //修改消息内容
+            messageBody.getReal().setMessage(sendChatBean.textContent);
+
+            //聊天界面更新消息
+            EventBusUtils.INSTANCE.sendMessage(EventMsg.Companion.getSEND_SINGLE_MESSAGE(), messageBody);
+        }
+        return false;
+    }
+
+
+    /**
+     * 获取发送的消息
+     *
+     * @param textMsg
+     * @param peerNumber
+     * @param isVideoCall
+     * @return
+     */
+    private MessageBody getMessageBody(String textMsg,
+                                       String peerNumber,
+                                       boolean isVideoCall) {
+        String sendId = SPStaticUtils.getString(UserContants.HUAWEI_ACCOUNT);
+        String sendName = SPStaticUtils.getString(UserContants.DISPLAY_NAME);
+
+        ConstactsBean constactsBean = GreenDaoUtil.queryByHuaweiIdConstactsBean(peerNumber);
+
+        String receiveName = peerNumber;
+
+        //是否获取到用户名
+        if (null != constactsBean) {
+            receiveName = constactsBean.name;
+        }
+
+        MessageReal messageReal = new MessageReal(
+                textMsg,
+                isVideoCall ? MessageReal.Companion.getTYPE_VIDEO_CALL() : MessageReal.Companion.getTYPE_VOICE_CALL(),
+                ""
+        );
+
+        MessageBody messageBody = new MessageBody(
+                sendId,
+                sendName,
+                peerNumber,
+                receiveName,
+                MessageBody.Companion.getTYPE_PERSONAL(),
+                messageReal
+        );
+
+        return messageBody;
+    }
+
 
     @Override
     public void initData(@Nullable Bundle bundle) {
@@ -648,7 +745,7 @@ public class VideoActivity extends BaseActivity implements LocBroadcastReceiver,
         //是否是会议
         try {
             String callInfoStringData = SPStaticUtils.getString(UIConstants.CALL_INFO);
-            mCallInfo = gson.fromJson(callInfoStringData,CallInfo.class);
+            mCallInfo = gson.fromJson(callInfoStringData, CallInfo.class);
         } catch (Exception e) {
         }
 

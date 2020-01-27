@@ -4,6 +4,7 @@ import com.hw.baselibrary.injection.PerComponentScope
 import com.hw.baselibrary.injection.component.ActivityComponent
 import com.hw.confmodule.inject.module.ConfModule
 import com.hw.confmodule.ui.activity.CreateConfActivity
+import com.hw.confmodule.ui.activity.MyConfActivity
 import dagger.Component
 
 /**
@@ -17,4 +18,7 @@ import dagger.Component
 )
 interface ConfComponent {
     fun inject(createConfActivity:CreateConfActivity)
+
+
+    fun inject (myConfActivity: MyConfActivity)
 }

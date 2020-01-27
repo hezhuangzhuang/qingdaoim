@@ -3,6 +3,7 @@ package com.hw.provider.chat.bean;
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Generated;
+import org.greenrobot.greendao.annotation.Unique;
 
 /**
  * author：pc-20171125
@@ -14,6 +15,7 @@ public class ConstactsBean {
     @Id
     public Long id;
 
+    @Unique
     public String sip;
     public String name;
 

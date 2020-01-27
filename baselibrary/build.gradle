@@ -74,17 +74,20 @@ dependencies {
     api 'com.hjq:titlebar:6.0'
 
     // 图片加载框架：https://github.com/bumptech/glide
-    api 'com.github.bumptech.glide:glide:4.9.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
+    api rootProject.ext.glide
+    annotationProcessor rootProject.ext.glideCompiler
 
     //tablayout-->https://github.com/H07000223/FlycoTabLayout
     api project(path: ':FlycoTabLayout_Lib')
 
     //recycler适配器
-    api 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.47'
+    api rootProject.ext.baseRecyclerViewAdapterHelper
+
+    //下拉刷新
+    api rootProject.ext.smartRefresh
 
     //greendao
-    api 'org.greenrobot:greendao:3.2.2'
+    api rootProject.ext.greendao
 
     //本地bug提示
     api rootProject.ext.recovery
@@ -97,6 +100,8 @@ dependencies {
 
     //popupwindow
     api rootProject.ext.basePopup
+
+    api 'com.afollestad.material-dialogs:core:0.9.1.0'
 
     //Dagger2
     api rootProject.ext.daggerApi

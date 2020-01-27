@@ -51,4 +51,9 @@ public class HuaweiModuleServiceImp implements IHuaweiModuleService {
     public void init(Context context) {
 
     }
+
+    @Override
+    public void joinConf(@NotNull String accessCode) {
+        HuaweiCallImp.joinConf(accessCode);
+    }
 }

@@ -112,7 +112,10 @@ public class GreenDaoUtil {
      * 通过华为id查询联系人
      */
     public static ConstactsBean queryByHuaweiIdConstactsBean(String accountId) {
-        return getDaoSession().getConstactsBeanDao().queryBuilder()
+        List<ConstactsBean> all = getDaoSession().getConstactsBeanDao()
+                .queryBuilder().list();
+        return getDaoSession().getConstactsBeanDao()
+                .queryBuilder()
                 .where(ConstactsBeanDao.Properties.Sip.eq(accountId))
                 .unique();
     }

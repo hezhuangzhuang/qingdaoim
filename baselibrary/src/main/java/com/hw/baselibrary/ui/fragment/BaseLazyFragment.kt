@@ -241,6 +241,8 @@ abstract class BaseLazyFragment : RxFragment(), IBaseView {
         }
     }
 
+//    setMaxLifecycle
+
     /**
      * 如果是通过FragmentTransaction的show和hide的方法来控制显示，调用的是onHiddenChanged.
      * 若是初始就show的Fragment 为了触发该事件 需要先hide再show

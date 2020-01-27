@@ -9,6 +9,7 @@ object RouterPath {
     class UserCenter {
         companion object {
             const val PATH_LOGIN = "/userCenter/login"
+            const val PATH_ABOUT = "/userCenter/about"
             const val USER_MODULE_SERVICE = "/userCenter/service"
         }
     }
@@ -37,6 +38,27 @@ object RouterPath {
     class Conf {
         companion object {
             const val CREATE_CONF = "/conf/createConf"
+
+            const val MY_CONF_LIST = "/conf/myConfList"
+
+            const val SELECTED_PEOPLE = "/conf/selectedPeople"
+
+            const val SELECTED_PEOPLE_REQUEST = 0X111
+
+            //已选择的成员
+            const val FILED_SELECTED_PEOPLE = "FILED_SELECTED_PEOPLE"
+
+
+
+
+            //是否是历史会议
+            const val FILED_IS_HISTORY = "FILED_IS_HISTORY"
+
+            //是否是创建群组
+            const val FILED_IS_CREATE_GROUP = "FILED_IS_CREATE_GROUP"
+
+            //是否是视频会议
+            const val FILED_VIDEO_CONF = "FILED_VIDEO_CONF"
         }
     }
 
@@ -59,6 +81,14 @@ object RouterPath {
     class Huawei {
         companion object {
             const val HUAWEI_MODULE_SERVICE = "/huawei/service"
+
+            const val CHAIR_SELECT = "/huawei/chairSelect"
+
+            //在线的会场
+            const val FILED_ONLINE_LIST = "FILED_ONLINE_LIST"
+
+            //会议id
+            const val FILED_SMC_CONF_ID = "FILED_SMC_CONF_ID"
         }
     }
 

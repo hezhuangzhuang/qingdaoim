@@ -19,6 +19,7 @@
         app:rightTitle="召集会议">
 
         <TextView
+            android:id="@+id/tvTopTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -28,7 +29,7 @@
     </com.hjq.bar.TitleBar>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/clContent"
+        android:id="@+id/clTypeContent"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:background="@color/white">
@@ -102,6 +103,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:id="@+id/tvConfNameLable"
             android:layout_marginRight="12dp"
             android:text="会议名称"
             android:textColor="@color/color_666"
@@ -112,12 +114,13 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@null"
+
             android:ellipsize="end"
             android:hint="请输入会议名称"
             android:singleLine="true"
             android:textColorHint="@color/color_bbb"
             android:textColor="@color/color_333"
-            android:textSize="16sp" />
+            android:textSize="14sp" />
     </LinearLayout>
 
     <View
@@ -127,6 +130,7 @@
 
 
     <LinearLayout
+        android:id="@+id/llConfCode"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="@color/white"
@@ -154,7 +158,7 @@
             android:singleLine="true"
             android:textColorHint="@color/color_bbb"
             android:textColor="@color/color_333"
-            android:textSize="16sp" />
+            android:textSize="14sp" />
     </LinearLayout>
 
     <View

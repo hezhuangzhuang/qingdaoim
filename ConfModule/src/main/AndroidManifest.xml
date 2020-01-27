@@ -3,7 +3,9 @@
     package="com.hw.confmodule">
 
     <application>
-        <activity android:name=".ui.activity.CreateConfActivity"></activity>
+        <activity android:name=".ui.activity.SelectedPeopleActivity"></activity>
+        <activity android:name=".ui.activity.MyConfActivity" />
+        <activity android:name=".ui.activity.CreateConfActivity" />
     </application>
 
 </manifest>

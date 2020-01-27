@@ -3,10 +3,22 @@ package com.hw.mylibrary.ui.fragment
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
+import androidx.annotation.NonNull
+import com.afollestad.materialdialogs.DialogAction
+import com.afollestad.materialdialogs.MaterialDialog
+import com.alibaba.android.arouter.launcher.ARouter
+import com.google.android.material.dialog.MaterialDialogs
 import com.hw.baselibrary.ui.fragment.BaseLazyFragment
 import com.hw.baselibrary.utils.ToastHelper
 import com.hw.baselibrary.utils.sharedpreferences.SPStaticUtils
 import com.hw.mylibrary.R
+import com.hw.mylibrary.mvp.model.UserService
+import com.hw.provider.eventbus.EventBusUtils
+import com.hw.provider.eventbus.EventMsg
+import com.hw.provider.net.respone.user.LoginBean
+import com.hw.provider.router.RouterPath
+import com.hw.provider.router.provider.huawei.impl.HuaweiModuleService.logOut
 import com.hw.provider.user.UserContants
 import kotlinx.android.synthetic.main.fragment_mine.*
 
@@ -21,8 +33,11 @@ private const val ARG_PARAM2 = "param2"
 class MineFragment : BaseLazyFragment(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v!!.id) {
-            tvAbout.id ->
-                ToastHelper.showShort("${param1 + param2}")
+            tvAbout.id -> {
+                ARouter.getInstance()
+                    .build(RouterPath.UserCenter.PATH_ABOUT)
+                    .navigation()
+            }
 
             tvBindPhone.id ->
                 ToastHelper.showShort("绑定手机")
@@ -30,8 +45,10 @@ class MineFragment : BaseLazyFragment(), View.OnClickListener {
             tvAbout.id ->
                 ToastHelper.showShort("修改密码")
 
-            btLogOut.id ->
-                ToastHelper.showShort("退出登录")
+            btLogOut.id -> {
+                //发出登出的消息
+                EventBusUtils.sendMessage(EventMsg.LOGOUT, "")
+            }
         }
     }
 
@@ -45,6 +62,7 @@ class MineFragment : BaseLazyFragment(), View.OnClickListener {
         tvAbout.setOnClickListener(this)
         tvBindPhone.setOnClickListener(this)
         tvChangePassWord.setOnClickListener(this)
+        btLogOut.setOnClickListener(this)
     }
 
     override fun bindLayout(): Int = R.layout.fragment_mine

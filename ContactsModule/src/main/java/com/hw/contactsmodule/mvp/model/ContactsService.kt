@@ -58,5 +58,15 @@ class ContactsService @Inject constructor() {
             .compose(CustomCompose())
     }
 
+    /**
+     * 通过群组id查询群组人员
+     */
+    fun getGroupIdConstacts(groupId: String): Observable<BaseData<PeopleBean>> {
+        return RetrofitManager
+            .create(ContactsApi::class.java, Urls.WEBSOCKET_URL)
+            .getGroupIdConstacts(groupId)
+            .compose(CustomCompose())
+    }
+
 
 }

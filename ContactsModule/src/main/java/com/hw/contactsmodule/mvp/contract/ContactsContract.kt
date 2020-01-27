@@ -16,7 +16,7 @@ interface ContactsContract {
 
         fun showOrgan(allOrgan: List<OrganizationBean>)
 
-        fun showOrganPeople(pos: Int,peoples: List<PeopleBean>)
+        fun showOrganPeople(pos: Int, peoples: List<PeopleBean>)
 
         fun showGroupChat(groupChats: List<GroupChatBean>)
 
@@ -26,12 +26,25 @@ interface ContactsContract {
     }
 
     interface Presenter {
+        //获取所有联系人
         fun getAllPeople()
 
+        //获取所有组织
         fun getAllOrganizations()
 
+        //通过组织id获取组织下的人员
         fun getDepIdConstacts(pos: Int, depId: Int)
 
+        //获取所有群聊
         fun getGroupChat()
+
+        //一键召集会议
+        fun createConf(
+            confName: String,
+            duration: String,
+            accessCode: String,
+            groupId: String,
+            type: Int
+        )
     }
 }

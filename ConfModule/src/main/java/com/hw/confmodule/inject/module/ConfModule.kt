@@ -1,6 +1,6 @@
 package com.hw.confmodule.inject.module
 
-import com.hw.confmodule.mvp.model.ConfService
+import com.hw.confmodule.mvp.model.CreateConfService
 import dagger.Module
 import dagger.Provides
 
@@ -12,7 +12,7 @@ import dagger.Provides
 class ConfModule {
 
     @Provides
-    fun providesConfService(): ConfService {
-        return ConfService()
+    fun providesConfService(): CreateConfService {
+        return CreateConfService()
     }
 }

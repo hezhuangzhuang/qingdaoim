@@ -21,18 +21,7 @@ import com.trello.rxlifecycle2.components.support.RxFragment
  *author：pc-20171125
  *data:2019/11/8 09:31
  */
- abstract class BaseFragment : RxFragment(), IBaseView, OnTitleBarListener {
-    override fun onLeftClick(v: View?) {
-        ToastHelper.showShort("onLeftClick")
-    }
-
-    override fun onRightClick(v: View?) {
-        ToastHelper.showShort("onRightClick")
-    }
-
-    override fun onTitleClick(v: View?) {
-        ToastHelper.showShort("onTitleClick")
-    }
+ abstract class BaseFragment : RxFragment(), IBaseView{
 
     companion object {
         private const val TAG = "BaseFragment"
@@ -164,8 +153,6 @@ import com.trello.rxlifecycle2.components.support.RxFragment
             // 懒人模式
             mTitleBar = (mActivity as BaseActivity).findTitleBar(view as ViewGroup)
         }
-            mTitleBar?.setOnTitleBarListener(this)
-
     }
 
     /**

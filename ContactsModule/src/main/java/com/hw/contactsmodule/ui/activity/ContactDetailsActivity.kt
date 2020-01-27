@@ -9,6 +9,7 @@ import com.hw.baselibrary.ui.activity.BaseActivity
 import com.hw.baselibrary.utils.ToastHelper
 import com.hw.contactsmodule.R
 import com.hw.provider.router.RouterPath
+import com.hw.provider.router.provider.huawei.impl.HuaweiModuleService
 import kotlinx.android.synthetic.main.activity_contact_details.*
 
 /**
@@ -71,11 +72,11 @@ class ContactDetailsActivity : BaseActivity(), View.OnClickListener {
 
             //视频呼叫
             R.id.flVideoCall ->
-                ToastHelper.showShort("视频呼叫")
+                HuaweiModuleService.callSite(id, true)
 
             //语音呼叫
             R.id.flVoiceCall ->
-                ToastHelper.showShort("语音呼叫")
+                HuaweiModuleService.callSite(id, false)
 
         }
     }

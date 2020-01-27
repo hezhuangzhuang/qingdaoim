@@ -25,6 +25,7 @@ import com.hw.provider.net.respone.contacts.OrganizationBean
 import com.hw.provider.net.respone.contacts.PeopleBean
 import com.hw.provider.router.RouterPath
 import kotlinx.android.synthetic.main.fragment_contacts.*
+import qdx.stickyheaderdecoration.NormalDecoration
 import com.hw.contactsmodule.ui.adapter.OrganizationAdapter.onClildClickLis as onClildClickLis1
 
 // TODO: Rename parameter arguments, choose names that match
@@ -74,6 +75,9 @@ class ContactsFragment : BaseMvpFragment<ContactsPresenter>(), ContactsContract.
     }
 
     override fun initData(bundle: Bundle?) {
+        //设置强制更新
+        forceLoad = true
+
         errorView.setOnClickListener {
             getData()
         }
@@ -107,15 +111,18 @@ class ContactsFragment : BaseMvpFragment<ContactsPresenter>(), ContactsContract.
     private fun getData() {
         when (type) {
             //全部
-            TYPE_ALL_PEOPLE ->
+            TYPE_ALL_PEOPLE -> {
                 mPresenter.getAllPeople()
+            }
 
             //组织
-            TYPE_ORGANIZATION
-            -> mPresenter.getAllOrganizations()
-
+            TYPE_ORGANIZATION -> {
+                mPresenter.getAllOrganizations()
+            }
             //群聊
-            TYPE_GROUP_CHAT -> mPresenter.getGroupChat()
+            TYPE_GROUP_CHAT -> {
+                mPresenter.getGroupChat()
+            }
         }
     }
 
@@ -172,17 +179,30 @@ class ContactsFragment : BaseMvpFragment<ContactsPresenter>(), ContactsContract.
      */
     private fun initGroupChatAdapter() {
         groupChatAdapter = GroupChatAdapter(R.layout.item_group_chat, ArrayList<GroupChatBean>())
-        groupChatAdapter.setOnItemClickListener(object : BaseQuickAdapter.OnItemClickListener {
-            override fun onItemClick(adapter: BaseQuickAdapter<*, *>?, view: View?, position: Int) {
-                val peopleBean = groupChatAdapter.getItem(position)!!
-                ARouter.getInstance()
-                    .build(RouterPath.Chat.CHAT)
-                    .withString(RouterPath.Chat.FILED_RECEIVE_ID, peopleBean.id.toString())
-                    .withString(RouterPath.Chat.FILED_RECEIVE_NAME, peopleBean.groupName)
-                    .withBoolean(RouterPath.Chat.FILED_IS_GROUP,true)
-                    .navigation()
+        groupChatAdapter.setOnItemChildClickListener { adapter, view, position ->
+            when (view.id) {
+                R.id.rl_root -> {
+                    val groupChatBean = groupChatAdapter.getItem(position)!!
+                    ARouter.getInstance()
+                        .build(RouterPath.Chat.CHAT)
+                        .withString(RouterPath.Chat.FILED_RECEIVE_ID, groupChatBean.id.toString())
+                        .withString(RouterPath.Chat.FILED_RECEIVE_NAME, groupChatBean.groupName)
+                        .withBoolean(RouterPath.Chat.FILED_IS_GROUP, true)
+                        .navigation()
+                }
+
+                R.id.ivCreateConf -> {
+                    val groupChatBean = groupChatAdapter.getItem(position)!!
+                    mPresenter.createConf(
+                        groupChatBean.groupName,
+                        "120",
+                        "",
+                        groupChatBean.id.toString(),
+                        1
+                    )
+                }
             }
-        })
+        }
         rvList.layoutManager = LinearLayoutManager(mActivity)
         rvList.adapter = groupChatAdapter
     }
@@ -200,6 +220,8 @@ class ContactsFragment : BaseMvpFragment<ContactsPresenter>(), ContactsContract.
         ToastHelper.showShort("onError:" + text)
     }
 
+    private var decoration: NormalDecoration? = null
+
     /**
      * 全部联系人获取完毕
      */
@@ -210,8 +232,21 @@ class ContactsFragment : BaseMvpFragment<ContactsPresenter>(), ContactsContract.
         allPeople.forEach {
             constactsBean = ConstactsBean(it.sip, it.name)
 
+            //保存联系人
             GreenDaoUtil.insertConstactsBean(constactsBean)
         }
+        //如果已经有了item则删除
+        if (null != decoration) {
+            rvList.removeItemDecorationAt(0)
+        }
+        decoration = object : NormalDecoration() {
+            override fun getHeaderName(pos: Int): String {
+                return allPeople.get(pos).firstLetter
+            }
+        }
+
+        //添加item
+        rvList.addItemDecoration(decoration!!)
     }
 
     //显示组织结构

@@ -45,16 +45,26 @@ public class SelectCreateDialog extends
     public void onClick(View v) {
         int id = v.getId();
         if (id == R.id.tv_CreateGroup) {
-
+            ARouter.getInstance()
+                    .build(RouterPath.Conf.CREATE_CONF)
+                    .withBoolean(RouterPath.Conf.FILED_IS_CREATE_GROUP, true)
+                    .withInt(RouterPath.Conf.FILED_VIDEO_CONF, -1)
+                    .navigation();
             dismiss();
         } else if (id == R.id.tv_AudioConf) {
             ARouter.getInstance()
                     .build(RouterPath.Conf.CREATE_CONF)
+                    .withBoolean(RouterPath.Conf.FILED_IS_CREATE_GROUP, false)
+                    //0：语音会议，1：视频会议
+                    .withInt(RouterPath.Conf.FILED_VIDEO_CONF, 0)
                     .navigation();
             dismiss();
         } else if (id == R.id.tv_VideoConf) {
             ARouter.getInstance()
                     .build(RouterPath.Conf.CREATE_CONF)
+                    .withBoolean(RouterPath.Conf.FILED_IS_CREATE_GROUP, false)
+                    //0：语音会议，1：视频会议
+                    .withInt(RouterPath.Conf.FILED_VIDEO_CONF, 1)
                     .navigation();
             dismiss();
         }

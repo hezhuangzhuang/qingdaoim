@@ -326,6 +326,9 @@ class KotlinMessageSocketService : Service() {
             //群聊中，消息不是自己发的则做处理
             if (!userId.equals(message.sendId) || isNotify) {
                 EventBusUtils.sendMessage(EventMsg.RECEIVE_SINGLE_MESSAGE, message)
+
+                //更新首页消息
+                EventBusUtils.sendMessage(EventMsg.REFRESH_HOME_MESSAGE, Any())
             }
         }
     }
