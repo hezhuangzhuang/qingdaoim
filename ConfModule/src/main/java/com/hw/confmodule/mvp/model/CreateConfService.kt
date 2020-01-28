@@ -59,7 +59,7 @@ class CreateConfService @Inject constructor() {
     }
 
     /**
-     * 获取历史会议列表
+     * 创建群组
      */
     fun createGroupChat(
         groupName: String,

@@ -52,6 +52,6 @@
         android:minHeight="240dp"
         android:minWidth="200dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/ic_launcher_background"/>
+        />
 
 </RelativeLayout>

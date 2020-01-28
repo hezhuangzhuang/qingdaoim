@@ -68,6 +68,11 @@ class MineFragment : BaseLazyFragment(), View.OnClickListener {
     override fun bindLayout(): Int = R.layout.fragment_mine
 
     override fun initView(savedInstanceState: Bundle?, contentView: View) {
+        }
+
+    override fun onResume() {
+        super.onResume()
+
         tvName.text = SPStaticUtils.getString(UserContants.DISPLAY_NAME)
     }
 

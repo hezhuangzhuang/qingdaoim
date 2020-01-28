@@ -2,6 +2,10 @@ package com.hw.mylibrary.ui.activity
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.text.Selection
+import android.text.Spannable
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
 import android.util.Log
 import android.view.View
 import com.alibaba.android.arouter.facade.Postcard
@@ -54,9 +58,29 @@ class LoginActivity : BaseMvpActivity<LoginPresenter>(), LoginContract.View {
     override fun doBusiness() {
     }
 
+    //是否显示密码
+    private var isShowPwd = false
+
     override fun setListeners() {
         btLogin.setOnClickListener {
             requestPhonePermission()
+        }
+        ivPwdShow.setOnClickListener {
+            isShowPwd = !isShowPwd
+            if (isShowPwd) {
+                //如果选中，显示密码
+                etPwd.transformationMethod = HideReturnsTransformationMethod.getInstance()
+                ivPwdShow.setImageResource(R.mipmap.ic_pwd_show)
+            } else {
+                //否则隐藏密码
+                etPwd.transformationMethod = PasswordTransformationMethod.getInstance()
+                ivPwdShow.setImageResource(R.mipmap.ic_pwd_hide)
+            }
+
+            //设置光标位置
+            if (etPwd.text is Spannable) {
+                Selection.setSelection(etPwd.text, etPwd.text.length)
+            }
         }
     }
 
@@ -167,7 +191,7 @@ class LoginActivity : BaseMvpActivity<LoginPresenter>(), LoginContract.View {
 
                     ARouter.getInstance()
                         .build(RouterPath.Main.PATH_MAIN)
-                        .navigation(application,object :NavigationCallback{
+                        .navigation(application, object : NavigationCallback {
                             override fun onLost(postcard: Postcard?) {
                             }
 

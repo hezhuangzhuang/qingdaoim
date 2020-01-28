@@ -62,6 +62,19 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".activity.AudioActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.audio_activity"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.sdkdemo"/>
+            </intent-filter>
+        </activity>
+
         <service
             android:name=".service.AudioStateWatchService"
             android:enabled="true"

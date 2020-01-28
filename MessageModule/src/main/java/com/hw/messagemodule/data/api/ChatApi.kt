@@ -1,6 +1,7 @@
 package com.hw.messagemodule.data.api
 
 import com.hw.messagemodule.data.bean.PingBean
+import com.hw.messagemodule.data.bean.PingHuaweiBean
 import com.hw.messagemodule.data.bean.UploadBeanRespone
 import io.reactivex.Observable
 import okhttp3.MultipartBody
@@ -27,4 +28,12 @@ interface ChatApi {
         @Query("sip")      sip: String,
         @Query("deviceID") deviceID: String
     ): Observable<PingBean>
+
+    /*
+     * 查询华为smc在线状态
+     */
+    @Headers("Content-Type: application/json", "Accept: application/json")//需要添加头
+    @POST("site/confAction_querySiteOnlineState")
+     fun querySiteOnlineState(@Query("siteUri") siteUri: String): Observable<PingHuaweiBean>
+
 }

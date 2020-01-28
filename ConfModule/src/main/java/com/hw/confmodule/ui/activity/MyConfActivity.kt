@@ -173,7 +173,7 @@ class MyConfActivity : BaseMvpActivity<MyConfPresenter>(), MyConfContract.View {
     }
 
     override fun queryConfListError(errorMsg: String) {
-        ToastHelper.showShort(errorMsg)
+//        ToastHelper.showShort(errorMsg)
         if(errorMsg.contains("查询不到会议")){
             confAdapter.setEmptyView(emptyView)
         }

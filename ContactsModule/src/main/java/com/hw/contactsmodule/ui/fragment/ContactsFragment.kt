@@ -20,11 +20,15 @@ import com.hw.contactsmodule.ui.adapter.OrganizationAdapter
 import com.hw.contactsmodule.ui.adapter.item.OrganizationItem
 import com.hw.provider.chat.bean.ConstactsBean
 import com.hw.provider.chat.utils.GreenDaoUtil
+import com.hw.provider.eventbus.EventMsg
 import com.hw.provider.net.respone.contacts.GroupChatBean
 import com.hw.provider.net.respone.contacts.OrganizationBean
 import com.hw.provider.net.respone.contacts.PeopleBean
 import com.hw.provider.router.RouterPath
 import kotlinx.android.synthetic.main.fragment_contacts.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import qdx.stickyheaderdecoration.NormalDecoration
 import com.hw.contactsmodule.ui.adapter.OrganizationAdapter.onClildClickLis as onClildClickLis1
 
@@ -37,7 +41,6 @@ private const val ARG_PARAM2 = "param2"
  * 联系人界面
  */
 class ContactsFragment : BaseMvpFragment<ContactsPresenter>(), ContactsContract.View {
-
     //懒加载获取类型
     private val type by lazy {
         arguments?.get(TYPE)
@@ -95,13 +98,29 @@ class ContactsFragment : BaseMvpFragment<ContactsPresenter>(), ContactsContract.
     private fun initAdapter() {
         when (type) {
             //全部
-            TYPE_ALL_PEOPLE -> initAllAdapter()
+            TYPE_ALL_PEOPLE -> {
+                initAllAdapter()
+            }
 
             //组织结构
             TYPE_ORGANIZATION -> initOrganAdapter()
 
             //群聊
-            TYPE_GROUP_CHAT -> initGroupChatAdapter()
+            TYPE_GROUP_CHAT -> {
+                initGroupChatAdapter()
+
+                //注册
+                EventBus.getDefault().register(this)
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        //如果是群聊
+        if (type == TYPE_GROUP_CHAT) {
+            //取消注册
+            EventBus.getDefault().unregister(this)
         }
     }
 
@@ -117,6 +136,9 @@ class ContactsFragment : BaseMvpFragment<ContactsPresenter>(), ContactsContract.
 
             //组织
             TYPE_ORGANIZATION -> {
+                //清空缓存
+                organPeopleMap.clear()
+
                 mPresenter.getAllOrganizations()
             }
             //群聊
@@ -134,17 +156,21 @@ class ContactsFragment : BaseMvpFragment<ContactsPresenter>(), ContactsContract.
         allPeopleAdapter.setOnItemClickListener(object : BaseQuickAdapter.OnItemClickListener {
             override fun onItemClick(adapter: BaseQuickAdapter<*, *>?, view: View?, position: Int) {
                 val peopleBean = allPeopleAdapter.getItem(position)!!
-                ARouter.getInstance()
-                    .build(RouterPath.Contacts.CONTACT_DETAILS)
-                    .withString(RouterPath.Contacts.FILED_RECEIVE_ID, peopleBean.sip)
-                    .withString(RouterPath.Contacts.FILED_RECEIVE_NAME, peopleBean.name)
-                    .navigation()
+                startContactsDetails(peopleBean)
             }
         })
         rvList.layoutManager = LinearLayoutManager(mActivity)
         rvList.adapter = allPeopleAdapter
 
         getData()
+    }
+
+    private fun startContactsDetails(peopleBean: PeopleBean) {
+        ARouter.getInstance()
+            .build(RouterPath.Contacts.CONTACT_DETAILS)
+            .withString(RouterPath.Contacts.FILED_RECEIVE_ID, peopleBean.sip)
+            .withString(RouterPath.Contacts.FILED_RECEIVE_NAME, peopleBean.name)
+            .navigation()
     }
 
     /**
@@ -156,18 +182,18 @@ class ContactsFragment : BaseMvpFragment<ContactsPresenter>(), ContactsContract.
             override fun onCollapseClick(pos: Int, depId: Int) {
                 organizationAdapter.collapse(pos)
             }
-
+    
             override fun onExpandClick(pos: Int, depId: Int) {
                 //包含数据则直接展开
                 if (organPeopleMap.containsKey(pos)) {
                     organizationAdapter.expand(pos)
-                } else {//请求数据
+                } else {//请求组织下的人员
                     mPresenter.getDepIdConstacts(pos, depId)
                 }
             }
 
             override fun onPersonClick(peopleBean: PeopleBean) {
-                ToastHelper.showShort(peopleBean.name)
+                startContactsDetails(peopleBean)
             }
         })
         rvList.layoutManager = LinearLayoutManager(mActivity)
@@ -239,6 +265,7 @@ class ContactsFragment : BaseMvpFragment<ContactsPresenter>(), ContactsContract.
         if (null != decoration) {
             rvList.removeItemDecorationAt(0)
         }
+
         decoration = object : NormalDecoration() {
             override fun getHeaderName(pos: Int): String {
                 return allPeople.get(pos).firstLetter
@@ -269,11 +296,18 @@ class ContactsFragment : BaseMvpFragment<ContactsPresenter>(), ContactsContract.
             item.addSubItem(it)
         }
 
-        //添加到map中，避免重复请求
-        organPeopleMap.put(pos, peoples)
+        //判断是否有这个列表
+        if(!organPeopleMap.containsKey(pos)){
+            //添加到map中，避免重复请求
+            organPeopleMap.put(pos, peoples)
+        }
 
         organizationAdapter.notifyDataSetChanged()
         organizationAdapter.expand(pos)
+    }
+
+    override fun queryOrganPeopleError(errorMsg: String) {
+        ToastHelper.showShort(errorMsg)
     }
 
     override fun showGroupChat(groupChats: List<GroupChatBean>) {
@@ -314,6 +348,20 @@ class ContactsFragment : BaseMvpFragment<ContactsPresenter>(), ContactsContract.
     override fun dismissLoading() {
 //        super.dismissLoading()
     }
+
+    /**
+     * 主线程中处理事件
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    fun mainEvent(messageEvent: EventMsg<Any>) {
+        when (messageEvent.message) {
+            //更新群聊列表
+            EventMsg.UPDATE_GROUP_CHAT -> {
+                getData()
+            }
+        }
+    }
+
 
     // TODO: Rename and change types of parameters
     private var param1: String? = null

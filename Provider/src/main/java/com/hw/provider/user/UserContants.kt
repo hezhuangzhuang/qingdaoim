@@ -25,5 +25,7 @@ object UserContants {
     //是否登录
     const val HAS_LOGIN = "HAS_LOGIN"
 
+    //是否设置了权限
+    val SETTING_PERMISSION = "SETTING_PERMISSION"
 
 }

@@ -4,6 +4,10 @@ import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.view.View
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
+import android.view.animation.AnimationSet
+import android.view.animation.ScaleAnimation
 import com.alibaba.android.arouter.facade.Postcard
 import com.alibaba.android.arouter.facade.callback.NavigationCallback
 import com.alibaba.android.arouter.launcher.ARouter
@@ -26,6 +30,7 @@ import com.hw.provider.router.RouterPath
 import com.hw.provider.router.provider.huawei.impl.HuaweiModuleService
 import com.hw.provider.router.provider.user.impl.UserModuleRouteService
 import com.hw.provider.user.UserContants
+import kotlinx.android.synthetic.main.activity_launcher.*
 
 class LauncherActivity : BaseActivity() {
     override fun initData(bundle: Bundle?) {
@@ -37,8 +42,16 @@ class LauncherActivity : BaseActivity() {
     }
 
     override fun doBusiness() {
-        PermissionUtils.permission(PermissionConstants.STORAGE, PermissionConstants.CAMERA)
-//            .rationale { shouldRequest -> DialogHelper.showRationaleDialog(shouldRequest) }
+        startAnimation()
+    }
+
+    private fun checkPermission() {
+        PermissionUtils.permission(
+            PermissionConstants.STORAGE,
+            PermissionConstants.CAMERA,
+            PermissionConstants.MICROPHONE
+        )
+    //            .rationale { shouldRequest -> DialogHelper.showRationaleDialog(shouldRequest) }
             .callback(object : PermissionUtils.FullCallback {
                 override fun onGranted(permissionsGranted: List<String>) {
                     //注册广播
@@ -177,5 +190,34 @@ class LauncherActivity : BaseActivity() {
                 }
             }
         }
+    }
+
+    private var alphaAnimation: AlphaAnimation? = null
+    private var scaleAnimation: ScaleAnimation? = null
+
+    private fun startAnimation() {
+        val animationSet = AnimationSet(true)
+
+        scaleAnimation =
+            ScaleAnimation(0.2f, 1f, 0.2f, 1f, Animation.RELATIVE_TO_SELF, 0.5f, 1, 0.5f)
+        scaleAnimation!!.duration = 1000
+
+        alphaAnimation = AlphaAnimation(0.2f, 1.0f)
+        alphaAnimation!!.duration = 1000
+
+        animationSet.addAnimation(scaleAnimation)
+        animationSet.addAnimation(alphaAnimation)
+
+        icImg.startAnimation(animationSet)
+
+        animationSet.setAnimationListener(object : Animation.AnimationListener {
+            override fun onAnimationStart(animation: Animation) {}
+
+            override fun onAnimationRepeat(animation: Animation) {}
+
+            override fun onAnimationEnd(animation: Animation) {
+                checkPermission()
+            }
+        })
     }
 }

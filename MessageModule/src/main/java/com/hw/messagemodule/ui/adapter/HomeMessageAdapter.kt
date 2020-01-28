@@ -16,7 +16,7 @@ class HomeMessageAdapter(layoutResId: Int, data: MutableList<ChatBeanLastMessage
 
     override fun convert(helper: BaseViewHolder, item: ChatBeanLastMessage?) {
         helper.setText(R.id.tvName, item?.conversationUserName)
-            .setText(R.id.tvContent, getShowText(item!!))
+            .setText(R.id.tvContent, getShowText(item!!, item.isGroup))
             .setText(R.id.tvTime, DateUtils.getTimeStringAutoShort2(item!!.time, true))
             .setVisible(R.id.viewReadStatus, !item.isRead)
     }
@@ -24,10 +24,10 @@ class HomeMessageAdapter(layoutResId: Int, data: MutableList<ChatBeanLastMessage
     /**
      * 根据类型返回显示的文本
      */
-    fun getShowText(item: ChatBeanLastMessage): String {
+    fun getShowText(item: ChatBeanLastMessage, isGroupChat: Boolean): String {
         when (item.messageType) {
             //语音
-            ChatMultipleItem.SEND_VOICE, ChatMultipleItem.FORM_VOICE -> {
+            ChatMultipleItem.SEND_VOICE -> {
                 val isVoiceFile =
                     item!!.textContent.endsWith(".voice") || item.textContent.endsWith(".m4a")
                 if (isVoiceFile) {
@@ -37,17 +37,32 @@ class HomeMessageAdapter(layoutResId: Int, data: MutableList<ChatBeanLastMessage
                 }
             }
 
+            ChatMultipleItem.FORM_VOICE -> {
+                val isVoiceFile =
+                    item!!.textContent.endsWith(".voice") || item.textContent.endsWith(".m4a")
+                if (isVoiceFile) {
+                    return if (isGroupChat) "${item.getName()}: [语音]" else "[语音]"
+                } else {
+                    return if (isGroupChat) "${item.getName()}: [文件]" else "[文件]"
+                }
+            }
+
             //图片
-            ChatMultipleItem.SEND_IMG, ChatMultipleItem.FORM_IMG -> return "[图片]"
+            ChatMultipleItem.SEND_IMG -> return "[图片]"
+            ChatMultipleItem.FORM_IMG -> return if (isGroupChat) "${item.getName()}: [图片]" else "[图片]"
 
             //文字
-            ChatMultipleItem.SEND_TEXT, ChatMultipleItem.FORM_TEXT -> return item.textContent
+            ChatMultipleItem.SEND_TEXT -> return item.textContent
+            ChatMultipleItem.FORM_TEXT -> return if (isGroupChat) "${item.getName()}: ${item.textContent}" else item.textContent
 
             //视频通话
-            ChatMultipleItem.SEND_VIDEO_CALL, ChatMultipleItem.FORM_VIDEO_CALL -> return "[视频通话]"
+            ChatMultipleItem.SEND_VIDEO_CALL -> return "[视频通话]"
+            ChatMultipleItem.FORM_VIDEO_CALL -> return if (isGroupChat) "${item.getName()}: [视频通话]" else "[视频通话]"
 
             //语音通话
-            ChatMultipleItem.SEND_VOICE_CALL, ChatMultipleItem.FORM_VOICE_CALL -> return "[语音通话]"
+            ChatMultipleItem.SEND_VOICE_CALL -> return "[语音通话]"
+
+            ChatMultipleItem.FORM_VOICE_CALL -> return if (isGroupChat) "${item.getName()}: [语音通话]" else "[语音通话]"
 
             else -> return ""
         }

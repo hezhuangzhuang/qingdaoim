@@ -46,14 +46,23 @@ class CreateConfPresenter @Inject constructor() : BasePresenter<CreateConfContra
             })
     }
 
-    override fun createConf(confName: String,
-                             duration: String,
-                             accessCode: String,
-                             memberSipList: String,
-                             groupId: String,
-                             type: Int) {
+    override fun createConf(
+        confName: String,
+        duration: String,
+        accessCode: String,
+        memberSipList: String,
+        groupId: String,
+        type: Int
+    ) {
 
-        HuaweiModuleService.createConfNetWork(confName, duration, accessCode, memberSipList, groupId, type)
+        HuaweiModuleService.createConfNetWork(
+            confName,
+            duration,
+            accessCode,
+            memberSipList,
+            groupId,
+            type
+        )
     }
 
     /**
@@ -64,16 +73,16 @@ class CreateConfPresenter @Inject constructor() : BasePresenter<CreateConfContra
         mRootView?.showLoading()
 
         confService.createGroupChat(groupName, createId, ids)
-            .subscribe({baseData->
+            .subscribe({ baseData ->
                 mRootView?.apply {
                     dismissLoading()
-                    if(baseData.responseCode==NetWorkContants.RESPONSE_CODE){
+                    if (baseData.responseCode == NetWorkContants.RESPONSE_CODE) {
                         createGroupChatSuccess()
-                    }else{
+                    } else {
                         createGroupChatError(baseData.message)
                     }
                 }
-            },{
+            }, {
                 mRootView?.apply {
                     dismissLoading()
                     createGroupChatError(ExceptionHandle.handleException(it))

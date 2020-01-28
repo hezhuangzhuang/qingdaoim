@@ -31,7 +31,19 @@ interface ConfApi {
      */
     @Headers("Content-Type: application/json", "Accept: application/json")//需要添加头
     @POST("im/mobile/group/createGroup")
-     fun createGroupChat(
+    fun createGroupChat(
+        @Query("groupName") groupName: String,
+        @Query("createId") createId: String,
+        @Query("ids") ids: String
+    ): Observable<BaseData<String>>
+
+    /**
+     * 创建群组
+     */
+    @Headers("Content-Type: application/json", "Accept: application/json")//需要添加头
+    @POST
+    fun createGroupChat(
+        @Url url: String,
         @Query("groupName") groupName: String,
         @Query("createId") createId: String,
         @Query("ids") ids: String

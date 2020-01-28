@@ -2,18 +2,24 @@ package com.hw.huaweivclib.inter;
 
 import com.huawei.opensdk.callmgr.CallMgr;
 import com.huawei.opensdk.ecsdk.common.UIConstants;
+import com.huawei.opensdk.sdkwrapper.login.LoginCenter;
+import com.huawei.opensdk.sdkwrapper.login.LoginStatus;
 import com.huawei.utils.DeviceManager;
 import com.hw.baselibrary.common.AppManager;
 import com.hw.baselibrary.common.BaseApp;
 import com.hw.baselibrary.net.RetrofitManager;
 import com.hw.baselibrary.net.Urls;
 import com.hw.baselibrary.rx.scheduler.CustomCompose;
+import com.hw.baselibrary.utils.LogUtils;
 import com.hw.baselibrary.utils.ToastHelper;
 import com.hw.baselibrary.utils.sharedpreferences.SPStaticUtils;
 import com.hw.huaweivclib.activity.LoadingActivity;
+import com.hw.huaweivclib.arouter.HuaweiModuleServiceImp;
 import com.hw.huaweivclib.net.ConfControlApi;
 import com.hw.huaweivclib.net.respone.BaseData;
 import com.hw.huaweivclib.net.respone.CreateConfResponeBean;
+import com.hw.provider.huawei.commonservice.util.LogUtil;
+import com.hw.provider.router.provider.huawei.impl.HuaweiModuleService;
 import com.hw.provider.user.UserContants;
 
 import org.json.JSONException;
@@ -25,8 +31,44 @@ import okhttp3.RequestBody;
 /**
  * author：pc-20171125
  * data:2020/1/15 19:37
+ * 0：未注册
+ * <p>
+ * 1：注册中
+ * <p>
+ * 2：注销中
+ * <p>
+ * 3：已注册
+ * <p>
+ * 4：无效状态
  */
 public class HuaweiCallImp {
+    /**
+     * 获取登录状态
+     *
+     * @return
+     */
+    public static boolean getLoginStatus() {
+        if (null != LoginCenter.getInstance() && null != LoginCenter.getInstance().getLoginStatus()) {
+            return 3 == LoginCenter.getInstance().getLoginStatus().getCallResult().getRegState();
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 判断是否需要登录
+     */
+    public static void hasLogin() {
+        if (!getLoginStatus()) {
+            HuaweiLoginImp.login(
+                    SPStaticUtils.getString(UserContants.HUAWEI_ACCOUNT),
+                    SPStaticUtils.getString(UserContants.HUAWEI_PWD),
+                    SPStaticUtils.getString(UserContants.HUAWEI_SMC_IP),
+                    SPStaticUtils.getString(UserContants.HUAWEI_SMC_PORT)
+            );
+        }
+    }
+
     /**
      * 点对点呼叫
      *
@@ -39,6 +81,10 @@ public class HuaweiCallImp {
             ToastHelper.INSTANCE.showShort("请检查您的网络");
             return -1;
         }
+
+        //是否需要登录
+        hasLogin();
+
         return CallMgr.getInstance().startCall(siteNumber, isVideoCall);
     }
 
@@ -47,6 +93,9 @@ public class HuaweiCallImp {
             ToastHelper.INSTANCE.showShort("请检查您的网络");
             return -1;
         }
+
+        //是否需要登录
+        hasLogin();
 
         //是否需要自动接听
         SPStaticUtils.put(UIConstants.IS_AUTO_ANSWER, true);
@@ -73,6 +122,14 @@ public class HuaweiCallImp {
                                          String memberSipList,
                                          String groupId,
                                          int type) {
+        if (!DeviceManager.isNetworkAvailable(BaseApp.context)) {
+            ToastHelper.INSTANCE.showShort("请检查您的网络");
+            return;
+        }
+
+        //是否需要登录
+        hasLogin();
+
         String createUri = SPStaticUtils.getString(UserContants.HUAWEI_ACCOUNT);
 
         //是否自己创建的会议
@@ -122,7 +179,5 @@ public class HuaweiCallImp {
                         ToastHelper.INSTANCE.showShort(throwable.getMessage());
                     }
                 });
-
     }
-
 }

@@ -25,6 +25,8 @@ import com.hw.confmodule.inject.module.ConfModule
 import com.hw.confmodule.mvp.contract.CreateConfContract
 import com.hw.confmodule.mvp.presenter.CreateConfPresenter
 import com.hw.confmodule.ui.adapter.CreateConfAdapter
+import com.hw.provider.eventbus.EventBusUtils
+import com.hw.provider.eventbus.EventMsg
 import com.hw.provider.net.respone.contacts.PeopleBean
 import com.hw.provider.router.RouterPath
 import com.hw.provider.user.UserContants
@@ -274,7 +276,7 @@ class CreateConfActivity : BaseMvpActivity<CreateConfPresenter>(), CreateConfCon
         //会议名称
         var groupChatName: String = etConfName.text.toString()
 
-        var selectUri = ""
+        var selectUri = "${SPStaticUtils.getInt(UserContants.USER_ID)},"
 
         selectPeoples.map {
             selectUri += it.id + ","
@@ -288,8 +290,12 @@ class CreateConfActivity : BaseMvpActivity<CreateConfPresenter>(), CreateConfCon
         )
     }
 
+    /**
+     * 创建群聊成功
+     */
     override fun createGroupChatSuccess() {
-        ToastHelper.showShort("创建群组成功")
+        EventBusUtils.sendMessage(EventMsg.UPDATE_GROUP_CHAT,Any())
+        finish()
     }
 
     override fun createGroupChatError(errorMsg: String) {

@@ -1,7 +1,10 @@
 package com.hw.kotlinmvpandroidxframe.ui.activity
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.os.Bundle
+import android.text.TextUtils
+import android.util.Log
 import android.view.View
 import androidx.annotation.NonNull
 import androidx.fragment.app.Fragment
@@ -11,17 +14,21 @@ import com.alibaba.android.arouter.facade.annotation.Route
 import com.alibaba.android.arouter.launcher.ARouter
 import com.flyco.tablayout.bean.TabEntity
 import com.flyco.tablayout.listener.CustomTabEntity
+import com.huawei.hms.aaid.HmsInstanceId
 import com.hw.baselibrary.net.NetWorkContants
 import com.hw.baselibrary.net.networkmonitor.NetType
 import com.hw.baselibrary.net.networkmonitor.Network
 import com.hw.baselibrary.net.networkmonitor.NetworkManager
 import com.hw.baselibrary.ui.activity.BaseActivity
 import com.hw.baselibrary.utils.LogUtils
+import com.hw.baselibrary.utils.PermissionUtils
 import com.hw.baselibrary.utils.ToastHelper
+import com.hw.baselibrary.utils.rom.SystemUtil
 import com.hw.baselibrary.utils.sharedpreferences.SPStaticUtils
 import com.hw.confmodule.ui.fragment.HomeConfFragment
 import com.hw.contactsmodule.ui.fragment.HomeContactsFragment
 import com.hw.kotlinmvpandroidxframe.R
+import com.hw.kotlinmvpandroidxframe.push.PushConstant
 import com.hw.messagemodule.service.KotlinMessageSocketService
 import com.hw.messagemodule.ui.fragment.HomeMessageFragment
 import com.hw.mylibrary.mvp.model.UserService
@@ -37,11 +44,16 @@ import kotlinx.android.synthetic.main.activity_main.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import java.util.concurrent.Executors
 
 @Route(path = RouterPath.Main.PATH_MAIN)
 class MainActivity : BaseActivity() {
-    //
     var TAG = MainActivity::javaClass.name
+
+    //是否有设置权限
+    val setPermission by lazy {
+        SPStaticUtils.getBoolean(UserContants.SETTING_PERMISSION)
+    }
 
     override fun setListeners() {
 
@@ -146,7 +158,6 @@ class MainActivity : BaseActivity() {
 
     override fun initView(savedInstanceState: Bundle?, contentView: View) {
         //初始化数据库
-//        MessageModuleRouteService.initDb()
         GreenDaoUtil.initDataBase(SPStaticUtils.getString(UserContants.HUAWEI_ACCOUNT))
 
         EventBus.getDefault().register(this)
@@ -154,7 +165,7 @@ class MainActivity : BaseActivity() {
         initTab()
 
         //获取所有联系人
-        ContactsModuleRouteService.getAllPeople().subscribe({baseData->
+        ContactsModuleRouteService.getAllPeople().subscribe({ baseData ->
             if (NetWorkContants.RESPONSE_CODE == baseData.responseCode) {
                 var constactsBean: ConstactsBean? = null
                 baseData.data.forEach {
@@ -165,6 +176,10 @@ class MainActivity : BaseActivity() {
                 }
             }
         })
+
+
+        //获取华为token
+        getHuaweiToken()
     }
 
     private fun initTab() {
@@ -188,6 +203,43 @@ class MainActivity : BaseActivity() {
     }
 
     override fun doBusiness() {
+        if (!setPermission) {
+            //判断是否是小米并且似乎否有后台弹出权限
+            if (SystemUtil.isMIUI()) {
+                showBackroundDialog("后台弹出权限,锁屏显示权限")
+            }//判断其他型号手机是否有悬浮窗权限
+            else {
+                showBackroundDialog("悬浮窗权限,锁屏显示权限")
+            }
+        }
+
+        //申请白名单权限
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+            //判断是否在白名单
+            if (!SystemUtil.isIgnoringBatteryOptimizations()) {
+                SystemUtil.requestIgnoreBatteryOptimizations()
+            }
+        }
+    }
+
+    /**
+     * 显示是否有后台弹出权限
+     */
+    private fun showBackroundDialog(permissionName: String) {
+        MaterialDialog.Builder(this)
+            .title("提示")
+            .content("为了更好的体验应用,请开启$permissionName")
+            .positiveText("去设置")
+            .negativeText("取消")
+            .onPositive { dialog, which ->
+                SPStaticUtils.put(UserContants.SETTING_PERMISSION, true)
+                if ("后台弹出权限" == permissionName) {
+                    PermissionUtils.launchAppPermissionSettings()
+                } else {
+                    PermissionUtils.launchAppPermissionSettings()
+                }
+            }
+            .show()
     }
 
     override fun onDestroy() {
@@ -284,6 +336,7 @@ class MainActivity : BaseActivity() {
     override fun onBackPressed() {
         showLogOutDialog()
     }
+
     /**
      * 保存数据状态
      *
@@ -293,4 +346,43 @@ class MainActivity : BaseActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         //        super.onSaveInstanceState(outState);
     }
+
+    /**
+     * 获取华为的token
+     */
+    fun getHuaweiToken() {
+        //如果是华为平台则获取token
+        if (SystemUtil.isEMUI()) {
+            Executors.newSingleThreadExecutor().execute {
+                try {
+                    val getToken = HmsInstanceId.getInstance(this)
+                        .getToken(PushConstant.HUAWEI_APP_ID,PushConstant.HUAWEI_SCOPE)
+                    Log.i("MainActivity", "getHuaweiToken-->$getToken")
+                    if (!TextUtils.isEmpty(getToken)) {
+                        //TODO: Send token to your app server.
+                    }
+                } catch (e: Exception) {
+                    Log.e("MainActivity", "getHuaweiToken failed.", e)
+                }
+            }
+        }
+    }
+
+    /**
+     * 删除delete
+     */
+    fun deleteHuaweiToken() {
+        //如果是华为平台则获取token
+        if (SystemUtil.isEMUI()) {
+            Executors.newSingleThreadExecutor().execute {
+                try {
+                    HmsInstanceId.getInstance(this)
+                        .deleteToken(PushConstant.HUAWEI_APP_ID, PushConstant.HUAWEI_SCOPE)
+                } catch (e: Exception) {
+                    Log.e("MainActivity", "deleteHuaweiToken failed.", e)
+                }
+            }
+        }
+    }
+
 }

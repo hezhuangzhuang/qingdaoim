@@ -34,6 +34,12 @@ data class EventMsg<T>(
 
         //登出
         val LOGOUT = "LOGOUT"
+
+        //更新群聊列表,修改群名称
+        val UPDATE_GROUP_CHAT = "UPDATE_GROUP_CHAT"
+
+        //删除群聊
+        val DELETE_GROUP_CHAT = "DELETE_GROUP_CHAT"
     }
 
 }

@@ -16,7 +16,10 @@ interface ContactsContract {
 
         fun showOrgan(allOrgan: List<OrganizationBean>)
 
+        //显示组织人员
         fun showOrganPeople(pos: Int, peoples: List<PeopleBean>)
+
+        fun queryOrganPeopleError(errorMsg: String)
 
         fun showGroupChat(groupChats: List<GroupChatBean>)
 

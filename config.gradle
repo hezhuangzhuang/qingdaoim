@@ -49,7 +49,10 @@ ext {
             baseRecyclerViewAdapterVersion: "2.9.47",
 
             //数据库
-            greendaoVersion               : "3.2.2"
+            greendaoVersion               : "3.2.2",
+
+            //屏幕适配
+            autoSizeVersion               : "1.2.0"
     ]
 
     supportDeps = [
@@ -66,6 +69,7 @@ ext {
             retrofit                : "com.squareup.retrofit2:retrofit:$dependVersion.retrofitSdkVersion",
             retrofitConverterGson   : "com.squareup.retrofit2:converter-gson:$dependVersion.retrofitSdkVersion",
             retrofitAdapterRxjava2  : "com.squareup.retrofit2:adapter-rxjava2:$dependVersion.retrofitSdkVersion",
+            retrofitConverterScalars: "com.squareup.retrofit2:converter-scalars:$dependVersion.retrofitSdkVersion",
             okhttp3LoggerInterceptor: 'com.squareup.okhttp3:logging-interceptor:3.4.1'
     ]
 
@@ -111,6 +115,9 @@ ext {
 
     //greendao数据库
     greendao = "org.greenrobot:greendao:$dependVersion.greendaoVersion"
+
+    //屏幕适配
+    autoSize = "me.jessyan:autosize:$dependVersion.autoSizeVersion"
 
     supportLibs = supportDeps.values()
     networkLibs = retrofit.values()

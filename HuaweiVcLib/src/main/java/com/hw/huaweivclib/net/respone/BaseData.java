@@ -13,4 +13,13 @@ public class BaseData<T> {
     public static int SUCEESS_CODE = 0;
 
     public List<T> data;
+
+    @Override
+    public String toString() {
+        return "BaseData{" +
+                "code=" + code +
+                ", msg='" + msg + '\'' +
+                ", data=" + data +
+                '}';
+    }
 }

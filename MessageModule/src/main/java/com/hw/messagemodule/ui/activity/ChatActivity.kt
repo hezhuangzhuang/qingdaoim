@@ -11,6 +11,7 @@ import android.view.View
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.alibaba.android.arouter.facade.annotation.Route
+import com.alibaba.android.arouter.launcher.ARouter
 import com.hjq.bar.OnTitleBarListener
 import com.hw.baselibrary.ui.activity.BaseMvpActivity
 import com.hw.baselibrary.utils.KeyboardUtils
@@ -110,6 +111,11 @@ class ChatActivity : BaseMvpActivity<ChatPresenter>(), ChatContract.View, View.O
                     previewPhoto(item.chatBean.textContent)
             }
         }
+
+        if (isGroup) {
+            titleBar.setRightIcon(R.mipmap.ic_group_details)
+        }
+
         rvMsg.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         rvMsg.adapter = chatAdapter
     }
@@ -152,6 +158,12 @@ class ChatActivity : BaseMvpActivity<ChatPresenter>(), ChatContract.View, View.O
             }
 
             override fun onRightClick(v: View?) {
+                if (isGroup) {
+                    ARouter.getInstance().build(RouterPath.Contacts.GROUP_CHAT_DETAILS)
+                        .withString(RouterPath.Contacts.FILED_RECEIVE_ID, receiveId)
+                        .withString(RouterPath.Contacts.FILED_RECEIVE_NAME, receiveName)
+                        .navigation()
+                }
             }
 
             override fun onTitleClick(v: View?) {
@@ -334,8 +346,25 @@ class ChatActivity : BaseMvpActivity<ChatPresenter>(), ChatContract.View, View.O
                 refreshReceiveMessage(messageEvent.messageData as MessageBody)
 
             //刷新发出的消息
-            EventMsg.SEND_SINGLE_MESSAGE ->
+            EventMsg.SEND_SINGLE_MESSAGE -> {
                 refreshSendMessage(messageEvent.messageData as MessageBody)
+            }
+
+            //更新群聊名称
+            EventMsg.UPDATE_GROUP_CHAT -> {
+                var newData = messageEvent.messageData as String
+                val split = newData.split(",")
+
+                if (receiveId.equals(split[0])) {
+                    if (EventMsg.DELETE_GROUP_CHAT.equals(split[1])) {
+                        finish()
+                    } else {
+                        receiveName = split[1]
+
+                        tvName.setText(receiveName)
+                    }
+                }
+            }
         }
     }
 
@@ -343,8 +372,15 @@ class ChatActivity : BaseMvpActivity<ChatPresenter>(), ChatContract.View, View.O
      * 刷新收到的消息
      */
     private fun refreshReceiveMessage(messageBody: MessageBody) {
+        //单聊
+        var isSingleChat =
+            receiveId == messageBody.sendId && messageBody.type == MessageBody.TYPE_PERSONAL
+        //群聊
+        var isGroupChat =
+            receiveId == messageBody.receiveId && messageBody.type == MessageBody.TYPE_COMMON
+
         //判断收到的消息是否是当前聊天
-        if (receiveId == messageBody.sendId) {
+        if (isSingleChat || isGroupChat) {
             //收到的消息转成chatbean
             var formChatBean = MessageUtils.receiveMessageToChatBean(messageBody)
             //设置消息未已读

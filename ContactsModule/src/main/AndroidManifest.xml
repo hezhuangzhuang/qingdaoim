@@ -3,7 +3,8 @@
     package="com.hw.contactsmodule">
 
     <application>
-        <activity android:name=".ui.activity.ContactDetailsActivity"></activity>
+        <activity android:name=".ui.activity.GroupDetailsActivity"></activity>
+        <activity android:name=".ui.activity.ContactDetailsActivity" />
     </application>
 
 </manifest>

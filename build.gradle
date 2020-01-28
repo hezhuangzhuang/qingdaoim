@@ -10,6 +10,9 @@ buildscript {
 
         //greendao
         mavenCentral()
+
+        //华为推送
+        maven {url 'http://developer.huawei.com/repo/'}
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.5.2'
@@ -18,6 +21,9 @@ buildscript {
 
         //greendao
         classpath 'org.greenrobot:greendao-gradle-plugin:3.2.2'
+
+        //华为推送
+        classpath 'com.huawei.agconnect:agcp:1.0.0.300'
     }
 }
 
@@ -27,6 +33,9 @@ allprojects {
         jcenter()
 
         maven { url "https://jitpack.io" }
+
+        //华为推送
+        maven {url 'http://developer.huawei.com/repo/'}
     }
 }
 

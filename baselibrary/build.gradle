@@ -101,7 +101,10 @@ dependencies {
     //popupwindow
     api rootProject.ext.basePopup
 
+    //对话框
     api 'com.afollestad.material-dialogs:core:0.9.1.0'
+
+    api rootProject.ext.autoSize
 
     //Dagger2
     api rootProject.ext.daggerApi

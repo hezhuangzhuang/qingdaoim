@@ -190,9 +190,11 @@ class HomeMessageFragment : BaseMvpFragment1<MessagePresenter>(), MessageContrac
     fun mainEvent(messageEvent: EventMsg<Any>) {
         when (messageEvent.message) {
             //刷新消息
-            EventMsg.REFRESH_HOME_MESSAGE ->
+            EventMsg.REFRESH_HOME_MESSAGE ->{
+
                 //查询消息
                 mPresenter.queryLastChatBeans()
+            }
 
             //更新消息阅读状态
             EventMsg.UPDATE_MESSAGE_READ_STATUS -> {
@@ -210,6 +212,13 @@ class HomeMessageFragment : BaseMvpFragment1<MessagePresenter>(), MessageContrac
                 //更新首页的未读状态
                 showMainShowRead()
             }
+
+            //更新群聊名称
+            EventMsg.UPDATE_GROUP_CHAT ->{
+                //查询消息
+                mPresenter.queryLastChatBeans()
+            }
+
         }
     }
 }

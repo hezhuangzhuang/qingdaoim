@@ -7,6 +7,9 @@ apply plugin: 'kotlin-android-extensions'
 //dagger2
 apply plugin: 'kotlin-kapt'
 
+//华为推送
+apply plugin: 'com.huawei.agconnect'
+
 //TODO:Arouter需要配置--跳转页面要用到
 kapt {
     arguments {
@@ -18,11 +21,11 @@ android {
     compileSdkVersion rootProject.ext.android.compileSdkVersion
 
     defaultConfig {
-        applicationId "com.hw.kotlinmvpandroidxframe"
+        applicationId "com.zxwl.imdemo"
         minSdkVersion rootProject.ext.android.minSdkVersion
         targetSdkVersion rootProject.ext.android.targetSdkVersion
-        versionCode 1
-        versionName "1.0.1"
+        versionCode 9
+        versionName "1.0.9"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         multiDexEnabled true
@@ -32,10 +35,38 @@ android {
             abiFilters 'armeabi'
         }
     }
+
+    signingConfigs {
+        config {
+            keyAlias 'key0'
+            keyPassword '86979731'
+            storeFile file('zxwl.jks')
+            storePassword '86979731'
+        }
+    }
+
     buildTypes {
+        debug {
+            signingConfig signingConfigs.config
+        }
+
         release {
+            signingConfig signingConfigs.config
+
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            android.applicationVariants.all { variant ->
+                variant.outputs.all { output ->
+                    if ("release".equals(variant.buildType.name)) {
+                        def fileName = "qingdaohuiyi_${variant.versionName}_${releaseTime()}.apk"
+                        def outFile = output.outputFile
+                        if (outFile != null && outFile.name.endsWith('.apk')) {
+                            outputFileName = fileName  //  output.outputFile 改为 outputFileName
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -56,6 +87,10 @@ android {
             jniLibs.srcDirs = ['libs']
         }
     }
+}
+
+def releaseTime() {
+    return new Date().format("yyyyMMdd_HHmm", TimeZone.getTimeZone("Asia/Shanghai"))
 }
 
 dependencies {
@@ -93,4 +128,6 @@ dependencies {
     //华为vc模块
     api project(path: ':HuaweiVcLib')
 
+    //华为推送
+    implementation 'com.huawei.hms:push:3.0.3.301'
 }

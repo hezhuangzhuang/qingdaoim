@@ -88,6 +88,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
+import me.jessyan.autosize.internal.CancelAdapt;
 
 import static com.hw.provider.huawei.commonservice.common.LocContext.getContext;
 
@@ -95,7 +96,7 @@ import static com.hw.provider.huawei.commonservice.common.LocContext.getContext;
 /**
  * 视频会议界面
  */
-public class VideoConfActivity extends BaseActivity implements LocBroadcastReceiver, View.OnClickListener {
+public class VideoConfActivity extends BaseActivity implements LocBroadcastReceiver, View.OnClickListener, CancelAdapt {
     private ImageView ivRightOperate;
     /*顶部按钮--end*/
 
@@ -490,9 +491,9 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
             if (null != allSiteList) {
                 ToastHelper.INSTANCE.showShort("正在启动会议控制...");
                 List<ConfBeanRespone.DataBean.SiteStatusInfoListBean> onlineSites = getOnlineSites();
-                showConfControlDialog(onlineSites, true);
+//                showConfControlDialog(onlineSites, true);
+                showConfControlDialog(allSiteList, true);
             }
-
         } else if (R.id.conf_video_small_logo == v.getId()) {
             changeShowView();
         }//一键关闭除自己的麦克风
@@ -542,7 +543,7 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
     private boolean isAllMicClose = true;
 
     /**
-     * m麦克风闭音
+     * 麦克风闭音
      */
     private void oneKeyCloseMic(final boolean isMicParam, String siteUri) {
         RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.FILE_URL)
@@ -592,7 +593,7 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
     }
 
     /**
-     * m麦克风闭音
+     * 麦克风闭音
      */
     private void setOtherSiteMuteRequest(final boolean isMicParam) {
         RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.FILE_URL)
@@ -1397,7 +1398,7 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
      * 指定主席
      */
     private void startAppointChairActivity() {
-        if(getOnlineSitesRemoveSelf().isEmpty()){
+        if (getOnlineSitesRemoveSelf().isEmpty()) {
             ToastHelper.INSTANCE.showShort("当前没有在线会场");
             return;
         }
@@ -1502,6 +1503,12 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
                                 }
                             }
                             ivOneKeyCloseMic.setImageResource(R.mipmap.ic_close_all_mic);
+
+                            //如果会控对话框显示则刷新列表
+                            if (null != confControlDialog && confControlDialog.isShowing()) {
+                                //刷新列表
+                                confControlAdapter.replaceData(allSiteList);
+                            }
                         } else {
                             ToastHelper.INSTANCE.showShort(baseData.msg);
                         }
@@ -1509,7 +1516,7 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
-                        ToastHelper.INSTANCE.showShort(getLine(1495) + throwable.getMessage());
+//                        ToastHelper.INSTANCE.showShort(getLine(1495) + throwable.getMessage());
                     }
                 });
     }

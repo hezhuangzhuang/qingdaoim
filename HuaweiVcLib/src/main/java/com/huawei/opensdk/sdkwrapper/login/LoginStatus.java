@@ -52,4 +52,19 @@ public class LoginStatus {
     public void setCallResult(TupRegisterResult callResult) {
         this.callResult = callResult;
     }
+
+    @Override
+    public String toString() {
+        return "LoginStatus{" +
+                "userID=" + userID +
+                ", authResult=" + authResult +
+                ", callResult=" + getTupRegisterResultString() +
+                '}';
+    }
+
+    private String getTupRegisterResultString(){
+        return "regState= "+callResult.getRegState()+
+                ", reasonCode= "+callResult.getReasonCode()+
+                ", sipAccountID= "+callResult.getSipAccountID();
+    }
 }

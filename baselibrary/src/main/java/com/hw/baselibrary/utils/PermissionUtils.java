@@ -3,6 +3,7 @@ package com.hw.baselibrary.utils;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AppOpsManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -19,8 +20,10 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 
+import com.hw.baselibrary.BuildConfig;
 import com.hw.baselibrary.common.BaseApp;
 import com.hw.baselibrary.constant.PermissionConstants;
+import com.hw.baselibrary.utils.rom.SystemUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -495,5 +498,73 @@ public final class PermissionUtils {
 
     public interface ThemeCallback {
         void onActivityCreate(Activity activity);
+    }
+
+
+    /**
+     * 跳转到权限设置节目
+     */
+    public static void launchAppPermissionSettings() {
+        if (SystemUtil.SYS_MIUI.equals(SystemUtil.getSystemNew())) {
+            gotoMiuiPermission();
+        } else if (SystemUtil.SYS_FLYME.equals(SystemUtil.getSystemNew())) {
+            gotoMeizuPermission();
+        } else if (SystemUtil.SYS_EMUI.equals(SystemUtil.getSystemNew())) {
+            goHuaWeiMainager();
+        }
+    }
+
+    private static void goHuaWeiMainager() {
+        try {
+            Intent intent = new Intent(BuildConfig.APPLICATION_ID);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            ComponentName comp = new ComponentName("com.huawei.systemmanager", "com.huawei.permissionmanager.ui.MainActivity");
+            intent.setComponent(comp);
+            BaseApp.context.startActivity(intent);
+        } catch (Exception e) {
+            // 否则跳转到应用详情
+            launchAppDetailsSettings();
+        }
+    }
+
+    /**
+     * 跳转到miui的权限管理页面
+     */
+    private static void gotoMiuiPermission() {
+        try { // MIUI 8
+            Intent localIntent = new Intent("miui.intent.action.APP_PERM_EDITOR");
+            localIntent.setClassName("com.miui.securitycenter", "com.miui.permcenter.permissions.PermissionsEditorActivity");
+            localIntent.putExtra("extra_pkgname", BaseApp.context.getPackageName());
+            localIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            BaseApp.context.startActivity(localIntent);
+        } catch (Exception e) {
+            try { // MIUI 5/6/7
+                Intent localIntent = new Intent("miui.intent.action.APP_PERM_EDITOR");
+                localIntent.setClassName("com.miui.securitycenter", "com.miui.permcenter.permissions.AppPermissionsEditorActivity");
+                localIntent.putExtra("extra_pkgname", BaseApp.context.getPackageName());
+                localIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                BaseApp.context.startActivity(localIntent);
+            } catch (Exception e1) {
+                // 否则跳转到应用详情
+                launchAppDetailsSettings();
+            }
+        }
+    }
+
+    /**
+     * 跳转到魅族的权限管理系统
+     */
+    private static void gotoMeizuPermission() {
+        try {
+            Intent intent = new Intent("com.meizu.safe.security.SHOW_APPSEC");
+            intent.addCategory(Intent.CATEGORY_DEFAULT);
+            intent.putExtra("packageName", BuildConfig.APPLICATION_ID);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            BaseApp.context.startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+            // 否则跳转到应用详情
+            launchAppDetailsSettings();
+        }
     }
 }

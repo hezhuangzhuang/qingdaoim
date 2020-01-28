@@ -26,6 +26,10 @@ object RouterPath {
         companion object {
             //联系人详情
             const val CONTACT_DETAILS="/contacts/contactsDetails"
+
+            //群聊详情
+            const val GROUP_CHAT_DETAILS="/contacts/groupChatDetails"
+
             const val FILED_RECEIVE_ID = "FILED_RECEIVE_ID"
             const val FILED_RECEIVE_NAME = "FILED_RECEIVE_NAME"
 

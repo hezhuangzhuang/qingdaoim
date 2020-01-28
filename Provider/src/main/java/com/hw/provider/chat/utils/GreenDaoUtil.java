@@ -97,6 +97,17 @@ public class GreenDaoUtil {
     }
 
     /**
+     * 通过id获取最后一条数据
+     */
+    public static ChatBeanLastMessage queryLastChatBeanById(String conversationId) {
+        return getDaoSession()
+                .getChatBeanLastMessageDao()
+                .queryBuilder()
+                .where(ChatBeanLastMessageDao.Properties.ConversationId.eq(conversationId))
+                .unique();
+    }
+
+    /**
      * 保存联系人
      *
      * @param constactsBean
@@ -118,6 +129,17 @@ public class GreenDaoUtil {
                 .queryBuilder()
                 .where(ConstactsBeanDao.Properties.Sip.eq(accountId))
                 .unique();
+    }
+
+    /**
+     * 解散群组时，删除群组聊天记录
+     */
+    public static void deleteMessageById(String conversationId) {
+        getDaoSession().getChatBeanLastMessageDao()
+                .queryBuilder()
+                .where(ChatBeanLastMessageDao.Properties.ConversationId.eq(conversationId))
+                .buildDelete()
+                .executeDeleteWithoutDetachingEntities();
     }
 
 }

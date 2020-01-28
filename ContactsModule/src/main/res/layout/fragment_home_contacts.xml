@@ -25,7 +25,7 @@
     <com.flyco.tablayout.SlidingTabLayout
         android:id="@+id/tbLayout"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="50dp"
         app:tl_indicator_corner_radius="@dimen/tab_indicator_corner_tiny_radius"
         app:tl_indicator_width="@dimen/tab_indicator_center_width"
         app:tl_tab_padding="@dimen/tab_bar_item_padding"

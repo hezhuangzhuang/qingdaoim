@@ -5,6 +5,7 @@ import com.hw.baselibrary.net.RetrofitManager
 import com.hw.baselibrary.net.Urls
 import com.hw.baselibrary.rx.scheduler.CustomCompose
 import com.hw.contactsmodule.data.api.ContactsApi
+import com.hw.contactsmodule.data.bean.GroupDetailsBean
 import com.hw.provider.net.respone.contacts.GroupChatBean
 import com.hw.provider.net.respone.contacts.OrganizationBean
 import com.hw.provider.net.respone.contacts.PeopleBean
@@ -25,6 +26,16 @@ class ContactsService @Inject constructor() {
         return RetrofitManager
             .create(ContactsApi::class.java, Urls.WEBSOCKET_URL)
             .getAllConstacts()
+            .compose(CustomCompose())
+    }
+
+    /**
+     * 获取特别联系人
+     */
+    fun queryGovAccounts(): Observable<BaseData<PeopleBean>> {
+        return RetrofitManager
+            .create(ContactsApi::class.java, Urls.WEBSOCKET_URL)
+            .getGovAccounts()
             .compose(CustomCompose())
     }
 
@@ -65,6 +76,41 @@ class ContactsService @Inject constructor() {
         return RetrofitManager
             .create(ContactsApi::class.java, Urls.WEBSOCKET_URL)
             .getGroupIdConstacts(groupId)
+            .compose(CustomCompose())
+    }
+
+    /**
+     * 通过群组id查询群主
+     */
+    fun queryGroupCreater(siteUri: String, groupId: String): Observable<GroupDetailsBean> {
+        return RetrofitManager
+            .create(ContactsApi::class.java, Urls.WEBSOCKET_URL)
+            .queryGroupCreater(siteUri, groupId)
+            .compose(CustomCompose())
+    }
+
+    /**
+     * 修改群名称
+     */
+    fun updateGroupName(
+        groupId: Int,
+        newName: String
+    ): Observable<GroupDetailsBean> {
+        return RetrofitManager
+            .create(ContactsApi::class.java, Urls.WEBSOCKET_URL)
+            .updateGroupName(groupId, newName)
+            .compose(CustomCompose())
+    }
+
+    /**
+     * 删除群聊
+     */
+    fun deleteGroupChat(
+        groupId: String
+    ): Observable<GroupDetailsBean> {
+        return RetrofitManager
+            .create(ContactsApi::class.java, Urls.WEBSOCKET_URL)
+            .deleteGroupChat(groupId)
             .compose(CustomCompose())
     }
 

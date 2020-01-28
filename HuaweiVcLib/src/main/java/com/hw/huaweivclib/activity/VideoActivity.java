@@ -65,13 +65,15 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Field;
 import java.util.concurrent.locks.ReentrantLock;
 
+import me.jessyan.autosize.internal.CancelAdapt;
+
 import static com.hw.provider.huawei.commonservice.common.LocContext.getContext;
 
 
 /**
  * 视频界面
  */
-public class VideoActivity extends BaseActivity implements LocBroadcastReceiver, View.OnClickListener {
+public class VideoActivity extends BaseActivity implements LocBroadcastReceiver, View.OnClickListener , CancelAdapt {
     private TextView tvTopTitle;
     private ImageView ivRightOperate;
     /*顶部按钮--end*/
@@ -369,11 +371,6 @@ public class VideoActivity extends BaseActivity implements LocBroadcastReceiver,
         if (mCallInfo.isCaller()) {
             Long chatTimeLong = System.currentTimeMillis() - startTimeLong;
             String chatTime = DateUtils.longToString(chatTimeLong, "mm:ss");
-//            //发送消息
-//            sendTextMsg("通话时长 " + chatTime, mCallInfo.getPeerNumber());
-//
-//            //保存本地消息
-//            saveLocalMessage("通话时长 " + chatTime, mCallInfo.getPeerNumber());
 
             //发送消息
             sendTextMsg("通话时长 " + chatTime, "通话时长 " + chatTime, mCallInfo.getPeerNumber(), true);

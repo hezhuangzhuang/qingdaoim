@@ -12,11 +12,11 @@
 
     <item android:drawable="@mipmap/ic_launch_bg"/>
 
-    <item
-        android:top="-150dp">
-        <bitmap
-            android:gravity="center_horizontal"
-            android:src="@mipmap/ic_launch_text"/>
-    </item>
+<!--    <item-->
+<!--        android:top="-150dp">-->
+<!--        <bitmap-->
+<!--            android:gravity="center_horizontal"-->
+<!--            android:src="@mipmap/ic_launch_text"/>-->
+<!--    </item>-->
 
 </layer-list>

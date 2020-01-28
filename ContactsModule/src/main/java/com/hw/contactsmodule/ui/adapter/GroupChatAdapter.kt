@@ -4,6 +4,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
 import com.hw.contactsmodule.R
 import com.hw.provider.net.respone.contacts.GroupChatBean
+import com.hw.provider.net.respone.contacts.PeopleBean
 
 /**
  *author：pc-20171125

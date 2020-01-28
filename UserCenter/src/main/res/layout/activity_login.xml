@@ -27,7 +27,6 @@
             android:layout_above="@id/etUser"
             android:layout_centerHorizontal="true"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="150dp"
             android:layout_marginBottom="120dp"
             android:src="@mipmap/ic_login_lable" />
 
@@ -35,37 +34,67 @@
             android:id="@+id/etUser"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_above="@id/etPwd"
+            android:layout_above="@id/llPwd"
             android:background="@drawable/shape_et_login_bg"
             android:hint="请输入用户名"
-            android:paddingLeft="12dp"
             android:inputType="text"
+            android:singleLine="true"
+            android:drawableLeft="@mipmap/ic_login_user"
+            android:paddingRight="6dp"
+            android:drawablePadding="6dp"
+            tools:text="请输入用户名请输入用户名请输入用户名请输入用户名请输入用户名请输入用户名请输入用户名"
+            android:paddingLeft="12dp"
+            android:ellipsize="end"
             android:textColor="@color/white"
-            android:textColorHint="@color/color_87bef5" />
+            android:textColorHint="@color/color_87bef5"
+            android:textSize="14sp" />
 
-        <EditText
-            android:inputType="textPassword"
-            android:id="@+id/etPwd"
+        <LinearLayout
+            android:id="@+id/llPwd"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_above="@id/btLogin"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="70dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="50dp"
             android:background="@drawable/shape_et_login_bg"
-            android:hint="请输入密码"
-            android:paddingLeft="12dp"
-            android:textColor="@color/white"
-            android:textColorHint="@color/color_87bef5" />
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/etPwd"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:background="@null"
+                android:hint="请输入密码"
+                android:inputType="textPassword"
+                android:singleLine="true"
+                android:drawablePadding="6dp"
+                android:drawableLeft="@mipmap/ic_login_password"
+                android:paddingLeft="12dp"
+                tools:text="请输入密码请输入密码请输入密码请输入密码请输入密码请输入密码请输入密码请输入密码"
+                android:textColor="@color/white"
+                android:textColorHint="@color/color_87bef5"
+                android:textSize="14sp" />
+
+            <ImageView
+                android:id="@+id/ivPwdShow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right|center_vertical"
+                android:layout_marginRight="6dp"
+                android:padding="12dp"
+                android:src="@mipmap/ic_pwd_hide" />
+        </LinearLayout>
 
         <Button
             android:id="@+id/btLogin"
             android:layout_width="match_parent"
-            android:background="@drawable/shape_bt_login_bg"
             android:layout_height="wrap_content"
-            android:textColor="@color/color_418ad5"
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="80dp"
-            android:text="登录" />
+            android:background="@drawable/shape_bt_login_bg"
+            android:text="登录"
+            android:textColor="@color/color_418ad5" />
     </RelativeLayout>
 
 

@@ -7,9 +7,11 @@ import com.alibaba.android.arouter.launcher.ARouter
 import com.hjq.bar.OnTitleBarListener
 import com.hw.baselibrary.ui.activity.BaseActivity
 import com.hw.baselibrary.utils.ToastHelper
+import com.hw.baselibrary.utils.sharedpreferences.SPStaticUtils
 import com.hw.contactsmodule.R
 import com.hw.provider.router.RouterPath
 import com.hw.provider.router.provider.huawei.impl.HuaweiModuleService
+import com.hw.provider.user.UserContants
 import kotlinx.android.synthetic.main.activity_contact_details.*
 
 /**
@@ -71,8 +73,10 @@ class ContactDetailsActivity : BaseActivity(), View.OnClickListener {
                     .navigation()
 
             //视频呼叫
-            R.id.flVideoCall ->
+            R.id.flVideoCall ->{
                 HuaweiModuleService.callSite(id, true)
+            }
+
 
             //语音呼叫
             R.id.flVoiceCall ->
