@@ -18,6 +18,7 @@ import com.huawei.opensdk.ecsdk.utils.ActivityUtil;
 import com.huawei.opensdk.ecsdk.utils.IntentConstant;
 import com.huawei.opensdk.sdkwrapper.login.LoginCenter;
 import com.hw.baselibrary.common.AppManager;
+import com.hw.baselibrary.utils.ToastHelper;
 import com.hw.baselibrary.utils.sharedpreferences.SPStaticUtils;
 import com.hw.huaweivclib.activity.LoadingActivity;
 import com.hw.provider.huawei.commonservice.common.LocContext;
@@ -59,7 +60,7 @@ public class ConfFunc implements IConfNotification {
                         errorMsg = "网络故障,会议召集失败,请稍后再试.";
                     }
                     LogUtil.i(UIConstants.DEMO_TAG, "book conf failed." + msg.toString());
-                    Toast.makeText(LocContext.getContext(), "会议召集失败,错误码是:" + errorMsg, Toast.LENGTH_SHORT).show();
+                    ToastHelper.INSTANCE.showShort("会议召集失败,错误码是:" + errorMsg);
                     //结束掉等待的对话框
 //                    AppManager.getInstance().finishActivity(LoadingActivity.class);
 

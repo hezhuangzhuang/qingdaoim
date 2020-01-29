@@ -11,19 +11,19 @@ object Urls{
 
     const val BASE_URL = "http://61.182.50.12:8085/xjdj/"
 
-//    //公司环境-start
-//    //即时通讯和基础业务的路径
-//    const val WEBSOCKET_URL = "http://demo.szzxwl.com:9016/"
-//
-//    //上传文件的服务器
-//    const val FILE_URL = "http://demo.szzxwl.com:9012/videoConf/"
-//    //公司环境-end
-
-    //客户环境-start
+    //公司环境-start
     //即时通讯和基础业务的路径
-    const val WEBSOCKET_URL = "http://120.221.95.142:7001/"
+    const val WEBSOCKET_URL = "http://demo.szzxwl.com:9016/"
 
     //上传文件的服务器
-    const val FILE_URL = "http://120.221.95.142:7002/videoConf/"
-    //客户环境-end
+    const val FILE_URL = "http://demo.szzxwl.com:9012/videoConf/"
+    //公司环境-end
+
+//    //客户环境-start
+//    //即时通讯和基础业务的路径
+//    const val WEBSOCKET_URL = "http://120.221.95.142:7001/"
+//
+//    //上传文件的服务器
+//    const val FILE_URL = "http://120.221.95.142:7002/videoConf/"
+//    //客户环境-end
 }

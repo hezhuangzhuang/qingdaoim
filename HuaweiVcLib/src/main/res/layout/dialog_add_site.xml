@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:padding="12dp"
-            android:text="添加会场"
+            android:text="添加用户"
             android:textColor="@color/white" />
 
         <TextView

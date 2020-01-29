@@ -51,6 +51,19 @@ class ChatService @Inject constructor() {
     }
 
     /**
+     * 上传语音
+     */
+    fun uploadVoice(file: File): Observable<UploadBeanRespone> {
+        val requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file)
+        val filePart = MultipartBody.Part.createFormData("uploadFile", file.getName(), requestFile)
+
+        return RetrofitManager
+            .create(ChatApi::class.java, Urls.FILE_URL)
+            .upload(filePart)
+            .compose(CustomCompose())
+    }
+
+    /**
      * 心跳的接口
      */
     fun ping(

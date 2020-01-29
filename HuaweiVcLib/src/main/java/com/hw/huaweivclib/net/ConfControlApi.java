@@ -21,21 +21,6 @@ public interface ConfControlApi {
      */
     @Headers({"Content-Type: application/json", "Accept: application/json"})
     @POST("conf/scheduleConf")
-    Observable<BaseData> createConf(
-            @Query("confName") String confName,
-            @Query("duration") String duration,
-            @Query("accessCode") String accessCode,
-            @Query("sites") String sites,
-            @Query("creatorUri") String creatorUri,
-            @Query("groupId") String groupId,
-            @Query("confMediaType") String confMediaType
-    );
-
-    /**
-     * 创建会议
-     */
-    @Headers({"Content-Type: application/json", "Accept: application/json"})
-    @POST("conf/scheduleConf")
     Observable<CreateConfResponeBean> createConf(
             @Body RequestBody body
     );

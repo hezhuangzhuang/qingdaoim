@@ -17,7 +17,11 @@ data class HistoryConfBean(
         var createTime: String,
         var sites: String,
         var sitesName: String,
-        var ifSuccess: Int = 0
+        var ifSuccess: Int = 0,
+        //参会人数
+        var accountNumber: Int = 0,
+        //会议时长
+        var confLength: Int = 0
     ) {
 
     }

@@ -104,7 +104,11 @@ dependencies {
     //对话框
     api 'com.afollestad.material-dialogs:core:0.9.1.0'
 
+    //屏幕适配
     api rootProject.ext.autoSize
+
+    //ui卡顿检测
+    api rootProject.ext.blockCanary
 
     //Dagger2
     api rootProject.ext.daggerApi

@@ -52,7 +52,10 @@ ext {
             greendaoVersion               : "3.2.2",
 
             //屏幕适配
-            autoSizeVersion               : "1.2.0"
+            autoSizeVersion               : "1.2.0",
+
+            //UI卡顿监测
+            blockCanaryVersion            : "1.5.0"
     ]
 
     supportDeps = [
@@ -118,6 +121,10 @@ ext {
 
     //屏幕适配
     autoSize = "me.jessyan:autosize:$dependVersion.autoSizeVersion"
+
+    //UI卡顿监测
+    blockCanary = "com.github.markzhai:blockcanary-android:$dependVersion.blockCanaryVersion"
+
 
     supportLibs = supportDeps.values()
     networkLibs = retrofit.values()

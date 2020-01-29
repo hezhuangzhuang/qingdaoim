@@ -126,7 +126,7 @@ class CreateConfActivity : BaseMvpActivity<CreateConfPresenter>(), CreateConfCon
         //设置全选的状态
         isAllCheck = selectPeoples.size == allPeoples.size
 
-        setAllCheckStatus()
+//        setAllCheckStatus()
 
         //设置已选会场的数量
         setSelectNumber()
@@ -153,6 +153,11 @@ class CreateConfActivity : BaseMvpActivity<CreateConfPresenter>(), CreateConfCon
         tvSelectNumber.isVisible = selectPeoples.size > 0
 
         tvSelectNumber.text = "已选择: ${selectPeoples.size}人"
+
+        //设置全选的状态
+        isAllCheck = selectPeoples.size == allPeoples.size
+
+        setAllCheckStatus()
     }
 
     override fun doBusiness() {
@@ -214,6 +219,7 @@ class CreateConfActivity : BaseMvpActivity<CreateConfPresenter>(), CreateConfCon
             //全选状态取反
             isAllCheck = !isAllCheck
 
+            //同步人员的选中状态
             allPeoples.forEach {
                 it.isCheck = isAllCheck
             }
@@ -227,9 +233,6 @@ class CreateConfActivity : BaseMvpActivity<CreateConfPresenter>(), CreateConfCon
 
             //刷新适配器
             createConfAdapter.notifyDataSetChanged()
-
-            //设置全选按钮状态
-            setAllCheckStatus()
 
             //设置已选会场的数量
             setSelectNumber()

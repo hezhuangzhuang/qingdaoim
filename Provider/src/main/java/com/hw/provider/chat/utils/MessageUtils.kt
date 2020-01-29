@@ -129,7 +129,7 @@ object MessageUtils {
     }
 
     /**
-     * 获取收到消息的类型
+     * 获取发出消息的类型
      */
     fun getSendMessageType(type: Int): Int {
         when (type) {

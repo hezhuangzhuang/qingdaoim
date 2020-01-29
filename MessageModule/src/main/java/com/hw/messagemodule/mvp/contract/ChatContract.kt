@@ -23,17 +23,35 @@ interface ChatContract {
         /**
          * 上传图片失败
          */
-        fun uploadFaile(errorMsg: String)
+        fun uploadPhotoFaile(errorMsg: String)
 
         /**
          * 上传图片成功
          */
-        fun uploadSuccess(
+        fun uploadPhotoSuccess(
             //图片名称
             fileName: String,
             //图片的网络路径
             filePath: String
         )
+
+        /**
+         * 上传语音失败
+         */
+        fun uploadVoiceFaile(errorMsg: String)
+
+        /**
+         * 上传语音成功
+         */
+        fun uploadVoiceSuccess(
+            fileLocalPath:String,
+            //图片名称
+            fileNetWorkName: String,
+            //图片的网络路径
+            fileNetWorkPath: String,
+            duration: Int
+        )
+
 
 //        //发送图片成功
 //        fun sendImageSuccess(messageBody: MessageBody)
@@ -49,8 +67,14 @@ interface ChatContract {
         //发送图片消息
         fun sendImage(messageBody: MessageBody)
 
+        //发送语音消息
+        fun sendVoice(messageBody: MessageBody)
+
         //上传图片
         fun uploadPhoto(file: File)
+
+        //上传语音文件
+        fun uploadVoice(file: File, duration: Int)
 
     }
 }

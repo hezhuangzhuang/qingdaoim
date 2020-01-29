@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.afollestad.materialdialogs.MaterialDialog
 import com.alibaba.android.arouter.facade.annotation.Route
+import com.hjq.bar.OnTitleBarListener
 import com.hw.baselibrary.ui.activity.BaseMvpActivity
 import com.hw.baselibrary.utils.ToastHelper
 import com.hw.baselibrary.utils.sharedpreferences.SPStaticUtils
@@ -48,7 +49,7 @@ class GroupDetailsActivity : BaseMvpActivity<GroupDetailsPresenter>(), GroupDeta
 
         mPresenter.mRootView = this
 
-        mPresenter.queryPeopleByGroupId(groupId)
+//        mPresenter.queryPeopleByGroupId(groupId)
         mPresenter.queryGroupCreater(SPStaticUtils.getString(UserContants.HUAWEI_ACCOUNT), groupId)
     }
 
@@ -62,6 +63,10 @@ class GroupDetailsActivity : BaseMvpActivity<GroupDetailsPresenter>(), GroupDeta
     override fun initView(savedInstanceState: Bundle?, contentView: View) {
         groupDetailsAdapter =
             GroupDetailsAdapter(R.layout.item_group_detail, ArrayList<PeopleBean>())
+
+        groupDetailsAdapter.setOnItemChildClickListener { adapter, view, position ->
+            ToastHelper.showShort(position.toString())
+        }
         rvList.layoutManager = GridLayoutManager(this, 5) as RecyclerView.LayoutManager?
         rvList.adapter = groupDetailsAdapter
 
@@ -83,6 +88,19 @@ class GroupDetailsActivity : BaseMvpActivity<GroupDetailsPresenter>(), GroupDeta
                 showModifyGroupNameDialog()
             }
         }
+
+        titleBar.setOnTitleBarListener(object : OnTitleBarListener {
+            override fun onRightClick(v: View?) {
+            }
+
+            override fun onTitleClick(v: View?) {
+            }
+
+            override fun onLeftClick(v: View?) {
+                finish()
+            }
+
+        })
     }
 
     //修改群名称的对话框
@@ -171,14 +189,24 @@ class GroupDetailsActivity : BaseMvpActivity<GroupDetailsPresenter>(), GroupDeta
 
     }
 
-    override fun showGroupChatPeople(groupPeoples: List<PeopleBean>) {
-        groupDetailsAdapter.replaceData(groupPeoples)
+    override fun queryGroupInfoError(errorMsg: String) {
+        ToastHelper.showShort(errorMsg)
     }
 
-    override fun showGroupInfo(isCreate: Boolean) {
+    //显示群聊信息
+    override fun showGroupInfo(isCreate: Boolean, groupPeoples: List<PeopleBean>) {
         //不是群主的时候隐藏解散按钮
         tvDismissGroup.isVisible = isCreate
         this.isCreate = isCreate
+
+        groupDetailsAdapter.replaceData(groupPeoples)
+    }
+
+    /**
+     * 显示群聊详情的界面
+     */
+    override fun showGroupChatPeople(groupPeoples: List<PeopleBean>) {
+
     }
 
     /**

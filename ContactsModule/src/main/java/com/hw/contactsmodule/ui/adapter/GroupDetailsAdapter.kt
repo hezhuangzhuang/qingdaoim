@@ -7,12 +7,19 @@ import com.hw.provider.net.respone.contacts.PeopleBean
 import kotlinx.android.synthetic.main.item_group_detail.view.*
 
 /**
- * 群聊的适配器
+ * 群聊详情的适配器
  */
-class GroupDetailsAdapter :BaseQuickAdapter<PeopleBean,BaseViewHolder>{
+class GroupDetailsAdapter : BaseQuickAdapter<PeopleBean, BaseViewHolder> {
     constructor(layoutResId: Int, data: MutableList<PeopleBean>?) : super(layoutResId, data)
 
     override fun convert(helper: BaseViewHolder, item: PeopleBean?) {
-        helper.setText(R.id.tv_name,item?.name)
+        if ("-1".equals(item?.id)) {
+            helper.setText(R.id.tv_name, "添加")
+                .setImageResource(R.id.ivHead, R.mipmap.ic_add_group_people)
+                .addOnClickListener(R.id.ivHead)
+        } else {
+            helper.setText(R.id.tv_name, item?.name)
+                .setImageResource(R.id.ivHead, R.mipmap.ic_personal_head_one)
+        }
     }
 }

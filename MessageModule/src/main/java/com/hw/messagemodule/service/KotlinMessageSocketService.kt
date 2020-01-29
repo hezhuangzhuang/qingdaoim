@@ -24,6 +24,7 @@ import com.hw.messagemodule.data.api.ChatApi
 import com.hw.messagemodule.data.bean.WebSocketResult
 import com.hw.messagemodule.mvp.model.ChatService
 import com.hw.messagemodule.ui.activity.ChatActivity
+import com.hw.messagemodule.utils.SocketStatus
 import com.hw.provider.chat.bean.ChatBean
 import com.hw.provider.chat.bean.ChatBeanLastMessage
 import com.hw.provider.chat.bean.MessageBody
@@ -114,6 +115,10 @@ class KotlinMessageSocketService : Service() {
                     //不等于0代表在其他地方登录
                     if (0 != baseDate.data.isPhoneRemove) {
                         ToastHelper.showShort("您的账号当前在其他设备登录")
+
+                        //清空数据库缓存
+                        GreenDaoUtil.close()
+
                         //清空用户信息
                         clearUserInfo()
 
@@ -203,7 +208,7 @@ class KotlinMessageSocketService : Service() {
         SPStaticUtils.put(UserContants.USER_ID, -1)
 
         //登录的用户名密码
-        SPStaticUtils.put(UserContants.USER_NAME, "")
+//        SPStaticUtils.put(UserContants.USER_NAME, "")
         SPStaticUtils.put(UserContants.PASS_WORD, "")
 
         //华为登录密码
@@ -229,8 +234,11 @@ class KotlinMessageSocketService : Service() {
     }
 
     companion object {
-        //0：断开，1：连接，2：正在连接
-        var socketStatus: Int = 0
+        //0：断开，1：已`连接，2：正在连接
+        var socketStatusInt: Int = 0
+
+        //初始状态为断开
+        var socketStatus: SocketStatus = SocketStatus.CLOSE
 
         private val url by lazy {
             Urls.WEBSOCKET_URL + "/im/websocket/im/client?sip=" + SPStaticUtils.getString(
@@ -256,13 +264,19 @@ class KotlinMessageSocketService : Service() {
                     //开始连接
                     //TODO:没有网络时，此处会报错
                     try {
-                        if (NetWorkUtils.isConnected() && 2 != socketStatus) {
-                            socketStatus = 2
+//                        if (NetWorkUtils.isConnected() && 2 != socketStatusInt) {
+                        if (NetWorkUtils.isConnected() && SocketStatus.CONNECTING != socketStatus) {
+                           //正在连接
+                            socketStatusInt = 2
+                            //正在连接
+                            socketStatus = SocketStatus.CONNECTING
                             val reconnectBlocking = kotlinMessageSocketClient.reconnectBlocking()
                             //如果连接失败则把标识符设成0
                             if (!reconnectBlocking) {
                                 //断开
-                                socketStatus = 0
+                                socketStatusInt = 0
+                                //断开
+                                socketStatus = SocketStatus.CLOSE
                             } else {//如果连接成功则再次发送
                                 sendMessage(message)
                             }
@@ -339,13 +353,21 @@ class KotlinMessageSocketService : Service() {
                 override fun onOpen(handshakedata: ServerHandshake?) {
                     super.onOpen(handshakedata)
                     LogUtils.d("MessageSocketService-->onOpen-->$handshakedata")
-                    socketStatus = 1;
+                    //已连接
+                    socketStatusInt = 1;
+
+                    //已连接
+                    socketStatus =SocketStatus.CONNECT
                 }
 
                 override fun onClose(code: Int, reason: String?, remote: Boolean) {
                     super.onClose(code, reason, remote)
                     LogUtils.d("MessageSocketService-->onClose-->code-->${code}remote-->${remote}")
-                    socketStatus = 0;
+                    //已断开
+                    socketStatusInt = 0;
+
+                    //已断开
+                    socketStatus =SocketStatus.CLOSE
                 }
 
                 override fun onError(ex: Exception?) {
@@ -428,8 +450,6 @@ class KotlinMessageSocketService : Service() {
             if (isNotify) {
                 //群组重命名
                 if (message.real.message.startsWith("群组重命名_")) {
-//                    saveGroupName(messageBody.getReceiveId(), message.getMessage().substring(6))
-
                     saveNewGroupName(message.receiveId, message.real.message.substring(6))
                 }
             } else {
@@ -446,8 +466,6 @@ class KotlinMessageSocketService : Service() {
                     sendNotif(message, true)
                 }
             }
-
-
         }
     }
 
@@ -464,7 +482,10 @@ class KotlinMessageSocketService : Service() {
         GreenDaoUtil.insertLastChatBean(queryByIdChatBeans)
 
         //更新列表
-        EventBusUtils.sendMessage(EventMsg.UPDATE_GROUP_CHAT, "${receiveId},${newGroupName}" as String)
+        EventBusUtils.sendMessage(
+            EventMsg.UPDATE_GROUP_CHAT,
+            "${receiveId},${newGroupName}" as String
+        )
     }
 
     /**
@@ -489,10 +510,10 @@ class KotlinMessageSocketService : Service() {
         val activity = AppManager.instance.getCurActivity()
 
         if (activity is ChatActivity) {
-            //            ToastUtil.showShortToast(getApplicationContext(), "当前是聊天界面");
+            //ToastUtil.showShortToast(getApplicationContext(), "当前是聊天界面");
             return
         } else {
-            //            ToastUtil.showShortToast(getApplicationContext(), "当前界面");
+            //ToastUtil.showShortToast(getApplicationContext(), "当前界面");
         }
 
         //获取notifid
@@ -550,24 +571,27 @@ class KotlinMessageSocketService : Service() {
             })
     }
 
+    /**
+     * 获取notif显示的文本
+     */
     private fun getNotifText(message: MessageBody?, isGroupChat: Boolean): String {
         val content = ""
         /*1:文字; 2:图片; 3:表情； 4：语音*/
         when (message!!.real.type) {
-            1 -> {
+            MessageReal.TYPE_STR -> {
                 if (isGroupChat) return message.sendName + ": " + message!!.real.message else return message!!.real.message
             }
 
-            2 -> {
+            MessageReal.TYPE_IMG -> {
                 if (isGroupChat) return message.sendName + ": [图片]" else return "[图片]"
             }
 
-            3 -> {
+            MessageReal.TYPE_EMOJI -> {
                 if (isGroupChat) return message.sendName + ": [表情]" else return "[表情]"
             }
 
-            4 -> {
-                if (isGroupChat) return message.sendName + ": [文件]" else return "[文件]"
+            MessageReal.TYPE_APPENDIX -> {
+                if (isGroupChat) return message.sendName + ": [语音]" else return "[语音]"
             }
 
             else -> return content
@@ -587,7 +611,7 @@ class KotlinMessageSocketService : Service() {
             //群聊
             if (messageBody.type == MessageBody.TYPE_COMMON)
                 MessageUtils.receiveGroupMessageToChatBean(messageBody)
-            else
+            else//单聊
                 MessageUtils.receiveMessageToChatBean(messageBody)
 
         //插入到数据库
@@ -608,7 +632,6 @@ class KotlinMessageSocketService : Service() {
         when (messageEvent.message) {
             //网络连接成功
             EventMsg.NET_WORK_CONNECT -> {
-//                LogUtils.d(KotlinMessageSocketService::class.java.name + "网络连接成功")
                 //socket重新连接
                 reConnectSocket()
 
@@ -619,7 +642,6 @@ class KotlinMessageSocketService : Service() {
             //网络断开
             EventMsg.NET_WORK_DISCONNECT -> {
                 disposable()
-//                LogUtils.d(KotlinMessageSocketService::class.java.name + "网络连接成功")
             }
         }
     }
@@ -628,9 +650,15 @@ class KotlinMessageSocketService : Service() {
      * socket重新连接
      */
     private fun reConnectSocket() {
-        socketStatus = 2
-        //重新连接
-        kotlinMessageSocketClient.reconnect()
+//        if (socketStatusInt != 2) {
+        if (socketStatus != SocketStatus.CONNECTING) {
+            //连接中
+            socketStatusInt = 2
+            //连接中
+            socketStatus = SocketStatus.CONNECTING
+            //重新连接
+            kotlinMessageSocketClient.reconnect()
+        }
     }
 
 }

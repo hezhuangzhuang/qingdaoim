@@ -14,9 +14,18 @@
         android:background="@color/color_418ad5"
         app:backButton="false"
         app:rightIcon="@mipmap/ic_home_more"
-        app:title="通讯录"
         app:titleColor="@color/white"
-        app:titleSize="18sp" />
+        app:titleSize="18sp" >
+
+        <TextView
+            android:id="@+id/tvName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:text="通讯录" />
+    </com.hjq.bar.TitleBar>
 
 <!--    app:tl_indicator_corner_radius="@dimen/tab_indicator_corner_tiny_radius"-->
 <!--    app:tl_indicator_width="@dimen/tab_indicator_center_width"-->

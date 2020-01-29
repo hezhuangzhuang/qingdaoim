@@ -21,7 +21,7 @@
         android:padding="6dp"
         android:src="@mipmap/ic_chat_voice" />
 
-    <RelativeLayout
+    <FrameLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -49,8 +49,9 @@
             android:stateListAnimator="@null"
             android:text="按住 说话"
             android:textColor="#7e7e7e"
+            tools:visibility="visible"
             android:visibility="gone" />
-    </RelativeLayout>
+    </FrameLayout>
 
     <ImageView
         android:id="@+id/iv_emo"

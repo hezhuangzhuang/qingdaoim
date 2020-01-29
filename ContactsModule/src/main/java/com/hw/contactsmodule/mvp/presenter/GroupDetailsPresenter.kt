@@ -1,11 +1,22 @@
 package com.hw.contactsmodule.mvp.presenter
 
+import android.annotation.SuppressLint
 import com.hazz.kotlinmvp.net.exception.ExceptionHandle
+import com.hw.baselibrary.common.BaseData
 import com.hw.baselibrary.common.BasePresenter
 import com.hw.baselibrary.net.NetWorkContants
+import com.hw.contactsmodule.data.bean.GroupDetailsBean
 import com.hw.contactsmodule.mvp.contract.GroupDetailsContract
 import com.hw.contactsmodule.mvp.model.ContactsService
+import com.hw.provider.net.respone.contacts.PeopleBean
 import com.hw.provider.router.provider.huawei.impl.HuaweiModuleService
+import io.reactivex.Flowable
+import io.reactivex.Observable
+import io.reactivex.ObservableSource
+import io.reactivex.functions.BiFunction
+import io.reactivex.functions.Function
+import java.util.ArrayList
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class GroupDetailsPresenter @Inject constructor() : BasePresenter<GroupDetailsContract.View>(),
@@ -13,6 +24,7 @@ class GroupDetailsPresenter @Inject constructor() : BasePresenter<GroupDetailsCo
 
     @Inject
     lateinit var contactsService: ContactsService
+
 
     override fun queryPeopleByGroupId(groupId: String) {
         checkViewAttached()
@@ -41,24 +53,58 @@ class GroupDetailsPresenter @Inject constructor() : BasePresenter<GroupDetailsCo
         checkViewAttached()
         mRootView?.showLoading()
 
-        //通过群组id查询群组人员
-        contactsService.queryGroupCreater(siteUri, groupId)
-            .subscribe({ baseData ->
-                mRootView?.apply {
+        //返回的列表
+        var list = ArrayList<PeopleBean>()
+
+        contactsService.getGroupIdConstacts(groupId)
+            .flatMap(object : Function<BaseData<PeopleBean>, Observable<GroupDetailsBean>> {
+                override fun apply(baseData: BaseData<PeopleBean>): Observable<GroupDetailsBean> {
                     if (NetWorkContants.RESPONSE_CODE == baseData.responseCode) {
-                        dismissLoading()
-                        //是否是群主
-                        showGroupInfo(baseData.data.ifCreateUser)
+                        list = baseData.data
+                    }
+                    return contactsService.queryGroupCreater(siteUri, groupId)
+                }
+            }).subscribe({ baseData ->
+                mRootView?.apply {
+                    dismissLoading()
+                    //请求成功
+                    if (NetWorkContants.RESPONSE_CODE == baseData.responseCode) {
+                        //true:群主
+                        var isCreate = baseData.data.ifCreateUser
+
+                        if (isCreate) {
+                            list.add(PeopleBean("-1", "", "", "", "", false))
+                        }
+                        showGroupInfo(isCreate,list)
                     } else {
-                        onError(baseData.message)
+                        queryGroupInfoError(baseData.message)
                     }
                 }
             }, {
                 mRootView?.apply {
                     dismissLoading()
-                    onError(ExceptionHandle.handleException(it))
+                    queryGroupInfoError(ExceptionHandle.handleException(it))
                 }
             })
+
+//        //通过群组id查询是否是群主
+//        contactsService.queryGroupCreater(siteUri, groupId)
+//            .subscribe({ baseData ->
+//                mRootView?.apply {
+//                    if (NetWorkContants.RESPONSE_CODE == baseData.responseCode) {
+//                        dismissLoading()
+//                        //是否是群主
+////                        showGroupInfo(baseData.data.ifCreateUser,null)
+//                    } else {
+//                        onError(baseData.message)
+//                    }
+//                }
+//            }, {
+//                mRootView?.apply {
+//                    dismissLoading()
+//                    onError(ExceptionHandle.handleException(it))
+//                }
+//            })
     }
 
     //修改群名称
@@ -66,18 +112,18 @@ class GroupDetailsPresenter @Inject constructor() : BasePresenter<GroupDetailsCo
         checkViewAttached()
         mRootView?.showLoading()
 
-        contactsService.updateGroupName(groupId,newName)
-            .subscribe({baseData->
+        contactsService.updateGroupName(groupId, newName)
+            .subscribe({ baseData ->
                 mRootView?.apply {
                     if (NetWorkContants.RESPONSE_CODE == baseData.responseCode) {
                         dismissLoading()
-                        //是否是群主
+                        //修改群名称结果
                         updateGroupNameResult(true)
                     } else {
                         onError(baseData.message)
                     }
                 }
-            },{
+            }, {
                 mRootView?.apply {
                     dismissLoading()
                     onError(ExceptionHandle.handleException(it))
@@ -91,7 +137,7 @@ class GroupDetailsPresenter @Inject constructor() : BasePresenter<GroupDetailsCo
         mRootView?.showLoading()
 
         contactsService.deleteGroupChat(groupId)
-            .subscribe({baseData->
+            .subscribe({ baseData ->
                 mRootView?.apply {
                     if (NetWorkContants.RESPONSE_CODE == baseData.responseCode) {
                         //是否是群主
@@ -100,7 +146,7 @@ class GroupDetailsPresenter @Inject constructor() : BasePresenter<GroupDetailsCo
                         onError(baseData.message)
                     }
                 }
-            },{
+            }, {
                 mRootView?.apply {
                     dismissLoading()
                     onError(ExceptionHandle.handleException(it))

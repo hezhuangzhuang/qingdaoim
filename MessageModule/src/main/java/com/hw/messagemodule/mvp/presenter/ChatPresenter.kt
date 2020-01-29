@@ -70,18 +70,64 @@ class ChatPresenter @Inject constructor() : BasePresenter<ChatContract.View>(),
                 mRootView?.apply {
                     dismissLoading()
                     if (NetWorkContants.SUCCESS == baseData.msg) {
-                        mRootView.uploadSuccess(baseData.data.fileName, baseData.data.filePath)
+                        mRootView.uploadPhotoSuccess(baseData.data.fileName, baseData.data.filePath)
                     } else {
-                        mRootView.uploadFaile(baseData.msg)
+                        mRootView.uploadPhotoFaile(baseData.msg)
                     }
                 }
             }, { e ->
                 mRootView?.apply {
                     dismissLoading()
-                    mRootView.uploadFaile(ExceptionHandle.handleException(e))
+                    mRootView.uploadPhotoFaile(ExceptionHandle.handleException(e))
                 }
             })
     }
 
+    /**
+     * 上传语音
+     */
+    override fun uploadVoice(file: File, duration: Int) {
+        checkViewAttached()
+        mRootView?.showLoading()
+
+        chatService.uploadVoice(file)
+            .subscribe({ baseData ->
+                mRootView?.apply {
+                    dismissLoading()
+                    if (NetWorkContants.SUCCESS == baseData.msg) {
+                        mRootView.uploadVoiceSuccess(
+                            file.path,
+                            baseData.data.fileName,
+                            baseData.data.filePath,
+                            duration
+                        )
+                    } else {
+                        mRootView.uploadVoiceFaile(baseData.msg)
+                    }
+                }
+            }, { e ->
+                mRootView?.apply {
+                    dismissLoading()
+                    mRootView.uploadVoiceFaile(ExceptionHandle.handleException(e))
+                }
+            })
+    }
+
+    /**
+     * 发送语音消息
+     */
+    override fun sendVoice(messageBody: MessageBody) {
+        //是否发送成功
+        val sendSuccess = chatService.sendMessage(messageBody)
+
+        checkViewAttached()
+        mRootView?.apply {
+            if (sendSuccess) {
+                mRootView.sendMessageSuccess(messageBody)
+            } else {
+                mRootView.sendMessageFaile("发送语音失败")
+            }
+        }
+    }
 
 }

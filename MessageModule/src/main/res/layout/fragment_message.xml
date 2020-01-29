@@ -14,10 +14,19 @@
         android:background="@color/color_418ad5"
         app:backButton="false"
         app:rightIcon="@mipmap/ic_home_more"
-        app:title="消息"
-        app:titleSize="18sp"
         app:titleColor="@color/white"
-        />
+        app:titleSize="18sp">
+
+        <TextView
+            android:id="@+id/tvName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="消息"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
+
+    </com.hjq.bar.TitleBar>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvList"

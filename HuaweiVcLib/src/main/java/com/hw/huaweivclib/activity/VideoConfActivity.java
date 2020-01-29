@@ -892,7 +892,7 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
                     public void accept(BaseData baseData) throws Exception {
                         //请求成功
                         if (null != baseData && BaseData.SUCEESS_CODE == baseData.code) {
-                            ToastHelper.INSTANCE.showShort("添加会场成功");
+                            ToastHelper.INSTANCE.showShort("添加用户成功");
                         } else {
                             ToastHelper.INSTANCE.showShort(baseData.msg);
                         }
@@ -978,7 +978,7 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
             }
         });
 
-        tvControlConfirm.setText("添加会场");
+        tvControlConfirm.setText("添加用户");
 
         tvControlConfirm.setOnClickListener(new View.OnClickListener() {
             @Override

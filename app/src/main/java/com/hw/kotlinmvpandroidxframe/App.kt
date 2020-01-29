@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.annotation.NonNull
 import androidx.core.content.ContextCompat
 import androidx.multidex.MultiDex
+import com.github.moduth.blockcanary.BlockCanary
+import com.github.moduth.blockcanary.BlockCanaryContext
 import com.hw.baselibrary.common.BaseApp
 import com.hw.baselibrary.image.ImageLoader
 import com.hw.kotlinmvpandroidxframe.ui.activity.LauncherActivity
@@ -19,7 +21,7 @@ import me.jessyan.autosize.AutoSizeConfig
  *author：pc-20171125
  *data:2019/11/8 11:20
  */
-class App :BaseApp() {
+class App : BaseApp() {
 
     override fun onCreate() {
         super.onCreate()
@@ -33,6 +35,11 @@ class App :BaseApp() {
 
         //65535
         MultiDex.install(this);
+
+        // 在主进程初始化调用哈
+        if (BuildConfig.DEBUG) {
+            BlockCanary.install(this, BlockCanaryContext()).start();
+        }
 
         //初始化华为app
         com.huawei.application.BaseApp.setApp(this)

@@ -9,6 +9,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
 import com.gyf.immersionbar.ImmersionBar
 import com.hjq.bar.OnTitleBarListener
+import com.hw.baselibrary.utils.ToastHelper
 import com.hw.messagemodule.R
 import com.hw.messagemodule.inject.component.DaggerMessageComponent
 import com.hw.messagemodule.inject.module.MessageModule
@@ -75,6 +76,7 @@ class HomeMessageFragment : BaseMvpFragment1<MessagePresenter>(), MessageContrac
     }
 
     override fun doLazyBusiness() {
+//        ToastHelper.showShort("获取最新的数据")
         //获取最新的消息
         mPresenter.queryLastChatBeans()
     }

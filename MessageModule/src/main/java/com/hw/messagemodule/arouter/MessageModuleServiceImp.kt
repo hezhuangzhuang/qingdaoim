@@ -22,7 +22,7 @@ class MessageModuleServiceImp : IMessageModuleService {
      * 初始化数据库
      */
     override fun initDb() {
-        GreenDaoUtil.initDataBase(SPStaticUtils.getString(UserContants.HUAWEI_ACCOUNT))
+        GreenDaoUtil.initDataBase()
     }
 
     /**

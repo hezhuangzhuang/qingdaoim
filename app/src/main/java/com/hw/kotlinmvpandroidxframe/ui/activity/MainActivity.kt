@@ -158,7 +158,7 @@ class MainActivity : BaseActivity() {
 
     override fun initView(savedInstanceState: Bundle?, contentView: View) {
         //初始化数据库
-        GreenDaoUtil.initDataBase(SPStaticUtils.getString(UserContants.HUAWEI_ACCOUNT))
+        GreenDaoUtil.initDataBase()
 
         EventBus.getDefault().register(this)
 
@@ -176,7 +176,6 @@ class MainActivity : BaseActivity() {
                 }
             }
         })
-
 
         //获取华为token
         getHuaweiToken()
@@ -292,6 +291,9 @@ class MainActivity : BaseActivity() {
 
                 KotlinMessageSocketService.stopService(this)
 
+                //清空数据库缓存
+                GreenDaoUtil.close()
+
                 //清空用户信息
                 clearUserInfo()
                 //跳转到登录界面
@@ -356,7 +358,7 @@ class MainActivity : BaseActivity() {
             Executors.newSingleThreadExecutor().execute {
                 try {
                     val getToken = HmsInstanceId.getInstance(this)
-                        .getToken(PushConstant.HUAWEI_APP_ID,PushConstant.HUAWEI_SCOPE)
+                        .getToken(PushConstant.HUAWEI_APP_ID, PushConstant.HUAWEI_SCOPE)
                     Log.i("MainActivity", "getHuaweiToken-->$getToken")
                     if (!TextUtils.isEmpty(getToken)) {
                         //TODO: Send token to your app server.

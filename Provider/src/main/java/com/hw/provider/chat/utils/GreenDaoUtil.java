@@ -1,15 +1,18 @@
 package com.hw.provider.chat.utils;
 
 import com.hw.baselibrary.common.BaseApp;
+import com.hw.baselibrary.utils.LogUtils;
 import com.hw.baselibrary.utils.sharedpreferences.SPStaticUtils;
 import com.hw.provider.chat.bean.ChatBean;
 import com.hw.provider.chat.bean.ChatBeanLastMessage;
 import com.hw.provider.chat.bean.ConstactsBean;
+import com.hw.provider.chat.bean.LocalFileBean;
 import com.hw.provider.db.ChatBeanDao;
 import com.hw.provider.db.ChatBeanLastMessageDao;
 import com.hw.provider.db.ConstactsBeanDao;
 import com.hw.provider.db.DaoMaster;
 import com.hw.provider.db.DaoSession;
+import com.hw.provider.db.LocalFileBeanDao;
 import com.hw.provider.user.UserContants;
 
 import org.greenrobot.greendao.query.QueryBuilder;
@@ -28,17 +31,24 @@ public class GreenDaoUtil {
     private static DaoSession mDaoSession;
 
     //初始化数据库及相关类
-    public static void initDataBase(String userName) {
+    public static void initDataBase() {
         setDebugMode(true);//默认开启Log打印
         //创建数据库
-        mSQLiteOpenHelper = new DaoMaster.DevOpenHelper(BaseApp.context, userName + ".db", null);
+        mSQLiteOpenHelper = new DaoMaster.DevOpenHelper(BaseApp.context,
+                SPStaticUtils.getString(UserContants.DISPLAY_NAME) + "-" + SPStaticUtils.getString(UserContants.HUAWEI_ACCOUNT) + ".db", null);
         mDaoMaster = new DaoMaster(mSQLiteOpenHelper.getWritableDatabase());
+//        mDaoSession = mDaoMaster.newSession();
+//        LogUtils.i("创建数据库-->"+SPStaticUtils.getString(UserContants.DISPLAY_NAME) + "-" + SPStaticUtils.getString(UserContants.HUAWEI_ACCOUNT));
+    }
+
+    public static void close(){
+        mDaoSession.getDatabase().close();
     }
 
     public synchronized static DaoSession getDaoSession() {
         if (null == mDaoSession) {
             if (null == mDaoMaster) {
-                initDataBase(SPStaticUtils.getString(UserContants.HUAWEI_ACCOUNT));
+                initDataBase();
             }
             mDaoSession = mDaoMaster.newSession();
         }
@@ -47,7 +57,7 @@ public class GreenDaoUtil {
 
     //是否开启Log
     public static void setDebugMode(boolean flag) {
-//        mSQLiteOpenHelper.DEBUG = true;//如果查看数据库更新的Log，请设置为true
+//        mSQLiteOpenHelper. = true;//如果查看数据库更新的Log，请设置为true
         QueryBuilder.LOG_SQL = flag;
         QueryBuilder.LOG_VALUES = flag;
     }
@@ -140,6 +150,26 @@ public class GreenDaoUtil {
                 .where(ChatBeanLastMessageDao.Properties.ConversationId.eq(conversationId))
                 .buildDelete()
                 .executeDeleteWithoutDetachingEntities();
+    }
+
+    /**
+     * 保存语音消息到本地
+     */
+
+    public static void insertLocalFileBean(LocalFileBean localFileBean) {
+        getDaoSession()
+                .getLocalFileBeanDao()
+                .insertOrReplace(localFileBean);
+    }
+
+    /**
+     * 通过远端路径获取本地路径
+     */
+    public static LocalFileBean queryLocalFileByRemotePath(String remotePath) {
+        return getDaoSession().getLocalFileBeanDao()
+                .queryBuilder()
+                .where(LocalFileBeanDao.Properties.RemotePath.eq(remotePath))
+                .unique();
     }
 
 }

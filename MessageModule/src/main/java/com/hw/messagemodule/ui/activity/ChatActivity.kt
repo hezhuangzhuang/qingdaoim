@@ -3,11 +3,17 @@ package com.hw.messagemodule.ui.activity
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
+import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import android.widget.ImageView
+import android.widget.PopupWindow
+import android.widget.TextView
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.alibaba.android.arouter.facade.annotation.Route
@@ -16,6 +22,7 @@ import com.hjq.bar.OnTitleBarListener
 import com.hw.baselibrary.ui.activity.BaseMvpActivity
 import com.hw.baselibrary.utils.KeyboardUtils
 import com.hw.baselibrary.utils.LogUtils
+import com.hw.baselibrary.utils.NotificationUtils
 import com.hw.baselibrary.utils.ToastHelper
 import com.hw.baselibrary.utils.sharedpreferences.SPStaticUtils
 import com.hw.messagemodule.R
@@ -26,8 +33,10 @@ import com.hw.messagemodule.mvp.contract.ChatContract
 import com.hw.messagemodule.mvp.presenter.ChatPresenter
 import com.hw.messagemodule.ui.adapter.ChatAdapter
 import com.hw.messagemodule.utils.GlideEngine
+import com.hw.messagemodule.utils.MediaConstant
 import com.hw.provider.chat.ChatMultipleItem
 import com.hw.provider.chat.bean.ChatBean
+import com.hw.provider.chat.bean.LocalFileBean
 import com.hw.provider.chat.bean.MessageBody
 import com.hw.provider.chat.bean.MessageReal
 import com.hw.provider.chat.utils.GreenDaoUtil
@@ -37,6 +46,13 @@ import com.hw.provider.eventbus.EventMsg
 import com.hw.provider.router.RouterPath
 import com.hw.provider.router.provider.huawei.impl.HuaweiModuleService
 import com.hw.provider.user.UserContants
+import com.liulishuo.filedownloader.BaseDownloadTask
+import com.liulishuo.filedownloader.FileDownloadListener
+import com.liulishuo.filedownloader.FileDownloader
+import com.lqr.audio.AudioPlayManager
+import com.lqr.audio.AudioRecordManager
+import com.lqr.audio.IAudioPlayListener
+import com.lqr.audio.IAudioRecordListener
 import com.luck.picture.lib.PictureSelector
 import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.config.PictureMimeType
@@ -48,6 +64,8 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.io.File
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 /**
@@ -55,7 +73,6 @@ import java.io.File
  */
 @Route(path = RouterPath.Chat.CHAT)
 class ChatActivity : BaseMvpActivity<ChatPresenter>(), ChatContract.View, View.OnClickListener {
-
     //收件人id
     public lateinit var receiveId: String
 
@@ -86,6 +103,8 @@ class ChatActivity : BaseMvpActivity<ChatPresenter>(), ChatContract.View, View.O
 
     override fun initData(bundle: Bundle?) {
         EventBus.getDefault().register(this)
+        //初始化下载控件
+        FileDownloader.setup(this)
 
         receiveId = intent.getStringExtra(RouterPath.Chat.FILED_RECEIVE_ID)
         receiveName = intent.getStringExtra(RouterPath.Chat.FILED_RECEIVE_NAME)
@@ -106,9 +125,46 @@ class ChatActivity : BaseMvpActivity<ChatPresenter>(), ChatContract.View, View.O
         chatAdapter.setOnItemChildClickListener { adapter, view, position ->
             val item = adapter.getItem(position) as ChatItem;
             when (view.id) {
-                //图片
-                R.id.iv_voice ->
-                    previewPhoto(item.chatBean.textContent)
+                R.id.iv_voice -> {
+                    when (item.chatBean.messageType) {
+                        //图片
+                        ChatMultipleItem.SEND_IMG, ChatMultipleItem.FORM_IMG -> {
+                            //查看图片
+                            previewPhoto(item.chatBean.textContent)
+                        }
+                    }
+                }
+
+                R.id.fl_voice -> {
+                    when (item.chatBean.messageType) {
+                        //发出的语音
+                        ChatMultipleItem.SEND_VOICE -> {
+                            val localFileBean =
+                                GreenDaoUtil.queryLocalFileByRemotePath(item.chatBean.textContent)
+                            //判断文件是否存在
+                            if (null != localFileBean && File(localFileBean.localPath).exists()) {
+                                //播放文件
+                                playAudio(view, localFileBean.localPath)
+                            } else {
+                                //下载文件
+                                downloaderVoiceFile(view, item.chatBean.textContent, true)
+                            }
+                        }
+                        //收到的语音
+                        ChatMultipleItem.FORM_VOICE -> {
+                            val localFileBean =
+                                GreenDaoUtil.queryLocalFileByRemotePath(item.chatBean.textContent)
+                            //判断文件是否存在
+                            if (null != localFileBean && File(localFileBean.localPath).exists()) {
+                                //播放文件
+                                playAudio(view, localFileBean.localPath)
+                            } else {
+                                //下载文件
+                                downloaderVoiceFile(view, item.chatBean.textContent, true)
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -118,6 +174,106 @@ class ChatActivity : BaseMvpActivity<ChatPresenter>(), ChatContract.View, View.O
 
         rvMsg.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         rvMsg.adapter = chatAdapter
+
+        //初始化语音控件
+        initAudioRecordManager()
+
+        //清楚notif
+        NotificationUtils.cancel(receiveId.toInt())
+    }
+
+    /**
+     * 下载语音文件并播放
+     */
+    private fun downloaderVoiceFile(view: View?, remotePath: String, isPlay: Boolean) {
+        //获取文件名称
+        val voiceName = remotePath.substring(remotePath.lastIndexOf("/"))
+
+        var localFilePath = MediaConstant.AUDIO_SAVE_DIR + voiceName
+        FileDownloader.getImpl()
+            .create(remotePath)
+            .setPath(localFilePath)
+            .setForceReDownload(true)
+            .setListener(object : FileDownloadListener() {
+                //等待
+                override fun pending(task: BaseDownloadTask, soFarBytes: Int, totalBytes: Int) {}
+
+                //下载进度回调
+                override fun progress(task: BaseDownloadTask, soFarBytes: Int, totalBytes: Int) {}
+
+                //完成下载
+                override fun completed(task: BaseDownloadTask) {
+                    //保存本地消息到本地
+                    GreenDaoUtil.insertLocalFileBean(LocalFileBean(remotePath, localFilePath))
+                    //播放语音
+                    if (isPlay) {
+                        playAudio(null, localFilePath)
+                    }
+                }
+
+                //暂停
+                override fun paused(task: BaseDownloadTask, soFarBytes: Int, totalBytes: Int) {
+
+                }
+
+                //下载出错
+                override fun error(task: BaseDownloadTask, e: Throwable) {
+                    ToastHelper.showShort("语音下载出错")
+                    Toast.makeText(this@ChatActivity, "下载出错", Toast.LENGTH_SHORT).show()
+                }
+
+                //已存在相同下载
+                override fun warn(task: BaseDownloadTask) {}
+            }).start()
+    }
+
+    /**
+     * 下载语音文件
+     */
+    private fun downloaderVoiceFile(view: View?, remotePath: String) {
+        downloaderVoiceFile(view, remotePath, false)
+    }
+
+    /**
+     * 播放语音
+     *
+     * @param view
+     * @param position
+     */
+    private fun playAudio(view: View?, fileLocalPath: String) {
+        AudioPlayManager.getInstance().stopPlay()
+
+        //创建文件
+        val item = File(fileLocalPath)
+
+        val audioUri = Uri.fromFile(item)
+        Log.e("LQR", audioUri.toString())
+
+        AudioPlayManager.getInstance()
+            .startPlay(this@ChatActivity, audioUri, object : IAudioPlayListener {
+                override fun onStart(var1: Uri) {
+                    //if (ivAudio != null && ivAudio.getBackground() instanceof AnimationDrawable) {
+                    //    AnimationDrawable animation = (AnimationDrawable) ivAudio.getBackground();
+                    //    animation.start();
+                    //}
+                }
+
+                override fun onStop(var1: Uri) {
+                    //if (ivAudio != null && ivAudio.getBackground() instanceof AnimationDrawable) {
+                    //    AnimationDrawable animation = (AnimationDrawable) ivAudio.getBackground();
+                    //    animation.stop();
+                    //    animation.selectDrawable(0);
+                    //}
+                }
+
+                override fun onComplete(var1: Uri) {
+                    //if (ivAudio != null && ivAudio.getBackground() instanceof AnimationDrawable) {
+                    //    AnimationDrawable animation = (AnimationDrawable) ivAudio.getBackground();
+                    //    animation.stop();
+                    //    animation.selectDrawable(0);
+                    //}
+                }
+            })
     }
 
     /**
@@ -192,7 +348,7 @@ class ChatActivity : BaseMvpActivity<ChatPresenter>(), ChatContract.View, View.O
                 }
             }
         })
-
+        ivAudioSwitch.setOnClickListener(this)
         etContent.setOnClickListener(this)
         btSendMsg.setOnClickListener(this)
         ivMore.setOnClickListener(this)
@@ -212,17 +368,202 @@ class ChatActivity : BaseMvpActivity<ChatPresenter>(), ChatContract.View, View.O
         rvMsg.setOnTouchListener { v, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
-                    isTouch = true
+                    isTouchRecycler = true
                     KeyboardUtils.hideSoftInput(etContent)
                     flEmotionView.visibility = View.GONE
                 }
             }
             false
         }
+
+        //语音按钮
+        btAudio.setOnTouchListener { v, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    btAudio.text = "松开结束"
+                    LogUtils.i("语音按钮-->ACTION_DOWN")
+                    AudioRecordManager.getInstance(this@ChatActivity).startRecord()
+                }
+
+                MotionEvent.ACTION_MOVE -> {
+                    LogUtils.i("语音按钮-->ACTION_MOVE")
+                    if (isAudioCancelled(v, event)) {
+                        AudioRecordManager.getInstance(this@ChatActivity).willCancelRecord()
+                    } else {
+                        AudioRecordManager.getInstance(this@ChatActivity).continueRecord()
+                    }
+                }
+
+                MotionEvent.ACTION_UP -> {
+                    btAudio.text = "按住说话"
+                    LogUtils.i("语音按钮-->ACTION_UP")
+                    AudioRecordManager.getInstance(this@ChatActivity).stopRecord()
+                    AudioRecordManager.getInstance(this@ChatActivity).destroyRecord()
+                }
+                MotionEvent.ACTION_CANCEL -> {
+                    LogUtils.i("语音按钮-->ACTION_CANCEL")
+                    AudioRecordManager.getInstance(this@ChatActivity).stopRecord()
+                    AudioRecordManager.getInstance(this@ChatActivity).destroyRecord()
+                }
+            }
+            false
+        }
     }
 
-    //是否是touch
-    var isTouch = false
+    private var audioDir: File? = null
+
+    /**
+     * 初始化音频管理
+     */
+    private fun initAudioRecordManager() {
+        //设置最长录音时间
+        AudioRecordManager.getInstance(this).maxVoiceDuration =
+            MediaConstant.DEFAULT_MAX_AUDIO_RECORD_TIME_SECOND
+        audioDir = File(MediaConstant.AUDIO_SAVE_DIR)
+        if (!audioDir!!.exists()) {
+            audioDir!!.mkdirs()
+        }
+        AudioRecordManager.getInstance(this).setAudioSavePath(audioDir!!.absolutePath)
+
+        //设置语言监听
+        AudioRecordManager.getInstance(this).audioRecordListener = object : IAudioRecordListener {
+            private var mTimerTV: TextView? = null
+            private var mStateTV: TextView? = null
+            private var mStateIV: ImageView? = null
+            private var mRecordWindow: PopupWindow? = null
+
+            override fun initTipView() {
+                Log.i(getString(R.string.Record_TAG), "initTipView")
+
+                val view = View.inflate(this@ChatActivity, R.layout.popup_audio_wi_vo, null)
+                mStateIV = view.findViewById<View>(R.id.rc_audio_state_image) as ImageView
+                mStateTV = view.findViewById<View>(R.id.rc_audio_state_text) as TextView
+                mTimerTV = view.findViewById<View>(R.id.rc_audio_timer) as TextView
+                mRecordWindow = PopupWindow(view, -1, -1)
+                mRecordWindow!!.showAtLocation(llRoot, 17, 0, 0)
+                mRecordWindow!!.isFocusable = true
+                mRecordWindow!!.isOutsideTouchable = false
+                mRecordWindow!!.isTouchable = false
+            }
+
+            override fun setTimeoutTipView(counter: Int) {
+                Log.i(getString(R.string.Record_TAG), "setTimeoutTipView")
+
+                if (null != this.mRecordWindow) {
+                    this.mStateIV!!.visibility = View.GONE
+                    this.mStateTV!!.visibility = View.VISIBLE
+                    this.mStateTV!!.setText(R.string.voice_rec)
+                    this.mStateTV!!.setBackgroundResource(R.drawable.bg_voice_popup)
+                    this.mTimerTV!!.text =
+                        String.format("%s", *arrayOf<Any>(Integer.valueOf(counter)))
+                    this.mTimerTV!!.visibility = View.VISIBLE
+                }
+            }
+
+            override fun setRecordingTipView() {
+                Log.i(getString(R.string.Record_TAG), "setRecordingTipView")
+                if (this.mRecordWindow != null) {
+                    this.mStateIV!!.visibility = View.VISIBLE
+                    this.mStateIV!!.setImageResource(R.mipmap.ic_volume_1)
+                    this.mStateTV!!.visibility = View.VISIBLE
+                    this.mStateTV!!.setText(R.string.voice_rec)
+                    this.mStateTV!!.setBackgroundResource(R.drawable.bg_voice_popup)
+                    this.mTimerTV!!.visibility = View.GONE
+                }
+            }
+
+            override fun setAudioShortTipView() {
+                Log.i(getString(R.string.Record_TAG), "setAudioShortTipView")
+                if (this.mRecordWindow != null) {
+                    mStateIV!!.setImageResource(R.mipmap.ic_volume_wraning)
+                    mStateTV!!.setText(R.string.voice_short)
+                }
+            }
+
+            override fun setCancelTipView() {
+                Log.i(getString(R.string.Record_TAG), "setCancelTipView")
+                if (this.mRecordWindow != null) {
+                    this.mTimerTV!!.visibility = View.GONE
+                    this.mStateIV!!.visibility = View.VISIBLE
+                    this.mStateIV!!.setImageResource(R.mipmap.ic_volume_cancel)
+                    this.mStateTV!!.visibility = View.VISIBLE
+                    this.mStateTV!!.setText(R.string.voice_cancel)
+                    this.mStateTV!!.setBackgroundResource(R.drawable.shape_corner_voice)
+
+                    btAudio.text = "松开取消"
+                }
+            }
+
+            override fun destroyTipView() {
+                try {
+                    Log.i(getString(R.string.Record_TAG), "destroyTipView")
+                    if (this.mRecordWindow != null) {
+                        this.mRecordWindow!!.dismiss()
+                        this.mRecordWindow = null
+                        this.mStateIV = null
+                        this.mStateTV = null
+                        this.mTimerTV = null
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+
+            //开始录音
+            override fun onStartRecord() {
+                Log.i(getString(R.string.Record_TAG), "onStartRecord")
+            }
+
+            //录音完成
+            override fun onFinish(audioPath: Uri, duration: Int) {
+                Log.i(getString(R.string.Record_TAG), "finish")
+                //发送文件
+                val newFile = File(audioPath.path!!)
+
+                if (newFile.exists()) {
+                    //上传语音
+                    mPresenter.uploadVoice(newFile, duration)
+                } else {
+                    ToastHelper.showShort("发送语音失败")
+                }
+            }
+
+            override fun onAudioDBChanged(db: Int) {
+                Log.i("Record", "onAudioDBChanged")
+
+                when (db / 5) {
+                    0 -> this.mStateIV!!.setImageResource(R.mipmap.ic_volume_1)
+                    1 -> this.mStateIV!!.setImageResource(R.mipmap.ic_volume_2)
+                    2 -> this.mStateIV!!.setImageResource(R.mipmap.ic_volume_3)
+                    3 -> this.mStateIV!!.setImageResource(R.mipmap.ic_volume_4)
+                    4 -> this.mStateIV!!.setImageResource(R.mipmap.ic_volume_5)
+                    5 -> this.mStateIV!!.setImageResource(R.mipmap.ic_volume_6)
+                    6 -> this.mStateIV!!.setImageResource(R.mipmap.ic_volume_7)
+                    else -> this.mStateIV!!.setImageResource(R.mipmap.ic_volume_8)
+                }
+            }
+        }
+    }
+
+    /**
+     * 语音按钮是否取消
+     */
+    private fun isAudioCancelled(view: View, event: MotionEvent): Boolean {
+        val location = IntArray(2)
+        view.getLocationOnScreen(location)
+
+//        return if (event.rawX < location[0] ||
+//            event.rawX > location[0] + view.width ||
+//            event.rawY < location[1] - 40) {
+//            true
+//        } else false
+        return (event.rawX < location[0] ||
+                event.rawX > location[0] + view.width ||
+                event.rawY < location[1] - 40)
+    }
+
+    //是否是触摸列表
+    var isTouchRecycler = false
 
     /**
      * 获取发送的消息
@@ -311,6 +652,37 @@ class ChatActivity : BaseMvpActivity<ChatPresenter>(), ChatContract.View, View.O
             //文件
             R.id.tvFile ->
                 queryChatBeans()
+
+            //语音和文字切换
+            R.id.ivAudioSwitch -> {
+                //输入框显示
+                if (etContent.isVisible) {
+                    btAudio.text = "按住说话"
+
+                    //显示语音按钮
+                    btAudio.isVisible = true
+
+                    //隐藏输入框
+                    etContent.isVisible = false
+
+                    //隐藏更多
+                    flEmotionView.isVisible = false
+
+                    //隐藏输入框
+                    KeyboardUtils.hideSoftInput(etContent)
+                } else {
+                    //隐藏语音框
+                    btAudio.isVisible = false
+
+                    //显示输入框
+                    etContent.isVisible = true
+                    //输入框获取焦点
+                    etContent.requestFocus()
+
+                    //显示输入框
+                    KeyboardUtils.showSoftInput(etContent)
+                }
+            }
         }
     }
 
@@ -327,11 +699,22 @@ class ChatActivity : BaseMvpActivity<ChatPresenter>(), ChatContract.View, View.O
      * 切换更多界面的显示
      */
     private fun switchShowMore() {
+        //如果更多布局显示
         if (flEmotionView.isVisible) {
+            //隐藏更多布局
             flEmotionView.visibility = View.GONE
+            //输入框获取焦点
+            etContent.requestFocus()
         } else {
             KeyboardUtils.hideSoftInput(etContent)
+            //显示更多布局
             flEmotionView.visibility = View.VISIBLE
+
+            etContent.isVisible = true
+            btAudio.isVisible = false
+
+            //输入框隐藏焦点
+            etContent.clearFocus()
         }
     }
 
@@ -342,8 +725,9 @@ class ChatActivity : BaseMvpActivity<ChatPresenter>(), ChatContract.View, View.O
     fun mainEvent(messageEvent: EventMsg<Any>) {
         when (messageEvent.message) {
             //刷新收到的消息
-            EventMsg.RECEIVE_SINGLE_MESSAGE ->
+            EventMsg.RECEIVE_SINGLE_MESSAGE -> {
                 refreshReceiveMessage(messageEvent.messageData as MessageBody)
+            }
 
             //刷新发出的消息
             EventMsg.SEND_SINGLE_MESSAGE -> {
@@ -372,9 +756,14 @@ class ChatActivity : BaseMvpActivity<ChatPresenter>(), ChatContract.View, View.O
      * 刷新收到的消息
      */
     private fun refreshReceiveMessage(messageBody: MessageBody) {
+        //如果是语音则下载
+        if (messageBody.real.type == MessageReal.TYPE_APPENDIX) {
+            downloaderVoiceFile(null, messageBody.real.message)
+        }
         //单聊
         var isSingleChat =
             receiveId == messageBody.sendId && messageBody.type == MessageBody.TYPE_PERSONAL
+
         //群聊
         var isGroupChat =
             receiveId == messageBody.receiveId && messageBody.type == MessageBody.TYPE_COMMON
@@ -383,10 +772,12 @@ class ChatActivity : BaseMvpActivity<ChatPresenter>(), ChatContract.View, View.O
         if (isSingleChat || isGroupChat) {
             //收到的消息转成chatbean
             var formChatBean = MessageUtils.receiveMessageToChatBean(messageBody)
+
             //设置消息未已读
             formChatBean.isRead = true
 
             chatAdapter.addData(ChatItem(formChatBean))
+
             //滑动底部
             smoothScrollToBottom()
         }
@@ -409,66 +800,6 @@ class ChatActivity : BaseMvpActivity<ChatPresenter>(), ChatContract.View, View.O
 
     private fun smoothScrollToBottom() {
         rvMsg.smoothScrollToPosition(chatAdapter.itemCount - 1)
-    }
-
-    /**
-     * 获取收到消息的类型
-     */
-    private fun getReceiveMessageType(type: Int): Int {
-        when (type) {
-            //文字
-            MessageReal.TYPE_STR ->
-                return ChatMultipleItem.FORM_TEXT
-
-            //图片
-            MessageReal.TYPE_IMG ->
-                return ChatMultipleItem.FORM_IMG
-
-            //附件，语音
-            MessageReal.TYPE_APPENDIX ->
-                return ChatMultipleItem.FORM_VOICE
-
-            //视频呼叫
-            MessageReal.TYPE_VIDEO_CALL ->
-                return ChatMultipleItem.FORM_VIDEO_CALL
-
-            //音频呼叫
-            MessageReal.TYPE_VOICE_CALL ->
-                return ChatMultipleItem.FORM_VOICE_CALL
-
-            else ->
-                return ChatMultipleItem.FORM_TEXT
-        }
-    }
-
-    /**
-     * 获取收到消息的类型
-     */
-    private fun getReceiveMessageContent(messageBody: MessageBody): String {
-        when (messageBody.real.type) {
-            //文字
-            MessageReal.TYPE_STR ->
-                return messageBody.real.message
-
-            //图片
-            MessageReal.TYPE_IMG ->
-                return messageBody.real.imgUrl
-
-//            //附件，语音
-//            MessageReal.TYPE_APPENDIX ->
-//                return ChatMultipleItem.FORM_VOICE
-//
-//            //视频呼叫
-//            MessageReal.TYPE_VIDEO_CALL ->
-//                return ChatMultipleItem.FORM_VIDEO_CALL
-//
-//            //音频呼叫
-//            MessageReal.TYPE_VOICE_CALL ->
-//                return ChatMultipleItem.FORM_VOICE_CALL
-
-            else ->
-                return messageBody.real.message
-        }
     }
 
     /**
@@ -552,7 +883,7 @@ class ChatActivity : BaseMvpActivity<ChatPresenter>(), ChatContract.View, View.O
     private fun startCameraAct() {
         PictureSelector.create(this)
             .openCamera(PictureMimeType.ofImage())
-//                    .loadImageEngine(GlideEngine.createGlideEngine()) // 请参考Demo GlideEngine.java
+            //.loadImageEngine(GlideEngine.createGlideEngine()) // 请参考Demo GlideEngine.java
             .forResult(PictureConfig.REQUEST_CAMERA);
     }
 
@@ -584,19 +915,52 @@ class ChatActivity : BaseMvpActivity<ChatPresenter>(), ChatContract.View, View.O
     /**
      * 图片上传失败
      */
-    override fun uploadFaile(errorMsg: String) {
+    override fun uploadPhotoFaile(errorMsg: String) {
         ToastHelper.showShort(errorMsg)
     }
 
     /**
      * 图片上传成功
      */
-    override fun uploadSuccess(fileName: String, filePath: String) {
+    override fun uploadPhotoSuccess(fileName: String, filePath: String) {
         mPresenter.sendImage(
             getMessageBody(
                 "",
                 filePath,
                 MessageReal.TYPE_IMG
+            )
+        )
+    }
+
+    /**
+     * 语音上传失败
+     */
+    override fun uploadVoiceFaile(errorMsg: String) {
+        ToastHelper.showShort(errorMsg)
+    }
+
+    /**
+     *  语音上传成功
+     */
+    override fun uploadVoiceSuccess(
+        //图片本地路径
+        fileLocalPath: String,
+        //图片名称
+        fileNetWorkName: String,
+        //图片的网络路径
+        fileNetWorkPath: String,
+        duration: Int
+    ) {
+
+        //保存本地消息到本地
+        GreenDaoUtil.insertLocalFileBean(LocalFileBean(fileNetWorkPath, fileLocalPath))
+
+        //发送消息
+        mPresenter.sendVoice(
+            getMessageBody(
+                fileNetWorkPath,
+                "",
+                MessageReal.TYPE_APPENDIX
             )
         )
     }

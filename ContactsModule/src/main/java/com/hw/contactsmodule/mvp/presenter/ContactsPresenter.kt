@@ -29,9 +29,12 @@ class ContactsPresenter @Inject constructor() : BasePresenter<ContactsContract.V
         checkViewAttached()
         mRootView?.showLoading()
 
-        Observable.zip(contactsService.queryGovAccounts(),
+        Observable.zip(
+            contactsService.queryGovAccounts(),
             contactsService.queryAllPeople(),
-            object : BiFunction<BaseData<PeopleBean>, BaseData<PeopleBean>, List<PeopleBean>> {
+            object : BiFunction<BaseData<PeopleBean>,
+                    BaseData<PeopleBean>,
+                    List<PeopleBean>> {
                 override fun apply(
                     govAccounts: BaseData<PeopleBean>,
                     allAccounts: BaseData<PeopleBean>
@@ -185,7 +188,8 @@ class ContactsPresenter @Inject constructor() : BasePresenter<ContactsContract.V
         duration: String,
         accessCode: String,
         groupId: String,
-        type: Int) {
+        type: Int
+    ) {
         checkViewAttached()
         mRootView?.showLoading()
 

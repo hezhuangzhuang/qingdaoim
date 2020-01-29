@@ -13,7 +13,10 @@ interface GroupDetailsContract {
         fun showGroupChatPeople(groupPeoples: List<PeopleBean>)
 
         //iscreate：true，群主
-        fun showGroupInfo(isCreate: Boolean)
+        fun showGroupInfo(isCreate: Boolean,groupPeoples: List<PeopleBean>)
+
+        //查询群组信息失败
+        fun queryGroupInfoError(errorMsg:String)
 
         //修改群名称结果
         fun updateGroupNameResult(isSuceess: Boolean)

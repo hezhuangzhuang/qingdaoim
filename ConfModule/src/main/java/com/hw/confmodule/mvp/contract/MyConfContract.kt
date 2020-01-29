@@ -24,8 +24,6 @@ interface MyConfContract {
 
         //查询历史会议列表为空
         fun queryHistoryEmpty(isFirst: Boolean)
-
-
     }
 
     interface Presenter {

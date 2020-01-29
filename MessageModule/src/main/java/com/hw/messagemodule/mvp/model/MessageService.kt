@@ -9,18 +9,18 @@ import javax.inject.Inject
  *data:2020/1/8 09:57
  * 获取数据的地方
  */
-class MessageService  @Inject constructor(){
+class MessageService @Inject constructor() {
     /**
      * 获取最近消息列表
      */
-    fun queryLastChatBeans():List<ChatBeanLastMessage>{
+    fun queryLastChatBeans(): List<ChatBeanLastMessage> {
         return GreenDaoUtil.queryLastChatBeans()
     }
 
     /**
      * 更新阅读状态
      */
-    fun updateMessageReadStauts(chatBeanLastMessage: ChatBeanLastMessage){
+    fun updateMessageReadStauts(chatBeanLastMessage: ChatBeanLastMessage) {
         return GreenDaoUtil.insertLastChatBean(chatBeanLastMessage)
     }
 }

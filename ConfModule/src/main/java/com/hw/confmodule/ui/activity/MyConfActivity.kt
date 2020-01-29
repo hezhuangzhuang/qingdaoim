@@ -87,7 +87,9 @@ class MyConfActivity : BaseMvpActivity<MyConfPresenter>(), MyConfContract.View {
         if (isHistory) {
             titleBar.rightTitle = ""
             initHistoryConfAdapter()
+            tvName.text="历史会议"
         } else {
+            tvName.text="我的会议"
             initMyConfAdapter()
         }
 
@@ -173,7 +175,6 @@ class MyConfActivity : BaseMvpActivity<MyConfPresenter>(), MyConfContract.View {
     }
 
     override fun queryConfListError(errorMsg: String) {
-//        ToastHelper.showShort(errorMsg)
         if(errorMsg.contains("查询不到会议")){
             confAdapter.setEmptyView(emptyView)
         }
@@ -187,6 +188,8 @@ class MyConfActivity : BaseMvpActivity<MyConfPresenter>(), MyConfContract.View {
             refreshLayout.finishRefresh(true)
             //显示空布局
             historyListAdapter.setEmptyView(emptyView)
+            //禁用加载更多
+            refreshLayout.setEnableLoadMore(false)
         } else {
             //完成加载并标记没有更多数据
             refreshLayout.finishLoadMoreWithNoMoreData()
@@ -203,6 +206,8 @@ class MyConfActivity : BaseMvpActivity<MyConfPresenter>(), MyConfContract.View {
             pageNum = 1
             //刷新加载更多状态
             refreshLayout.resetNoMoreData()
+            //禁用加载更多
+            refreshLayout.setEnableLoadMore(true)
             refreshLayout.finishRefresh(true)
             historyListAdapter.replaceData(historyConfList)
         } else {
