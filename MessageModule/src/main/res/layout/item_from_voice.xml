@@ -55,7 +55,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:scaleType="centerCrop"
-            android:src="@drawable/audio_animation_right_list" />
+            android:background="@drawable/audio_animation_right_list" />
 
         <TextView
             android:id="@+id/tv_duration"

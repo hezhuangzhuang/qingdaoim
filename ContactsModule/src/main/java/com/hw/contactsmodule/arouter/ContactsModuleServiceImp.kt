@@ -17,7 +17,13 @@ import javax.inject.Inject
 @Route(path = RouterPath.Contacts.CONTACTS_MODULE_SERVICE)
 class ContactsModuleServiceImp @Inject constructor() :
     IContactsModuleService {
-    
+    override fun addPeopleToGroupChat(
+        groupId: String,
+        ids: String
+    ): Observable<BaseData<PeopleBean>> {
+        return ContactsService().addPeopleToGroupChat(groupId, ids)
+    }
+
     /**
      * 获取所有的联系人
      */

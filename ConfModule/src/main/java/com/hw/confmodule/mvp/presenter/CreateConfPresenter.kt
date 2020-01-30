@@ -1,11 +1,13 @@
 package com.hw.confmodule.mvp.presenter
 
 import com.hazz.kotlinmvp.net.exception.ExceptionHandle
+import com.hw.baselibrary.bindLife
 import com.hw.baselibrary.common.BasePresenter
 import com.hw.baselibrary.net.NetWorkContants
 import com.hw.baselibrary.utils.sharedpreferences.SPStaticUtils
 import com.hw.confmodule.mvp.contract.CreateConfContract
 import com.hw.confmodule.mvp.model.CreateConfService
+import com.hw.provider.router.provider.constacts.impl.ContactsModuleRouteService
 import com.hw.provider.router.provider.huawei.impl.HuaweiModuleService
 import com.hw.provider.user.UserContants
 import javax.inject.Inject
@@ -17,6 +19,70 @@ import javax.inject.Inject
 class CreateConfPresenter @Inject constructor() : BasePresenter<CreateConfContract.View>(),
     CreateConfContract.Presenter {
 
+    /**
+     * 添加人员到群组
+     */
+    override fun addPeoplesToGroup(groupId: String, ids: String) {
+        checkViewAttached()
+        mRootView?.showLoading()
+
+        ContactsModuleRouteService.addPeopleToGroupChat(groupId, ids)
+            .bindLife(lifecycleProvider)
+            .subscribe({ baseData ->
+                mRootView?.apply {
+                    dismissLoading()
+                    if (NetWorkContants.RESPONSE_CODE == baseData.responseCode) {
+                        addPeopleToGroupChatSuccess()
+                    } else {
+                        addPeopleToGroupChatFaile(baseData.message)
+                    }
+                }
+            }, {
+                mRootView?.apply {
+                    dismissLoading()
+                    addPeopleToGroupChatFaile(ExceptionHandle.handleException(it))
+                }
+            })
+    }
+
+    /**
+     * 预约会议
+     */
+    override fun reservedConf(
+        confName: String,
+        duration: String,
+        accessCode: String,
+        memberSipList: String,
+        groupId: String,
+        type: Int,
+        confType: String,
+        startTime: String
+    ) {
+
+        checkViewAttached()
+        mRootView?.showLoading()
+
+        val reservedConfSuccess = HuaweiModuleService.reservedConfNetWork(
+            confName,
+            duration,
+            accessCode,
+            memberSipList,
+            groupId,
+            type,
+            confType,
+            startTime
+        )
+
+        mRootView?.apply {
+            if (reservedConfSuccess) {
+                reservedConfSuccess()
+            } else {
+                reservedConfFaile()
+            }
+            dismissLoading()
+        }
+    }
+
 
     @Inject
     lateinit var confService: CreateConfService
@@ -26,6 +92,7 @@ class CreateConfPresenter @Inject constructor() : BasePresenter<CreateConfContra
         mRootView?.showLoading()
 
         confService.getAllPeople()
+            .bindLife(lifecycleProvider)
             .subscribe({ baseData ->
                 mRootView?.apply {
                     dismissLoading()
@@ -54,7 +121,6 @@ class CreateConfPresenter @Inject constructor() : BasePresenter<CreateConfContra
         groupId: String,
         type: Int
     ) {
-
         HuaweiModuleService.createConfNetWork(
             confName,
             duration,
@@ -65,6 +131,7 @@ class CreateConfPresenter @Inject constructor() : BasePresenter<CreateConfContra
         )
     }
 
+
     /**
      * 创建群组
      */
@@ -73,6 +140,7 @@ class CreateConfPresenter @Inject constructor() : BasePresenter<CreateConfContra
         mRootView?.showLoading()
 
         confService.createGroupChat(groupName, createId, ids)
+            .bindLife(lifecycleProvider)
             .subscribe({ baseData ->
                 mRootView?.apply {
                     dismissLoading()

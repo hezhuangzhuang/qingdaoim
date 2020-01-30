@@ -40,6 +40,9 @@ data class EventMsg<T>(
 
         //删除群聊
         val DELETE_GROUP_CHAT = "DELETE_GROUP_CHAT"
+
+        //添加人员到群组
+        val ADD_PEOPLE_TO_GROUPCHAT = "ADD_PEOPLE_TO_GROUPCHAT"
     }
 
 }

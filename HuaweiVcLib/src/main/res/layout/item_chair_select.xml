@@ -13,7 +13,7 @@
         android:layout_height="40dp"
         android:layout_marginLeft="@dimen/recovery_default_margin_8dp"
         android:layout_marginTop="8dp"
-        android:src="@mipmap/ic_personal_head_one" />
+        android:src="@mipmap/ic_personal_head_one_online" />
 
     <TextView
         android:id="@+id/tv_set_chair"

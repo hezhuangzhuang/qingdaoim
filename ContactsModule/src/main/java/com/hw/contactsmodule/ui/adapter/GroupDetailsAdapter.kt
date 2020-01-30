@@ -4,7 +4,6 @@ import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
 import com.hw.contactsmodule.R
 import com.hw.provider.net.respone.contacts.PeopleBean
-import kotlinx.android.synthetic.main.item_group_detail.view.*
 
 /**
  * 群聊详情的适配器
@@ -19,7 +18,7 @@ class GroupDetailsAdapter : BaseQuickAdapter<PeopleBean, BaseViewHolder> {
                 .addOnClickListener(R.id.ivHead)
         } else {
             helper.setText(R.id.tv_name, item?.name)
-                .setImageResource(R.id.ivHead, R.mipmap.ic_personal_head_one)
+                .setImageResource(R.id.ivHead, R.mipmap.ic_personal_head_one_online)
         }
     }
 }

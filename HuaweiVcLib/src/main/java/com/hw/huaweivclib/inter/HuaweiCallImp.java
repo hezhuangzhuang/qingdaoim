@@ -109,6 +109,8 @@ public class HuaweiCallImp {
     }
 
     /**
+     * 创建即时会议
+     *
      * @param confName      会议名称
      * @param duration      会议时长，单位(分钟)
      * @param memberSipList 参会人员的sip号码，多个以逗号分隔
@@ -157,7 +159,7 @@ public class HuaweiCallImp {
         RequestBody body = RequestBody.create(Urls.INSTANCE.getMEDIA_TYPE(), jsonObject.toString());
 
         RetrofitManager.INSTANCE.create(ConfControlApi.class,
-                Urls.FILE_URL
+                Urls.INSTANCE.getFILE_URL()
         )
                 .createConf(body)
                 .compose(new CustomCompose())
@@ -179,5 +181,97 @@ public class HuaweiCallImp {
                         ToastHelper.INSTANCE.showShort(throwable.getMessage());
                     }
                 });
+    }
+
+
+    /**
+     * 预约会议
+     *
+     * @param confName      会议名称
+     * @param duration      会议时长，单位(分钟)
+     * @param memberSipList 参会人员的sip号码，多个以逗号分隔
+     * @param groupId
+     * @param accessCode    会议接入码
+     * @param type          0：语音会议，1：视频会议
+     * @param confType      0：即时会议，1：预约会议
+     * @param startTime     会议开始时间
+     */
+    public static boolean reservedConfNetWork(String confName,
+                                              String duration,
+                                              String accessCode,
+                                              String memberSipList,
+                                              String groupId,
+                                              int type,
+                                              String confType,
+                                              String startTime) {
+        if (!DeviceManager.isNetworkAvailable(BaseApp.context)) {
+            ToastHelper.INSTANCE.showShort("请检查您的网络");
+            return false;
+        }
+
+        //是否需要登录
+        hasLogin();
+
+        String createUri = SPStaticUtils.getString(UserContants.HUAWEI_ACCOUNT);
+
+//        //是否自己创建的会议
+//        SPStaticUtils.put(UIConstants.IS_CREATE, true);
+//
+//        //是否需要自动接听
+//        SPStaticUtils.put(UIConstants.IS_AUTO_ANSWER, true);
+
+        //显示等待界面
+//        LoadingActivity.startActivty(BaseApp.context, confName);
+
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("confName", confName);
+            jsonObject.put("duration", duration);
+            jsonObject.put("accessCode", accessCode);
+            jsonObject.put("sites", memberSipList);
+            jsonObject.put("creatorUri", createUri);
+            jsonObject.put("groupId", groupId);
+            jsonObject.put("confMediaType", type);
+            jsonObject.put("confType", confType);
+            jsonObject.put("startTime", startTime);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        RequestBody body = RequestBody.create(Urls.INSTANCE.getMEDIA_TYPE(), jsonObject.toString());
+
+        //是否预约成功
+        final boolean[] isReservedSuccess = {false};
+
+        RetrofitManager.INSTANCE.create(ConfControlApi.class,
+                Urls.INSTANCE.getFILE_URL()
+        )
+                .createConf(body)
+                .compose(new CustomCompose())
+                .subscribe(new Consumer<CreateConfResponeBean>() {
+                    @Override
+                    public void accept(CreateConfResponeBean baseData) throws Exception {
+                        //请求成功
+                        if (null != baseData && BaseData.SUCEESS_CODE == baseData.code) {
+                            ToastHelper.INSTANCE.showShort("会议预约成功");
+//                            AppManager.Companion.getInstance().pushActivity(LoadingActivity.class);
+                            isReservedSuccess[0] = true;
+                        } else {
+                            ToastHelper.INSTANCE.showShort("会议预约失败");
+//                            AppManager.Companion.getInstance().pushActivity(LoadingActivity.class);
+                            ToastHelper.INSTANCE.showShort(baseData.msg);
+                            isReservedSuccess[0] = false;
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        ToastHelper.INSTANCE.showShort("会议预约失败");
+//                        AppManager.Companion.getInstance().pushActivity(LoadingActivity.class);
+                        ToastHelper.INSTANCE.showShort(throwable.getMessage());
+                        isReservedSuccess[0] = false;
+                    }
+                });
+        return isReservedSuccess[0];
     }
 }

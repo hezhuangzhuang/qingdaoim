@@ -1,6 +1,7 @@
 package com.hw.messagemodule.mvp.presenter
 
 import com.hazz.kotlinmvp.net.exception.ExceptionHandle
+import com.hw.baselibrary.bindLife
 import com.hw.baselibrary.common.BasePresenter
 import com.hw.baselibrary.net.NetWorkContants
 import com.hw.baselibrary.utils.NetWorkUtils
@@ -66,6 +67,7 @@ class ChatPresenter @Inject constructor() : BasePresenter<ChatContract.View>(),
         mRootView?.showLoading()
 
         chatService.uploadPhoto(file)
+            .bindLife(lifecycleProvider)
             .subscribe({ baseData ->
                 mRootView?.apply {
                     dismissLoading()
@@ -91,6 +93,7 @@ class ChatPresenter @Inject constructor() : BasePresenter<ChatContract.View>(),
         mRootView?.showLoading()
 
         chatService.uploadVoice(file)
+            .bindLife(lifecycleProvider)
             .subscribe({ baseData ->
                 mRootView?.apply {
                     dismissLoading()

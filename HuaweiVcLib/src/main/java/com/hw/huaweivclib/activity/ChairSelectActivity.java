@@ -74,10 +74,11 @@ public class ChairSelectActivity extends BaseActivity {
 
     /**
      * 指定主席并退出会议
+     *
      * @param statusInfoListBean
      */
     private void setConfChair(final ConfBeanRespone.DataBean.SiteStatusInfoListBean statusInfoListBean) {
-        RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.FILE_URL)
+        RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.INSTANCE.getFILE_URL())
                 .setConfChair(smcConfId, statusInfoListBean.siteUri)
                 .flatMap(new Function<BaseData, ObservableSource<BaseData>>() {
                     @Override
@@ -109,7 +110,7 @@ public class ChairSelectActivity extends BaseActivity {
      * 离开会议的网络请求
      */
     private Observable<BaseData> leaveConfRequest() {
-      return   RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.FILE_URL)
+        return RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.INSTANCE.getFILE_URL())
                 .leaveConf(smcConfId, SPStaticUtils.getString(UserContants.HUAWEI_ACCOUNT));
     }
 

@@ -110,6 +110,9 @@ dependencies {
     //ui卡顿检测
     api rootProject.ext.blockCanary
 
+    //条件选择器
+    api rootProject.ext.pickerView
+
     //Dagger2
     api rootProject.ext.daggerApi
     kapt rootProject.ext.daggerCompiler

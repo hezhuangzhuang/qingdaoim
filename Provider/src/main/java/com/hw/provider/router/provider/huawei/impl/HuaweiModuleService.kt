@@ -52,14 +52,48 @@ object HuaweiModuleService {
         accessCode: String,
         memberSipList: String,
         groupId: String,
-        type: Int) {
+        type: Int
+    ) {
         navigation.createConfNetWork(confName, duration, accessCode, memberSipList, groupId, type)
+    }
+
+    /**
+     * 通过后台接口预约会议
+     * @param confName      会议名称
+     * @param duration      会议时长，单位(分钟)
+     * @param memberSipList 参会人员的sip号码，多个以逗号分隔
+     * @param groupId
+     * @param accessCode    会议接入码
+     * @param type          0：语音会议，1：视频会议
+     * @param confType          0：即使会议，1：预约会议
+     * @param startTime     会议开始时间
+     */
+    fun reservedConfNetWork(
+        confName: String,
+        duration: String,
+        accessCode: String,
+        memberSipList: String,
+        groupId: String,
+        type: Int,
+        confType: String,
+        startTime: String
+    ): Boolean {
+        return navigation.reservedConfNetWork(
+            confName,
+            duration,
+            accessCode,
+            memberSipList,
+            groupId,
+            type,
+            confType,
+            startTime
+        )
     }
 
     /**
      * 呼叫会场
      */
     fun callSite(accessCode: String) {
-         navigation.joinConf(accessCode)
+        navigation.joinConf(accessCode)
     }
 }

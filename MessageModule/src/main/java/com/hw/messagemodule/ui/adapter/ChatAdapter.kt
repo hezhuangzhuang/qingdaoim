@@ -97,7 +97,7 @@ class ChatAdapter : BaseSectionMultiItemQuickAdapter<ChatItem, BaseViewHolder> {
         val isVoice =
             item!!.chatBean.textContent.endsWith(".voice") || item.chatBean.textContent.endsWith(".m4a")
         if (isVoice) {
-            helper.setImageResource(R.id.iv_voice, R.drawable.audio_animation_right_list)
+            helper
                 .setText(R.id.tv_duration, "")
                 .setText(R.id.tv_name, item.chatBean.name)
                 .setText(
@@ -127,13 +127,14 @@ class ChatAdapter : BaseSectionMultiItemQuickAdapter<ChatItem, BaseViewHolder> {
         val isVoice =
             item!!.chatBean.textContent.endsWith(".voice") || item.chatBean.textContent.endsWith(".m4a")
         if (isVoice) {
-            helper.setImageResource(R.id.iv_voice, R.drawable.audio_animation_right_list)
+            helper
                 .setText(R.id.tv_duration, "")
                 .setText(R.id.tv_name, item.chatBean.name)
                 .setText(
                     R.id.tv_time, DateUtils.getTimeStringAutoShort2(item.chatBean.time, false)
                 )
             val view = helper.getView<ImageView>(R.id.iv_voice)
+            //旋转动画
             val animator = ObjectAnimator.ofFloat(view, "rotation", 0f, 180.0f)
             animator.duration = 10
             animator.start()

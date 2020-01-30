@@ -15,5 +15,9 @@ class AllPeopleAdapter(layoutRes: Int, data: MutableList<PeopleBean>) :
 
     override fun convert(helper: BaseViewHolder, item: PeopleBean) {
         helper.setText(R.id.tvName, item.name)
+            .setImageResource(
+                R.id.ivHead,
+                if (0 == item.online) R.mipmap.ic_personal_head_one_online else R.mipmap.ic_personal_head_one_offline
+            )
     }
 }

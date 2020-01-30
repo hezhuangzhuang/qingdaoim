@@ -1,6 +1,7 @@
 package com.hw.kotlinmvpandroidxframe.mvp.presenter
 
 import com.hazz.kotlinmvp.net.exception.ExceptionHandle
+import com.hw.baselibrary.bindLife
 import com.hw.baselibrary.common.BasePresenter
 import com.hw.baselibrary.net.NetWorkContants
 import com.hw.kotlinmvpandroidxframe.mvp.contract.HomeContract
@@ -20,6 +21,7 @@ class HomePresenter : BasePresenter<HomeContract.View>(), HomeContract.Presenter
         mRootView?.showLoading()
 
         var disposable = homeModel.queryStudys(pageNum)
+            .bindLife(lifecycleProvider)
             .subscribe({ baseData ->
                 mRootView?.apply {
                     dismissLoading()
@@ -44,6 +46,7 @@ class HomePresenter : BasePresenter<HomeContract.View>(), HomeContract.Presenter
         mRootView?.showLoading()
 
         var disposable = homeModel.queryStudys(pageNum)
+            .bindLife(lifecycleProvider)
             .subscribe({ baseData ->
                 mRootView?.apply {
                     dismissLoading()

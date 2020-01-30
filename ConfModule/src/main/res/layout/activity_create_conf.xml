@@ -93,6 +93,7 @@
         android:background="@color/color_e5e5e5" />
 
     <LinearLayout
+        android:id="@+id/llConfName"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="@color/white"
@@ -101,9 +102,9 @@
         android:paddingRight="15dp">
 
         <TextView
+            android:id="@+id/tvConfNameLable"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/tvConfNameLable"
             android:layout_marginRight="12dp"
             android:text="会议名称"
             android:textColor="@color/color_666"
@@ -118,8 +119,8 @@
             android:ellipsize="end"
             android:hint="请输入会议名称"
             android:singleLine="true"
-            android:textColorHint="@color/color_bbb"
             android:textColor="@color/color_333"
+            android:textColorHint="@color/color_bbb"
             android:textSize="14sp" />
     </LinearLayout>
 
@@ -156,9 +157,88 @@
             android:inputType="number"
             android:maxLength="4"
             android:singleLine="true"
+            android:textColor="@color/color_333"
             android:textColorHint="@color/color_bbb"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/color_e5e5e5" />
+
+    <LinearLayout
+        android:id="@+id/llConfType"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="12dp"
+            android:text="会议类型"
+            android:textColor="@color/color_666"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/tvContType"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="12dp"
+            android:layout_weight="1"
+            android:gravity="right"
+            android:text="即时会议"
             android:textColor="@color/color_333"
             android:textSize="14sp" />
+
+        <com.hw.baselibrary.widgets.SwitchButton
+            android:id="@+id/swConfType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/color_e5e5e5" />
+
+    <LinearLayout
+        android:id="@+id/llStartTime"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="12dp"
+            android:text="开始时间"
+            android:textColor="@color/color_666"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/tvStartTime"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginRight="12dp"
+            android:layout_weight="1"
+            android:gravity="right|center_vertical"
+            android:text="请选择会议开始时间"
+            android:textColor="@color/color_333"
+            android:textSize="14sp" />
+
     </LinearLayout>
 
     <View
@@ -180,10 +260,10 @@
             android:drawableLeft="@mipmap/ic_create_conf_search"
             android:drawablePadding="6dp"
             android:hint="搜索"
-            android:textSize="14sp"
-            android:textColorHint="@color/color_bbb"
+            android:padding="8dp"
             android:textColor="@color/color_333"
-            android:padding="8dp" />
+            android:textColorHint="@color/color_bbb"
+            android:textSize="14sp" />
 
     </FrameLayout>
 
@@ -206,10 +286,10 @@
             android:layout_height="match_parent"
             android:layout_centerVertical="true"
             android:drawableLeft="@mipmap/ic_blue_check_false"
+            android:drawablePadding="8dp"
             android:gravity="center_vertical"
             android:paddingLeft="15dp"
             android:paddingRight="15dp"
-            android:drawablePadding="8dp"
             android:text="全选"
             android:textColor="@color/color_418ad5"
             android:textSize="16sp"

@@ -22,7 +22,7 @@
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_gravity="center"
-                android:src="@mipmap/ic_personal_head_one"
+                android:src="@mipmap/ic_personal_head_one_online"
                 />
 
             <TextView

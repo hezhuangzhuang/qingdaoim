@@ -546,7 +546,7 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
      * 麦克风闭音
      */
     private void oneKeyCloseMic(final boolean isMicParam, String siteUri) {
-        RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.FILE_URL)
+        RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.INSTANCE.getFILE_URL())
                 .setSiteMute(smcConfId, siteUri, String.valueOf(isMicParam))
                 .compose(new CustomCompose())
                 .subscribe(new Consumer<BaseData>() {
@@ -571,7 +571,7 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
      * 离开会议的网络请求
      */
     private void leaveConfRequest() {
-        RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.FILE_URL)
+        RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.INSTANCE.getFILE_URL())
                 .leaveConf(smcConfId, siteUri)
                 .compose(new CustomCompose())
                 .subscribe(new Consumer<BaseData>() {
@@ -596,7 +596,7 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
      * 麦克风闭音
      */
     private void setOtherSiteMuteRequest(final boolean isMicParam) {
-        RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.FILE_URL)
+        RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.INSTANCE.getFILE_URL())
                 .setSiteMute(smcConfId, siteUri, String.valueOf(isMicParam))
                 .compose(new CustomCompose())
                 .subscribe(new Consumer<BaseData>() {
@@ -628,7 +628,7 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
      * 外放闭音
      */
     private void setSitesQuietRequest(final boolean isMuteParam) {
-        RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.FILE_URL)
+        RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.INSTANCE.getFILE_URL())
                 .setSitesQuiet(smcConfId, siteUri, String.valueOf(isMuteParam))
                 .compose(new CustomCompose())
                 .subscribe(new Consumer<BaseData>() {
@@ -666,7 +666,7 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
     private void switchConfMode() {
         final int mode = 0 == confMode ? 1 : 0;
 
-        RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.FILE_URL)
+        RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.INSTANCE.getFILE_URL())
                 .changeConfMode(smcConfId, String.valueOf(mode))
                 .compose(new CustomCompose())
                 .subscribe(new Consumer<BaseData>() {
@@ -884,7 +884,7 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
      * 添加会场
      */
     private void addSiteToConf(String siteUris) {
-        RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.FILE_URL)
+        RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.INSTANCE.getFILE_URL())
                 .addSiteToConf(smcConfId, siteUris)
                 .compose(new CustomCompose())
                 .subscribe(new Consumer<BaseData>() {
@@ -1081,7 +1081,7 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
      * @param otherSiteUri 静音的会场号码
      */
     private void setOtherSiteMuteRequest(final boolean isMicParam, final String otherSiteUri) {
-        RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.FILE_URL)
+        RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.INSTANCE.getFILE_URL())
                 .setSiteMute(smcConfId, otherSiteUri, String.valueOf(isMicParam))
                 .compose(new CustomCompose())
                 .subscribe(new Consumer<BaseData>() {
@@ -1119,7 +1119,7 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
      * 外放闭音其他会场
      */
     private void setOtherSitesQuietRequest(final boolean isMuteParam, final String otherSiteUri) {
-        RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.FILE_URL)
+        RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.INSTANCE.getFILE_URL())
                 .setSitesQuiet(smcConfId, otherSiteUri, String.valueOf(isMuteParam))
                 .compose(new CustomCompose())
                 .subscribe(new Consumer<BaseData>() {
@@ -1160,7 +1160,7 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
      *                     confAction_setBroadcastSite.action
      */
     private void setSiteBroadcastRequest(final boolean isBroadcast, final String otherSiteUri) {
-        RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.FILE_URL)
+        RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.INSTANCE.getFILE_URL())
                 .setBroadcastSite(smcConfId, otherSiteUri, String.valueOf(isBroadcast))
                 .compose(new CustomCompose())
                 .subscribe(new Consumer<BaseData>() {
@@ -1194,7 +1194,7 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
      *                     connectSite
      */
     private void setSiteCallRequest(String otherSiteUri) {
-        RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.FILE_URL)
+        RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.INSTANCE.getFILE_URL())
                 .connectSite(smcConfId, otherSiteUri)
                 .compose(new CustomCompose())
                 .subscribe(new Consumer<BaseData>() {
@@ -1225,7 +1225,7 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
         if (0 != confMode) {
             return;
         }
-        RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.FILE_URL)
+        RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.INSTANCE.getFILE_URL())
                 .setVideoSource(smcConfId, siteUri, otherSiteUri)
                 .compose(new CustomCompose())
                 .subscribe(new Consumer<BaseData>() {
@@ -1266,7 +1266,7 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
      *                     connectSite
      */
     private void setSiteDisconnectRequest(String otherSiteUri) {
-        RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.FILE_URL)
+        RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.INSTANCE.getFILE_URL())
                 .leaveConf(smcConfId, otherSiteUri)
                 .compose(new CustomCompose())
                 .subscribe(new Consumer<BaseData>() {
@@ -1291,7 +1291,7 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
      * 结束会议
      */
     private void endConfReuqest() {
-        RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.FILE_URL)
+        RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.INSTANCE.getFILE_URL())
                 .stopConf(smcConfId)
                 .compose(new CustomCompose())
                 .subscribe(new Consumer<BaseData>() {
@@ -1441,7 +1441,7 @@ public class VideoConfActivity extends BaseActivity implements LocBroadcastRecei
      * 循环查询状态
      */
     private void intervalQueryConfInfo() {
-        RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.FILE_URL)
+        RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.INSTANCE.getFILE_URL())
                 .queryConfDetail(peerNumber)
                 .compose(new CustomCompose())
                 .subscribe(new Consumer<ConfBeanRespone>() {

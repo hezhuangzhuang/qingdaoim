@@ -3,6 +3,7 @@ package com.hw.contactsmodule.ui.fragment
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.alibaba.android.arouter.launcher.ARouter
 import com.chad.library.adapter.base.BaseQuickAdapter
@@ -182,7 +183,7 @@ class ContactsFragment : BaseMvpFragment<ContactsPresenter>(), ContactsContract.
             override fun onCollapseClick(pos: Int, depId: Int) {
                 organizationAdapter.collapse(pos)
             }
-    
+
             override fun onExpandClick(pos: Int, depId: Int) {
                 //包含数据则直接展开
                 if (organPeopleMap.containsKey(pos)) {
@@ -251,7 +252,11 @@ class ContactsFragment : BaseMvpFragment<ContactsPresenter>(), ContactsContract.
     /**
      * 全部联系人获取完毕
      */
-    override fun showAllPeople(allPeople: List<PeopleBean>) {
+    override fun showAllPeople(allPeople: List<PeopleBean>, onlineNumber: Int) {
+        tvOnlineNumber.text = "${allPeople.size}位联系人，在线${onlineNumber}位"
+
+        showOnline(true)
+
         allPeopleAdapter.replaceData(allPeople)
 
         var constactsBean: ConstactsBean? = null
@@ -278,6 +283,8 @@ class ContactsFragment : BaseMvpFragment<ContactsPresenter>(), ContactsContract.
 
     //显示组织结构
     override fun showOrgan(allOrgan: List<OrganizationBean>) {
+        showOnline(false)
+
         var multiItems = ArrayList<MultiItemEntity>()
 
         allOrgan.forEach { organBean ->
@@ -297,7 +304,7 @@ class ContactsFragment : BaseMvpFragment<ContactsPresenter>(), ContactsContract.
         }
 
         //判断是否有这个列表
-        if(!organPeopleMap.containsKey(pos)){
+        if (!organPeopleMap.containsKey(pos)) {
             //添加到map中，避免重复请求
             organPeopleMap.put(pos, peoples)
         }
@@ -311,7 +318,16 @@ class ContactsFragment : BaseMvpFragment<ContactsPresenter>(), ContactsContract.
     }
 
     override fun showGroupChat(groupChats: List<GroupChatBean>) {
+        showOnline(false)
+
         groupChatAdapter.replaceData(groupChats)
+    }
+
+    /**
+     * 显示在线人员
+     */
+    fun showOnline(show: Boolean) {
+        tvOnlineNumber.isVisible = show
     }
 
     override fun showError(errorMsg: String) {

@@ -55,7 +55,10 @@ ext {
             autoSizeVersion               : "1.2.0",
 
             //UI卡顿监测
-            blockCanaryVersion            : "1.5.0"
+            blockCanaryVersion            : "1.5.0",
+
+            //条件选择器
+            pickerViewVersion             : "4.1.9"
     ]
 
     supportDeps = [
@@ -124,6 +127,9 @@ ext {
 
     //UI卡顿监测
     blockCanary = "com.github.markzhai:blockcanary-android:$dependVersion.blockCanaryVersion"
+
+    //条件选择器-
+    pickerView = "com.contrarywind:Android-PickerView:$dependVersion.pickerViewVersion"
 
 
     supportLibs = supportDeps.values()

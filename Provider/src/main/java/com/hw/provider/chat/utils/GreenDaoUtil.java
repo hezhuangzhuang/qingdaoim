@@ -42,7 +42,16 @@ public class GreenDaoUtil {
     }
 
     public static void close(){
+        mDaoSession.clear();
         mDaoSession.getDatabase().close();
+        mSQLiteOpenHelper.close();
+
+        mDaoSession = null;
+
+//        sInstance.daoSession.clear();
+//        sInstance.mDatabase.close();
+//        sInstance.mHelper.close();
+//        sInstance = null;
     }
 
     public synchronized static DaoSession getDaoSession() {

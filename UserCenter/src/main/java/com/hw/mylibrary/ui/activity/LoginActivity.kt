@@ -14,7 +14,6 @@ import com.alibaba.android.arouter.facade.callback.NavigationCallback
 import com.alibaba.android.arouter.launcher.ARouter
 import com.hw.baselibrary.constant.PermissionConstants
 import com.hw.baselibrary.ui.activity.BaseMvpActivity
-import com.hw.baselibrary.utils.LogUtils
 import com.hw.baselibrary.utils.PermissionUtils
 import com.hw.baselibrary.utils.PhoneUtils
 import com.hw.baselibrary.utils.ToastHelper
@@ -82,6 +81,12 @@ class LoginActivity : BaseMvpActivity<LoginPresenter>(), LoginContract.View {
                 Selection.setSelection(etPwd.text, etPwd.text.length)
             }
         }
+
+        ivSetUrl.setOnClickListener {
+            ARouter.getInstance()
+                .build(RouterPath.UserCenter.PATH_SET_URL)
+                .navigation()
+        }
     }
 
     fun requestPhonePermission() {
@@ -89,7 +94,6 @@ class LoginActivity : BaseMvpActivity<LoginPresenter>(), LoginContract.View {
 //            .rationale { shouldRequest -> DialogHelper.showRationaleDialog(shouldRequest) }
             .callback(object : PermissionUtils.FullCallback {
                 override fun onGranted(permissionsGranted: List<String>) {
-                    LogUtils.d(permissionsGranted)
                     //登录的请求
                     loginRequest()
                 }
@@ -98,7 +102,6 @@ class LoginActivity : BaseMvpActivity<LoginPresenter>(), LoginContract.View {
                     permissionsDeniedForever: List<String>,
                     permissionsDenied: List<String>
                 ) {
-                    LogUtils.d(permissionsDeniedForever, permissionsDenied)
                     if (!permissionsDeniedForever.isEmpty()) {
                         return
                     }

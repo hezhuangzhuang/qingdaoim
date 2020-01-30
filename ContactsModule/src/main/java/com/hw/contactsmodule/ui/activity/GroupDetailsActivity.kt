@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.afollestad.materialdialogs.MaterialDialog
 import com.alibaba.android.arouter.facade.annotation.Route
+import com.alibaba.android.arouter.launcher.ARouter
 import com.hjq.bar.OnTitleBarListener
 import com.hw.baselibrary.ui.activity.BaseMvpActivity
 import com.hw.baselibrary.utils.ToastHelper
@@ -18,7 +19,9 @@ import com.hw.contactsmodule.inject.module.ContactsModule
 import com.hw.contactsmodule.mvp.contract.GroupDetailsContract
 import com.hw.contactsmodule.mvp.presenter.GroupDetailsPresenter
 import com.hw.contactsmodule.ui.adapter.GroupDetailsAdapter
+import com.hw.provider.chat.bean.MessageBody
 import com.hw.provider.chat.utils.GreenDaoUtil
+import com.hw.provider.conf.ConfContants
 import com.hw.provider.eventbus.EventBusUtils
 import com.hw.provider.eventbus.EventMsg
 import com.hw.provider.net.respone.contacts.PeopleBean
@@ -26,6 +29,10 @@ import com.hw.provider.router.RouterPath
 import com.hw.provider.user.UserContants
 import kotlinx.android.synthetic.main.activity_group_details.*
 import kotlinx.android.synthetic.main.fragment_contacts.rvList
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
+import java.io.Serializable
 
 @Route(path = RouterPath.Contacts.GROUP_CHAT_DETAILS)
 class GroupDetailsActivity : BaseMvpActivity<GroupDetailsPresenter>(), GroupDetailsContract.View {
@@ -54,6 +61,8 @@ class GroupDetailsActivity : BaseMvpActivity<GroupDetailsPresenter>(), GroupDeta
     }
 
     override fun initData(bundle: Bundle?) {
+        EventBus.getDefault().register(this)
+
         groupId = intent.getStringExtra(RouterPath.Contacts.FILED_RECEIVE_ID)
         groupName = intent.getStringExtra(RouterPath.Contacts.FILED_RECEIVE_NAME)
     }
@@ -65,7 +74,19 @@ class GroupDetailsActivity : BaseMvpActivity<GroupDetailsPresenter>(), GroupDeta
             GroupDetailsAdapter(R.layout.item_group_detail, ArrayList<PeopleBean>())
 
         groupDetailsAdapter.setOnItemChildClickListener { adapter, view, position ->
-            ToastHelper.showShort(position.toString())
+            ARouter.getInstance()
+                .build(RouterPath.Conf.CREATE_CONF)
+                //控制的类型
+                .withInt(RouterPath.Conf.FILED_CONTROL_TYPE, ConfContants.GROUP_CHAT_ADD_PEOPLE)
+                //群组id
+                .withString(RouterPath.Conf.FILED_GROUP_ID, groupId)
+                //已存在的人员
+                .withSerializable(
+                    RouterPath.Conf.FILED_EXIST_PEOPLS,
+                    groupDetailsAdapter.data as Serializable
+                )
+                .withInt(RouterPath.Conf.FILED_VIDEO_CONF, -1)
+                .navigation()
         }
         rvList.layoutManager = GridLayoutManager(this, 5) as RecyclerView.LayoutManager?
         rvList.adapter = groupDetailsAdapter
@@ -212,10 +233,13 @@ class GroupDetailsActivity : BaseMvpActivity<GroupDetailsPresenter>(), GroupDeta
     /**
      * 修改群名称结果
      */
-    override fun updateGroupNameResult(isSuceess: Boolean) {
+    override fun updateGroupNameResult(isSuceess: Boolean, newGroupName: String, groupId: String) {
         //隐藏对话框
         modifyGroupNameDialog?.dismiss()
-        EventBusUtils.sendMessage(EventMsg.UPDATE_GROUP_CHAT, Any())
+        EventBusUtils.sendMessage(
+            EventMsg.UPDATE_GROUP_CHAT,
+            "${groupId},${newGroupName}" as String
+        )
         finish()
     }
 
@@ -232,5 +256,26 @@ class GroupDetailsActivity : BaseMvpActivity<GroupDetailsPresenter>(), GroupDeta
             "${groupId},${EventMsg.DELETE_GROUP_CHAT}" as String
         )
         finish()
+    }
+
+    override fun onDestroy() {
+        EventBus.getDefault().unregister(this)
+        super.onDestroy()
+    }
+
+    /**
+     * 主线程中处理事件
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    fun mainEvent(messageEvent: EventMsg<Any>) {
+        when (messageEvent.message) {
+            //刷新群组人员
+            EventMsg.ADD_PEOPLE_TO_GROUPCHAT -> {
+                mPresenter.queryGroupCreater(
+                    SPStaticUtils.getString(UserContants.HUAWEI_ACCOUNT),
+                    groupId
+                )
+            }
+        }
     }
 }

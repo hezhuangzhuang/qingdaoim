@@ -18,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
 public class HuaweiModuleServiceImp implements IHuaweiModuleService {
     @Override
     public void login(@NotNull String userName, @NotNull String password, @NotNull String smcRegisterServer, @NotNull String smcRegisterPort) {
-        HuaweiLoginImp.login(userName,password,smcRegisterServer,smcRegisterPort);
+        HuaweiLoginImp.login(userName, password, smcRegisterServer, smcRegisterPort);
     }
 
     @Override
@@ -28,7 +28,7 @@ public class HuaweiModuleServiceImp implements IHuaweiModuleService {
 
     @Override
     public void callSite(@NotNull String siteNumber, boolean isVideoCall) {
-        HuaweiCallImp.callSite(siteNumber,isVideoCall);
+        HuaweiCallImp.callSite(siteNumber, isVideoCall);
     }
 
     @Override
@@ -55,5 +55,30 @@ public class HuaweiModuleServiceImp implements IHuaweiModuleService {
     @Override
     public void joinConf(@NotNull String accessCode) {
         HuaweiCallImp.joinConf(accessCode);
+    }
+
+    /**
+     * 预约会议
+     *
+     * @param confName      会议名称
+     * @param duration      会议时间
+     * @param accessCode    会议接入码
+     * @param memberSipList 参会人员
+     * @param groupId       群组id
+     * @param type          0：语音会议，1：视频会议
+     * @param confType      0：即时会议，1：预约会议
+     * @param startTime     会议开始时间
+     */
+    @Override
+    public boolean reservedConfNetWork(@NotNull String confName, @NotNull String duration, @NotNull String accessCode, @NotNull String memberSipList, @NotNull String groupId, int type, @NotNull String confType, @NotNull String startTime) {
+        return HuaweiCallImp.reservedConfNetWork(
+                confName,
+                duration,
+                accessCode,
+                memberSipList,
+                groupId,
+                type,
+                confType,
+                startTime);
     }
 }

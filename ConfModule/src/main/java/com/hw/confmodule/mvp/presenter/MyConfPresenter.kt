@@ -1,6 +1,7 @@
 package com.hw.confmodule.mvp.presenter
 
 import com.hazz.kotlinmvp.net.exception.ExceptionHandle
+import com.hw.baselibrary.bindLife
 import com.hw.baselibrary.common.BasePresenter
 import com.hw.baselibrary.net.NetWorkContants
 import com.hw.confmodule.mvp.contract.MyConfContract
@@ -23,6 +24,7 @@ class MyConfPresenter @Inject constructor() : BasePresenter<MyConfContract.View>
         mRootView?.showLoading()
 
         createService.getAllConf(site)
+            .bindLife(lifecycleProvider)
             .subscribe({ baseData ->
                 mRootView?.apply {
                     dismissLoading()
@@ -48,6 +50,7 @@ class MyConfPresenter @Inject constructor() : BasePresenter<MyConfContract.View>
         mRootView?.showLoading()
 
         createService.getHistoryConfList(pageNum)
+            .bindLife(lifecycleProvider)
             .subscribe({ baseData ->
                 mRootView?.apply {
                     dismissLoading()

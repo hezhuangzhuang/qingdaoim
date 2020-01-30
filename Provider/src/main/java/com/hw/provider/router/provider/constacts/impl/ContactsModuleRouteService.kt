@@ -19,4 +19,14 @@ object ContactsModuleRouteService {
 
         return navigation.getAllPeople()
     }
+
+    fun addPeopleToGroupChat(
+        groupId: String,
+        ids: String
+    ): Observable<BaseData<PeopleBean>> {
+
+        val navigation = ARouter.getInstance().navigation(IContactsModuleService::class.java)
+
+        return navigation.addPeopleToGroupChat(groupId, ids)
+    }
 }

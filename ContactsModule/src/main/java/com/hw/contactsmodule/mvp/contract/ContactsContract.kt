@@ -12,7 +12,7 @@ import com.hw.provider.net.respone.contacts.PeopleBean
 interface ContactsContract {
 
     interface View : IBaseView {
-        fun showAllPeople(allPeople: List<PeopleBean>)
+        fun showAllPeople(allPeople: List<PeopleBean>,onlineNumber:Int)
 
         fun showOrgan(allOrgan: List<OrganizationBean>)
 

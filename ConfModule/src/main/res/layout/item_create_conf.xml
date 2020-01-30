@@ -25,7 +25,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
         android:layout_toRightOf="@id/iv_check"
-        android:src="@mipmap/ic_personal_head_one"
+        android:src="@mipmap/ic_personal_head_one_online"
         android:visibility="visible" />
 
     <TextView

@@ -24,9 +24,9 @@ object RetrofitManager {
 
     public lateinit var BASE_URL: String
 
-    val CONNECT_TIME_OUT: Long = 5//以秒为单位
-    val READ_TIME_OUT: Long = 5   //以秒为单位
-    val WRITE_TIME_OUT: Long = 5  //以秒为单位
+    val CONNECT_TIME_OUT: Long = 15//以秒为单位
+    val READ_TIME_OUT: Long = 15   //以秒为单位
+    val WRITE_TIME_OUT: Long = 15  //以秒为单位
 
     /*
        具体服务实例化

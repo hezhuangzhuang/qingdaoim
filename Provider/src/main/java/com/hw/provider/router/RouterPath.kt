@@ -10,6 +10,7 @@ object RouterPath {
         companion object {
             const val PATH_LOGIN = "/userCenter/login"
             const val PATH_ABOUT = "/userCenter/about"
+            const val PATH_SET_URL = "/userCenter/setUrl"
             const val USER_MODULE_SERVICE = "/userCenter/service"
         }
     }
@@ -60,6 +61,15 @@ object RouterPath {
 
             //是否是创建群组
             const val FILED_IS_CREATE_GROUP = "FILED_IS_CREATE_GROUP"
+
+            //创建会议界面的操作类型，0：创建会议，1：创建群组，2：添加人员
+            const val FILED_CONTROL_TYPE = "FILED_CONTROL_TYPE"
+
+            //群组id
+            const val FILED_GROUP_ID = "FILED_GROUP_ID"
+
+            //群组中已经存在的人员
+            const val FILED_EXIST_PEOPLS = "FILED_EXIST_PEOPLS"
 
             //是否是视频会议
             const val FILED_VIDEO_CONF = "FILED_VIDEO_CONF"

@@ -2,6 +2,7 @@ package com.hw.contactsmodule.mvp.presenter
 
 import android.annotation.SuppressLint
 import com.hazz.kotlinmvp.net.exception.ExceptionHandle
+import com.hw.baselibrary.bindLife
 import com.hw.baselibrary.common.BaseData
 import com.hw.baselibrary.common.BasePresenter
 import com.hw.baselibrary.net.NetWorkContants
@@ -32,6 +33,7 @@ class GroupDetailsPresenter @Inject constructor() : BasePresenter<GroupDetailsCo
 
         //通过群组id查询群组人员
         contactsService.getGroupIdConstacts(groupId)
+            .bindLife(lifecycleProvider)
             .subscribe({ baseData ->
                 mRootView?.apply {
                     dismissLoading()
@@ -57,6 +59,7 @@ class GroupDetailsPresenter @Inject constructor() : BasePresenter<GroupDetailsCo
         var list = ArrayList<PeopleBean>()
 
         contactsService.getGroupIdConstacts(groupId)
+            .bindLife(lifecycleProvider)
             .flatMap(object : Function<BaseData<PeopleBean>, Observable<GroupDetailsBean>> {
                 override fun apply(baseData: BaseData<PeopleBean>): Observable<GroupDetailsBean> {
                     if (NetWorkContants.RESPONSE_CODE == baseData.responseCode) {
@@ -75,7 +78,7 @@ class GroupDetailsPresenter @Inject constructor() : BasePresenter<GroupDetailsCo
                         if (isCreate) {
                             list.add(PeopleBean("-1", "", "", "", "", false))
                         }
-                        showGroupInfo(isCreate,list)
+                        showGroupInfo(isCreate, list)
                     } else {
                         queryGroupInfoError(baseData.message)
                     }
@@ -113,12 +116,13 @@ class GroupDetailsPresenter @Inject constructor() : BasePresenter<GroupDetailsCo
         mRootView?.showLoading()
 
         contactsService.updateGroupName(groupId, newName)
+            .bindLife(lifecycleProvider)
             .subscribe({ baseData ->
                 mRootView?.apply {
                     if (NetWorkContants.RESPONSE_CODE == baseData.responseCode) {
                         dismissLoading()
                         //修改群名称结果
-                        updateGroupNameResult(true)
+                        updateGroupNameResult(true, newName,groupId.toString())
                     } else {
                         onError(baseData.message)
                     }
@@ -137,6 +141,7 @@ class GroupDetailsPresenter @Inject constructor() : BasePresenter<GroupDetailsCo
         mRootView?.showLoading()
 
         contactsService.deleteGroupChat(groupId)
+            .bindLife(lifecycleProvider)
             .subscribe({ baseData ->
                 mRootView?.apply {
                     if (NetWorkContants.RESPONSE_CODE == baseData.responseCode) {

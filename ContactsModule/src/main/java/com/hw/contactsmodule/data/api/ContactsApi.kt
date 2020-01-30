@@ -32,6 +32,14 @@ interface ContactsApi {
     fun getAllConstacts(): Observable<BaseData<PeopleBean>>
 
     /**
+     * 获取smc上的列表，包含在线状态
+     */
+    //需要添加头
+    @Headers("Content-Type: application/json", "Accept: application/json")
+    @POST("conf/queryOnlineSiteList")
+    fun queryOnlineSiteList(): Observable<BaseData<PeopleBean>>
+
+    /**
      * 获取所有组织
      */
     @Headers("Content-Type: application/json", "Accept: application/json")//需要添加头
@@ -93,4 +101,19 @@ interface ContactsApi {
     fun deleteGroupChat(
         @Query("groupId") id: String
     ): Observable<GroupDetailsBean>
+
+    /**
+     * 添加人员到群组
+     *
+     * @param id
+     * @return
+     */
+    @Headers("Content-Type: application/json", "Accept: application/json")//需要添加头
+    @POST("im/mobile/group/addGroupUser")
+    fun addPeopleToGroupChat(
+        @Query("groupId") groupId: String,
+        @Query("ids") ids: String
+    ): Observable<BaseData<PeopleBean>>
+
+
 }

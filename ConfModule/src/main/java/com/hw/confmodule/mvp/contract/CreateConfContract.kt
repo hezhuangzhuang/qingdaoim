@@ -16,6 +16,12 @@ interface CreateConfContract {
         //创建会议失败
         fun createConfFaile()
 
+        //预约会议成功
+        fun reservedConfSuccess()
+
+        //预约会议失败
+        fun reservedConfFaile()
+
         //查询人员成功
         fun queryPeopleSuccess(allPeople: List<PeopleBean>)
 
@@ -27,16 +33,37 @@ interface CreateConfContract {
 
         //创建群组失败
         fun createGroupChatError(errorMsg: String)
+
+        //添加人员成功
+        fun addPeopleToGroupChatSuccess()
+
+        //添加人员失败
+        fun addPeopleToGroupChatFaile(errorMsg: String)
     }
 
     interface Presenter {
         //创建会议
-        fun createConf(confName: String,
-                       duration: String,
-                       accessCode: String,
-                       memberSipList: String,
-                       groupId: String,
-                       type: Int)
+        fun createConf(
+            confName: String,
+            duration: String,
+            accessCode: String,
+            memberSipList: String,
+            groupId: String,
+            type: Int
+        )
+
+        //预约会议
+        fun reservedConf(
+            confName: String,
+            duration: String,
+            accessCode: String,
+            memberSipList: String,
+            groupId: String,
+            type: Int,
+            confType: String,
+            startTime: String
+        )
+
 
         //获取所有联系人
         fun queryAllPeople()
@@ -48,6 +75,14 @@ interface CreateConfContract {
             groupName: String,
             createId: String,
             ids: String
+        )
+
+        /**
+         * 添加人员到群组
+         */
+        fun addPeoplesToGroup(
+            groupId:String,
+            ids:String
         )
     }
 }

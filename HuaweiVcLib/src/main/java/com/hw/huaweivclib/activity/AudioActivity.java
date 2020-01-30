@@ -206,7 +206,7 @@ public class AudioActivity extends BaseActivity implements LocBroadcastReceiver,
     }
 
     private void queryConfInfo() {
-        RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.FILE_URL)
+        RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.INSTANCE.getFILE_URL())
                 .queryConfDetail(peerNumber)
                 .compose(new CustomCompose())
                 .subscribe(new Consumer<ConfBeanRespone>() {
@@ -356,7 +356,7 @@ public class AudioActivity extends BaseActivity implements LocBroadcastReceiver,
      * 外放闭音
      */
     private void setSitesQuietRequest(final boolean isMuteParam) {
-        RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.FILE_URL)
+        RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.INSTANCE.getFILE_URL())
                 .setSitesQuiet(smcConfId, SPStaticUtils.getString(UserContants.HUAWEI_ACCOUNT), String.valueOf(isMuteParam))
                 .compose(new CustomCompose())
                 .subscribe(new Consumer<BaseData>() {
@@ -388,7 +388,7 @@ public class AudioActivity extends BaseActivity implements LocBroadcastReceiver,
      * 麦克风闭音
      */
     private void setSiteMuteRequest(final boolean isMicParam) {
-        RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.FILE_URL)
+        RetrofitManager.INSTANCE.create(ConfControlApi.class, Urls.INSTANCE.getFILE_URL())
                 .setSiteMute(smcConfId, SPStaticUtils.getString(UserContants.HUAWEI_ACCOUNT), String.valueOf(isMicParam))
                 .compose(new CustomCompose())
                 .subscribe(new Consumer<BaseData>() {

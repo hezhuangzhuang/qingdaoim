@@ -18,10 +18,10 @@ class HistoryListAdapter : BaseQuickAdapter<HistoryConfBean.DataBean, BaseViewHo
         item?.apply {
             helper.setImageResource(R.id.iv_img, R.mipmap.ic_conf_3)
                 .setText(R.id.tv_conf_name, confName)
-                .setText(R.id.tv_time, "开始时间:${createTime}")
-                .setText(R.id.tv_originator, "发起人:${creatorUriName}")
-                .setText(R.id.tv_account_number, "参会人数:${accountNumber}")
-                .setText(R.id.tv_duration, "会议时长:${confLength}分钟")
+                .setText(R.id.tv_time, "开始时间: ${createTime}")
+                .setText(R.id.tv_originator, "发起人: ${creatorUriName}")
+                .setText(R.id.tv_account_number, "参会人数: ${accountNumber}")
+                .setText(R.id.tv_duration, "会议时长: ${confLength}分钟")
                 .setText(R.id.tv_attendee, sitesName)
         }
     }

@@ -1,26 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:gravity="center_horizontal"
-    android:layout_margin="15dp"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingLeft="3dp"
+    android:paddingTop="@dimen/recovery_default_margin_8dp"
+    android:paddingRight="3dp"
+    android:paddingBottom="@dimen/recovery_default_margin_8dp">
 
     <ImageView
         android:id="@+id/ivHead"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@mipmap/ic_personal_head_one" />
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@mipmap/ic_personal_head_one_online" />
 
     <TextView
         android:id="@+id/tv_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        tools:text="姓名"
+        android:layout_marginTop="8dp"
         android:gravity="center"
         android:textColor="@color/color_666"
-        android:textSize="12sp" />
+        android:textSize="12sp"
+        tools:text="姓名" />
 
 </LinearLayout>

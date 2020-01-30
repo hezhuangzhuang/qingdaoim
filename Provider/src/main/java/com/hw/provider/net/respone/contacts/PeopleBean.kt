@@ -13,7 +13,9 @@ data class PeopleBean(
     var sipAccount: String,
     var name: String,
     var firstLetter: String,
-    var isCheck: Boolean = false
+    var isCheck: Boolean = false,
+    //0:在线，1:离线
+    var online: Int = 1
 ) : Serializable, MultiItemEntity {
 
     override fun getItemType(): Int {

@@ -3,6 +3,7 @@ package com.hw.messagemodule.ui.activity
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
+import android.graphics.drawable.AnimationDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
@@ -144,10 +145,10 @@ class ChatActivity : BaseMvpActivity<ChatPresenter>(), ChatContract.View, View.O
                             //判断文件是否存在
                             if (null != localFileBean && File(localFileBean.localPath).exists()) {
                                 //播放文件
-                                playAudio(view, localFileBean.localPath)
+                                playAudio(view.findViewById(R.id.iv_voice), localFileBean.localPath)
                             } else {
                                 //下载文件
-                                downloaderVoiceFile(view, item.chatBean.textContent, true)
+                                downloaderVoiceFile(view.findViewById(R.id.iv_voice), item.chatBean.textContent, true)
                             }
                         }
                         //收到的语音
@@ -157,10 +158,10 @@ class ChatActivity : BaseMvpActivity<ChatPresenter>(), ChatContract.View, View.O
                             //判断文件是否存在
                             if (null != localFileBean && File(localFileBean.localPath).exists()) {
                                 //播放文件
-                                playAudio(view, localFileBean.localPath)
+                                playAudio(view.findViewById(R.id.iv_voice), localFileBean.localPath)
                             } else {
                                 //下载文件
-                                downloaderVoiceFile(view, item.chatBean.textContent, true)
+                                downloaderVoiceFile(view.findViewById(R.id.iv_voice), item.chatBean.textContent, true)
                             }
                         }
                     }
@@ -207,7 +208,7 @@ class ChatActivity : BaseMvpActivity<ChatPresenter>(), ChatContract.View, View.O
                     GreenDaoUtil.insertLocalFileBean(LocalFileBean(remotePath, localFilePath))
                     //播放语音
                     if (isPlay) {
-                        playAudio(null, localFilePath)
+                        playAudio(view, localFilePath)
                     }
                 }
 
@@ -234,13 +235,14 @@ class ChatActivity : BaseMvpActivity<ChatPresenter>(), ChatContract.View, View.O
         downloaderVoiceFile(view, remotePath, false)
     }
 
+
     /**
      * 播放语音
      *
      * @param view
      * @param position
      */
-    private fun playAudio(view: View?, fileLocalPath: String) {
+    private fun playAudio(ivAudio: View?, fileLocalPath: String) {
         AudioPlayManager.getInstance().stopPlay()
 
         //创建文件
@@ -252,26 +254,26 @@ class ChatActivity : BaseMvpActivity<ChatPresenter>(), ChatContract.View, View.O
         AudioPlayManager.getInstance()
             .startPlay(this@ChatActivity, audioUri, object : IAudioPlayListener {
                 override fun onStart(var1: Uri) {
-                    //if (ivAudio != null && ivAudio.getBackground() instanceof AnimationDrawable) {
-                    //    AnimationDrawable animation = (AnimationDrawable) ivAudio.getBackground();
-                    //    animation.start();
-                    //}
+                    if (ivAudio != null && ivAudio.background is AnimationDrawable) {
+                        val animationDrawable = ivAudio.background as AnimationDrawable
+                        animationDrawable.start()
+                    }
                 }
 
                 override fun onStop(var1: Uri) {
-                    //if (ivAudio != null && ivAudio.getBackground() instanceof AnimationDrawable) {
-                    //    AnimationDrawable animation = (AnimationDrawable) ivAudio.getBackground();
-                    //    animation.stop();
-                    //    animation.selectDrawable(0);
-                    //}
+                    if (ivAudio != null && ivAudio.background is AnimationDrawable) {
+                        val animationDrawable = ivAudio.background as AnimationDrawable
+                        animationDrawable.stop()
+                        animationDrawable.selectDrawable(0)
+                    }
                 }
 
                 override fun onComplete(var1: Uri) {
-                    //if (ivAudio != null && ivAudio.getBackground() instanceof AnimationDrawable) {
-                    //    AnimationDrawable animation = (AnimationDrawable) ivAudio.getBackground();
-                    //    animation.stop();
-                    //    animation.selectDrawable(0);
-                    //}
+                    if (ivAudio != null && ivAudio.background is AnimationDrawable) {
+                        val animationDrawable = ivAudio.background as AnimationDrawable
+                        animationDrawable.stop()
+                        animationDrawable.selectDrawable(0)
+                    }
                 }
             })
     }
@@ -740,6 +742,7 @@ class ChatActivity : BaseMvpActivity<ChatPresenter>(), ChatContract.View, View.O
                 val split = newData.split(",")
 
                 if (receiveId.equals(split[0])) {
+                    //删除群聊
                     if (EventMsg.DELETE_GROUP_CHAT.equals(split[1])) {
                         finish()
                     } else {

@@ -11,6 +11,7 @@ import androidx.core.app.NotificationCompat
 import com.alibaba.android.arouter.launcher.ARouter
 import com.google.gson.Gson
 import com.hazz.kotlinmvp.net.exception.ExceptionHandle
+import com.hw.baselibrary.bindLife
 import com.hw.baselibrary.common.AppManager
 import com.hw.baselibrary.common.BaseApp
 import com.hw.baselibrary.net.NetWorkContants
@@ -47,6 +48,7 @@ import org.greenrobot.eventbus.ThreadMode
 import org.java_websocket.exceptions.WebsocketNotConnectedException
 import org.java_websocket.handshake.ServerHandshake
 import java.net.URI
+import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 /**
@@ -109,7 +111,7 @@ class KotlinMessageSocketService : Service() {
                 if (NetWorkContants.RESPONSE_CODE == baseDate.responseCode) {
                     //不等于1代表socket不在线
                     if (1 != baseDate.data.isWebSocketOnline) {
-                        reConnectSocket()
+//                        reConnectSocket()
                     }
 
                     //不等于0代表在其他地方登录
@@ -132,7 +134,7 @@ class KotlinMessageSocketService : Service() {
                     }
                 }
             }, {
-                ToastHelper.showShort(it.toString() + getLine(55))
+//                ToastHelper.showShort(it.toString() + getLine(55))
             })
     }
 
@@ -181,6 +183,7 @@ class KotlinMessageSocketService : Service() {
                     isLoginIng = false
 
                     val errorMessage = obj as String
+
                     //打印日志
                     LogUtils.d("华为平台登录失败-->$errorMessage")
                     LogUtils.i("login failed,$errorMessage")
@@ -250,6 +253,11 @@ class KotlinMessageSocketService : Service() {
             Gson()
         }
 
+        //线程池
+        private val singleThreadExecutor by lazy {
+            Executors.newSingleThreadExecutor()
+        }
+
         private lateinit var kotlinMessageSocketClient: KotlinMessageSocketClient
 
         /**
@@ -264,13 +272,17 @@ class KotlinMessageSocketService : Service() {
                     //开始连接
                     //TODO:没有网络时，此处会报错
                     try {
-//                        if (NetWorkUtils.isConnected() && 2 != socketStatusInt) {
+                        // if (NetWorkUtils.isConnected() && 2 != socketStatusInt) {
                         if (NetWorkUtils.isConnected() && SocketStatus.CONNECTING != socketStatus) {
-                           //正在连接
-                            socketStatusInt = 2
-                            //正在连接
-                            socketStatus = SocketStatus.CONNECTING
-                            val reconnectBlocking = kotlinMessageSocketClient.reconnectBlocking()
+//                            //正在连接
+//                            socketStatusInt = 2
+//                            //正在连接
+//                            socketStatus = SocketStatus.CONNECTING
+//                            val reconnectBlocking = kotlinMessageSocketClient.reconnectBlocking()
+
+                            //重新连接
+                            val reconnectBlocking = reConnectSocket()
+
                             //如果连接失败则把标识符设成0
                             if (!reconnectBlocking) {
                                 //断开
@@ -288,6 +300,30 @@ class KotlinMessageSocketService : Service() {
                 ToastHelper.showShort("消息发送失败")
                 return false
             }
+        }
+
+
+        /**
+         * socket重新连接
+         */
+        private fun reConnectSocket(): Boolean {
+            var isConnect = false
+            try {
+                if (socketStatus != SocketStatus.CONNECTING) {
+                    //连接中
+                    socketStatusInt = 2
+                    //连接中
+                    socketStatus = SocketStatus.CONNECTING
+
+                    singleThreadExecutor.execute {
+                        //重新连接
+                        isConnect = kotlinMessageSocketClient.reconnectBlocking()
+                    }
+                }
+            } catch (e: Exception) {
+                ToastHelper.showShort("socket重新连接异常-->${e.message}")
+            }
+            return isConnect
         }
 
         /**
@@ -357,7 +393,7 @@ class KotlinMessageSocketService : Service() {
                     socketStatusInt = 1;
 
                     //已连接
-                    socketStatus =SocketStatus.CONNECT
+                    socketStatus = SocketStatus.CONNECT
                 }
 
                 override fun onClose(code: Int, reason: String?, remote: Boolean) {
@@ -367,7 +403,7 @@ class KotlinMessageSocketService : Service() {
                     socketStatusInt = 0;
 
                     //已断开
-                    socketStatus =SocketStatus.CLOSE
+                    socketStatus = SocketStatus.CLOSE
                 }
 
                 override fun onError(ex: Exception?) {
@@ -450,14 +486,15 @@ class KotlinMessageSocketService : Service() {
             if (isNotify) {
                 //群组重命名
                 if (message.real.message.startsWith("群组重命名_")) {
+                    //保存新的群组名称
                     saveNewGroupName(message.receiveId, message.real.message.substring(6))
                 }
             } else {
-                //保存消息到数据库
-                saveChatBeanToDb(message)
-
                 //群聊中，消息不是自己发的则做处理
                 if (!userId.equals(message.sendId)) {
+                    //保存消息到数据库
+                    saveChatBeanToDb(message)
+
                     EventBusUtils.sendMessage(EventMsg.RECEIVE_SINGLE_MESSAGE, message)
 
                     //更新首页消息
@@ -645,20 +682,23 @@ class KotlinMessageSocketService : Service() {
             }
         }
     }
-
-    /**
-     * socket重新连接
-     */
-    private fun reConnectSocket() {
-//        if (socketStatusInt != 2) {
-        if (socketStatus != SocketStatus.CONNECTING) {
-            //连接中
-            socketStatusInt = 2
-            //连接中
-            socketStatus = SocketStatus.CONNECTING
-            //重新连接
-            kotlinMessageSocketClient.reconnect()
-        }
-    }
+//
+//    /**
+//     * socket重新连接
+//     */
+//    private fun reConnectSocket(): Boolean {
+//        var isConnect = false
+////        if (socketStatusInt != 2) {
+//        if (socketStatus != SocketStatus.CONNECTING) {
+//            //连接中
+//            socketStatusInt = 2
+//            //连接中
+//            socketStatus = SocketStatus.CONNECTING
+//            //重新连接
+////            kotlinMessageSocketClient.reconnect()
+//            isConnect = kotlinMessageSocketClient.reconnectBlocking()
+//        }
+//        return isConnect
+//    }
 
 }

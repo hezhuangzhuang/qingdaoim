@@ -40,6 +40,16 @@ class ContactsService @Inject constructor() {
     }
 
     /**
+     * 获取smc的联系人，包含在线状态
+     */
+    fun queryOnlineSiteList(): Observable<BaseData<PeopleBean>> {
+        return RetrofitManager
+            .create(ContactsApi::class.java, Urls.FILE_URL)
+            .queryOnlineSiteList()
+            .compose(CustomCompose())
+    }
+
+    /**
      * 获取组织结构
      */
     fun queryAllOrganizations(): Observable<BaseData<OrganizationBean>> {
@@ -114,5 +124,16 @@ class ContactsService @Inject constructor() {
             .compose(CustomCompose())
     }
 
-
+    /**
+     * 添加人员到群组
+     */
+    fun addPeopleToGroupChat(
+        groupId: String,
+        ids: String
+    ): Observable<BaseData<PeopleBean>> {
+        return RetrofitManager
+            .create(ContactsApi::class.java, Urls.WEBSOCKET_URL)
+            .addPeopleToGroupChat(groupId, ids)
+            .compose(CustomCompose())
+    }
 }
