@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.alibaba.android.arouter.facade.annotation.Route;
 import com.hw.huaweivclib.inter.HuaweiCallImp;
+import com.hw.huaweivclib.inter.HuaweiInitImp;
 import com.hw.huaweivclib.inter.HuaweiLoginImp;
 import com.hw.provider.router.RouterPath;
 import com.hw.provider.router.provider.huawei.IHuaweiModuleService;
@@ -80,5 +81,10 @@ public class HuaweiModuleServiceImp implements IHuaweiModuleService {
                 type,
                 confType,
                 startTime);
+    }
+
+    @Override
+    public void initHuawei(@NotNull Context application, @NotNull String appName) {
+        HuaweiInitImp.initHuawei(application,appName);
     }
 }

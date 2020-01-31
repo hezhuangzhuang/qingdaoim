@@ -32,6 +32,28 @@
             android:textSize="18sp" />
     </com.hjq.bar.TitleBar>
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:padding="12dp">
+
+        <EditText
+            android:id="@+id/etSearch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_search_bg_eee_5dp"
+            android:drawableLeft="@mipmap/ic_create_conf_search"
+            android:drawablePadding="6dp"
+            android:hint="搜索"
+            android:padding="8dp"
+            android:textColor="@color/color_333"
+            android:textColorHint="@color/color_bbb"
+            android:textSize="14sp" />
+
+    </FrameLayout>
+
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvList"
         android:layout_width="match_parent"

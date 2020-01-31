@@ -1,5 +1,6 @@
 package com.hw.provider.router.provider.huawei.impl
 
+import android.content.Context
 import com.alibaba.android.arouter.launcher.ARouter
 import com.hw.provider.router.provider.huawei.IHuaweiModuleService
 
@@ -10,6 +11,14 @@ import com.hw.provider.router.provider.huawei.IHuaweiModuleService
 object HuaweiModuleService {
     val navigation =
         ARouter.getInstance().navigation(IHuaweiModuleService::class.java)
+
+
+    /**
+     * 初始化华为
+     */
+    fun initHuawei(application: Context, appName: String) {
+        navigation.initHuawei(application, appName)
+    }
 
     /**
      * 登录的方法

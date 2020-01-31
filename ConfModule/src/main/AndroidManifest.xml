@@ -3,9 +3,17 @@
     package="com.hw.confmodule">
 
     <application>
-        <activity android:name=".ui.activity.SelectedPeopleActivity" />
-        <activity android:name=".ui.activity.MyConfActivity" />
-        <activity android:name=".ui.activity.CreateConfActivity" />
+        <activity
+            android:name=".ui.activity.SelectedPeopleActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".ui.activity.MyConfActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".ui.activity.CreateConfActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

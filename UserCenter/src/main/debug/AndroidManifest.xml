@@ -6,7 +6,9 @@
         android:name=".App"
         android:networkSecurityConfig="@xml/network_config"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.activity.UserActivity"></activity>
+        <activity
+            android:name=".ui.activity.UserActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".ui.activity.LoginActivity"
             android:launchMode="singleTask">

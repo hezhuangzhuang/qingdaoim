@@ -1,11 +1,9 @@
 package com.hw.messagemodule.service
 
-import android.app.Notification
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.app.Service
+import android.app.*
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import com.alibaba.android.arouter.launcher.ARouter
@@ -355,6 +353,8 @@ class KotlinMessageSocketService : Service() {
     override fun onCreate() {
         super.onCreate()
 
+        initNotif()
+
         createDisposable()
 
         //登录广播
@@ -367,6 +367,9 @@ class KotlinMessageSocketService : Service() {
         super.onDestroy()
 
         disposable()
+
+        //取消notif
+        manager?.cancelAll()
 
         LocBroadcast.getInstance().unRegisterBroadcast(loginReceiver, mActions)
 
@@ -688,23 +691,40 @@ class KotlinMessageSocketService : Service() {
             }
         }
     }
-//
-//    /**
-//     * socket重新连接
-//     */
-//    private fun reConnectSocket(): Boolean {
-//        var isConnect = false
-////        if (socketStatusInt != 2) {
-//        if (socketStatus != SocketStatus.CONNECTING) {
-//            //连接中
-//            socketStatusInt = 2
-//            //连接中
-//            socketStatus = SocketStatus.CONNECTING
-//            //重新连接
-////            kotlinMessageSocketClient.reconnect()
-//            isConnect = kotlinMessageSocketClient.reconnectBlocking()
-//        }
-//        return isConnect
-//    }
 
+
+    var manager: NotificationManager? = null
+
+    /**
+     * 初始化notif
+     */
+    fun initNotif() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                "deamon",
+                "deamon",
+                NotificationManager.IMPORTANCE_LOW
+            )
+
+            manager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager ?: return
+
+            manager?.createNotificationChannel(channel)
+
+            val notification = NotificationCompat.Builder(this)
+                .setAutoCancel(true)
+                .setCategory(Notification.CATEGORY_SERVICE)
+                .setOngoing(true)
+                .setChannelId(channel.id)
+                .setPriority(NotificationManager.IMPORTANCE_LOW)
+                .build()
+            startForeground(10, notification)
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            //如果 18 以上的设备 启动一个Service startForeground给相同的id
+            //然后结束那个Service
+            startForeground(10, Notification())
+        } else {
+            startForeground(10, Notification())
+        }
+    }
 }

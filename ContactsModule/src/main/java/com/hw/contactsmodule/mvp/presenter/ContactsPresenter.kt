@@ -64,20 +64,6 @@ class ContactsPresenter @Inject constructor() : BasePresenter<ContactsContract.V
                         allList.addAll(allAccounts.data)
 
                         try {
-//                            allList.forEach { allBean ->
-//                                onlineSites.data.forEach {
-//                                    //名称相同则为在线，0:在线，1:离线
-//                                    if (allBean.name.equals(it.name)) {
-//                                        allBean.online = 0
-//
-//                                        //在线人数增加
-//                                        onlineNumber++
-//                                    } else {
-//                                        allBean.online = 1
-//                                    }
-//                                }
-//                            }
-
                             //所有人员默认为离线状态
                             allList.forEach {
                                 it.online = 1
@@ -95,7 +81,7 @@ class ContactsPresenter @Inject constructor() : BasePresenter<ContactsContract.V
                                 }
                             }
                         } catch (e: Exception) {
-                            ToastHelper.showShort("出现异常了")
+//                            ToastHelper.showShort("出现异常了")
                         }
                     } else {
                         mRootView?.apply {
@@ -123,7 +109,6 @@ class ContactsPresenter @Inject constructor() : BasePresenter<ContactsContract.V
                     LogUtils.e("获取所有通讯录-->${it.message}")
                     dismissLoading()
                     showError(it.message.toString())
-//                    showError(ExceptionHandle.handleException(it))
                 }
             })
     }

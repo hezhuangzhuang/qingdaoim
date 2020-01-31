@@ -12,6 +12,8 @@ import com.alibaba.android.arouter.facade.Postcard
 import com.alibaba.android.arouter.facade.annotation.Route
 import com.alibaba.android.arouter.facade.callback.NavigationCallback
 import com.alibaba.android.arouter.launcher.ARouter
+import com.hw.baselibrary.BuildConfig
+import com.hw.baselibrary.common.BaseApp
 import com.hw.baselibrary.constant.PermissionConstants
 import com.hw.baselibrary.ui.activity.BaseMvpActivity
 import com.hw.baselibrary.utils.PermissionUtils
@@ -115,6 +117,9 @@ class LoginActivity : BaseMvpActivity<LoginPresenter>(), LoginContract.View {
     private fun loginRequest() {
         //注册广播
         LocBroadcast.getInstance().registerBroadcast(loginReceiver, mActions)
+
+        //初始化华为
+        HuaweiModuleService.initHuawei(BaseApp.context, BuildConfig.APPLICATION_ID)
 
         var name = etUser.text.toString().trim()
         var pwd = etPwd.text.toString().trim()

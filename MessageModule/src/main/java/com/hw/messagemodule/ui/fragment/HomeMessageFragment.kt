@@ -35,7 +35,6 @@ private const val ARG_PARAM2 = "param2"
  *  消息的fragment
  */
 class HomeMessageFragment : BaseMvpFragment1<MessagePresenter>(), MessageContract.View {
-    //自己初始化
     private lateinit var messageAdapter: HomeMessageAdapter
 
     private val selectCreateDialog: SelectCreateDialog by lazy {
@@ -76,7 +75,6 @@ class HomeMessageFragment : BaseMvpFragment1<MessagePresenter>(), MessageContrac
     }
 
     override fun doLazyBusiness() {
-//        ToastHelper.showShort("获取最新的数据")
         //获取最新的消息
         mPresenter.queryLastChatBeans()
     }

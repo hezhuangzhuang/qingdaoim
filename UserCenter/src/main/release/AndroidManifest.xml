@@ -5,8 +5,12 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application>
-        <activity android:name=".ui.activity.SetUrlActivity"></activity>
-        <activity android:name=".ui.activity.AboutActivity" />
+        <activity
+            android:name=".ui.activity.SetUrlActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".ui.activity.AboutActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activity.LoginActivity"
             android:launchMode="singleTask"

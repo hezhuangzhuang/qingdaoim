@@ -1,11 +1,14 @@
 package com.hw.contactsmodule.ui.activity
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.alibaba.android.arouter.facade.annotation.Route
 import com.hjq.bar.OnTitleBarListener
 import com.hw.baselibrary.ui.activity.BaseMvpActivity
+import com.hw.baselibrary.utils.KeyboardUtils
 import com.hw.baselibrary.utils.ToastHelper
 import com.hw.baselibrary.utils.sharedpreferences.SPStaticUtils
 import com.hw.contactsmodule.R
@@ -19,7 +22,9 @@ import com.hw.provider.eventbus.EventMsg
 import com.hw.provider.net.respone.contacts.PeopleBean
 import com.hw.provider.router.RouterPath
 import com.hw.provider.user.UserContants
+import kotlinx.android.synthetic.main.activity_delete_group_people.*
 import kotlinx.android.synthetic.main.activity_group_details.*
+import kotlinx.android.synthetic.main.activity_group_details.titleBar
 import kotlinx.android.synthetic.main.fragment_contacts.*
 import kotlinx.android.synthetic.main.fragment_contacts.rvList
 
@@ -65,7 +70,7 @@ class DeleteGroupPeopleActivity : BaseMvpActivity<DeleteGroupPeoplePresenter>(),
 
     override fun initView(savedInstanceState: Bundle?, contentView: View) {
         deleteGroupPeopleAdapter =
-            DeleteGroupPeopleAdapter(R.layout.item_delete_group_people, allPeoples)
+            DeleteGroupPeopleAdapter(R.layout.item_delete_group_people, ArrayList<PeopleBean>())
 
         deleteGroupPeopleAdapter.setOnItemClickListener { adapter, view, position ->
             itemClick(position)
@@ -73,6 +78,8 @@ class DeleteGroupPeopleActivity : BaseMvpActivity<DeleteGroupPeoplePresenter>(),
 
         rvList.layoutManager = LinearLayoutManager(this)
         rvList.adapter = deleteGroupPeopleAdapter
+
+        deleteGroupPeopleAdapter.replaceData(allPeoples)
     }
 
     /**
@@ -90,7 +97,6 @@ class DeleteGroupPeopleActivity : BaseMvpActivity<DeleteGroupPeoplePresenter>(),
         }
         deleteGroupPeopleAdapter.notifyItemChanged(position)
     }
-
 
     override fun doBusiness() {
 
@@ -112,6 +118,22 @@ class DeleteGroupPeopleActivity : BaseMvpActivity<DeleteGroupPeoplePresenter>(),
             override fun onTitleClick(v: View?) {
             }
         })
+
+        etSearch.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val filter = allPeoples.filter {
+                    it.name.contains(s.toString())
+                }
+                deleteGroupPeopleAdapter.replaceData(filter)
+            }
+        })
     }
 
     override fun onError(text: String) {
@@ -126,5 +148,11 @@ class DeleteGroupPeopleActivity : BaseMvpActivity<DeleteGroupPeoplePresenter>(),
 
     override fun deletePeopleFailed(errorMsg: String) {
         ToastHelper.showShort(errorMsg)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        KeyboardUtils.hideSoftInput(etSearch)
     }
 }

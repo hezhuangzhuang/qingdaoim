@@ -256,7 +256,7 @@
             android:id="@+id/etSearch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/shape_search_bg"
+            android:background="@drawable/shape_search_bg_eee_5dp"
             android:drawableLeft="@mipmap/ic_create_conf_search"
             android:drawablePadding="6dp"
             android:hint="搜索"

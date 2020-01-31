@@ -3,7 +3,9 @@
     package="com.hw.huaweivclib">
 
     <application>
-        <activity android:name=".activity.ChairSelectActivity"></activity>
+        <activity
+            android:name=".activity.ChairSelectActivity"
+            android:screenOrientation="portrait"/>
         <!-- 召集会议等待界面 -->
         <activity
             android:name=".activity.LoadingActivity"
@@ -68,10 +70,10 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait">
             <intent-filter>
-                <action android:name="android.intent.action.audio_activity"/>
+                <action android:name="android.intent.action.audio_activity" />
 
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.sdkdemo"/>
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.sdkdemo" />
             </intent-filter>
         </activity>
 

@@ -411,6 +411,7 @@ object NetWorkUtils {
                     }
                 }
             }
+//        } catch (e: SocketException) {
         } catch (e: SocketException) {
             e.printStackTrace()
         }

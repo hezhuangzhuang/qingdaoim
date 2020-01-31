@@ -1,5 +1,6 @@
 package com.hw.provider.router.provider.huawei
 
+import android.content.Context
 import com.alibaba.android.arouter.facade.template.IProvider
 
 /**
@@ -68,11 +69,16 @@ interface IHuaweiModuleService : IProvider {
         type: Int,
         confType: String,
         startTime: String
-    ):Boolean
+    ): Boolean
 
     /**
      * 加入会议
      */
     fun joinConf(accessCode: String)
+
+    /**
+     * 初始化华为
+     */
+    fun initHuawei(application: Context, appName: String)
 
 }

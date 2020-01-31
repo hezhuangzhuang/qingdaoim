@@ -18,6 +18,9 @@ import com.huawei.tup.login.LoginAuthServerInfo;
 import com.huawei.tup.login.LoginAuthType;
 import com.huawei.tup.login.LoginAuthorizeParam;
 import com.huawei.tup.login.LoginServerType;
+import com.hw.baselibrary.common.BaseApp;
+import com.hw.huaweivclib.BuildConfig;
+import com.hw.huaweivclib.inter.HuaweiInitImp;
 import com.hw.provider.huawei.commonservice.util.DeviceManager;
 import com.hw.provider.huawei.commonservice.util.LogUtil;
 
@@ -86,9 +89,13 @@ public class LoginMgr implements ITupLoginCenterNotify {
 
         LoginCenter.getInstance().setLocalIPAddress(localIpAddress);
 
-        if (TupMgr.getInstance().getFeatureMgr().isSupportAudioAndVideoCall()) {
-            LoginCenter.getInstance().setSrtpMode(loginParam.getSrtpMode());
-            LoginCenter.getInstance().setSipTransportMode(loginParam.getSipTransportMode());
+        try {
+            if (TupMgr.getInstance().getFeatureMgr().isSupportAudioAndVideoCall()) {
+                LoginCenter.getInstance().setSrtpMode(loginParam.getSrtpMode());
+                LoginCenter.getInstance().setSipTransportMode(loginParam.getSipTransportMode());
+            }
+        } catch (Exception ex) {
+            HuaweiInitImp.initHuawei(BaseApp.context, BuildConfig.APPLICATION_ID);
         }
 
         //user authorize info

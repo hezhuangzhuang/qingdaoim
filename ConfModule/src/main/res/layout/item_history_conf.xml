@@ -79,27 +79,34 @@
         android:layout_below="@id/tv_duration"
         android:layout_marginTop="5dp"
         android:layout_toRightOf="@id/iv_img"
+        android:layout_marginBottom="5dp"
         android:drawableLeft="@mipmap/ic_history_account_number"
         android:drawablePadding="6dp"
         android:textColor="@color/color_666"
         android:textSize="13sp"
         tools:text="会议人数" />
 
-    <TextView
-        android:id="@+id/tv_attendee"
-        android:layout_width="match_parent"
+    <ImageView
+        android:id="@+id/iv_attendee"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/tv_account_number"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="18dp"
+        android:layout_marginRight="6dp"
         android:layout_toRightOf="@id/iv_img"
-        android:drawableLeft="@mipmap/ic_attendee"
-        android:drawablePadding="6dp"
-        android:paddingRight="10dp"
-        android:singleLine="true"
+        android:src="@mipmap/ic_attendee" />
+
+
+    <TextView
+        android:id="@+id/tv_attendee"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="18dp"
+        android:layout_toRightOf="@+id/iv_attendee"
+        android:layout_alignTop="@+id/iv_attendee"
+        android:gravity="top"
+         android:layout_marginRight="@dimen/dp_10"
         android:textColor="@color/color_666"
         android:textSize="13sp"
-        tools:drawableRight="@mipmap/ic_conf_array_down"
-        tools:text="999" />
+        tools:text="999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999" />
 
 </RelativeLayout>

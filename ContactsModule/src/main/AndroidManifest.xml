@@ -4,9 +4,15 @@
 
     <application>
 
-        <activity android:name=".ui.activity.DeleteGroupPeopleActivity"></activity>
-        <activity android:name=".ui.activity.GroupDetailsActivity"></activity>
-        <activity android:name=".ui.activity.ContactDetailsActivity" />
+        <activity
+            android:name=".ui.activity.DeleteGroupPeopleActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".ui.activity.GroupDetailsActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".ui.activity.ContactDetailsActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>
