@@ -62,10 +62,10 @@ class CreateConfActivity : BaseMvpActivity<CreateConfPresenter>(), CreateConfCon
     }
 
     //是否是视频会议, 0：语音会议，1：视频会议,
-    var isVideoConf = 1
+    var isVideoConf = ConfContants.VIDEO_CONF
 
     //是否是预约会议，0:即时会议，1：预约会议
-    var isReservedConf = 0
+    var isReservedConf = ConfContants.INSTANT_CONF
 
     //true:创建群聊，false:创建会议
     var isCreateGroup = false
@@ -76,7 +76,7 @@ class CreateConfActivity : BaseMvpActivity<CreateConfPresenter>(), CreateConfCon
      * const val CREATE_GROUP_CHAT = 1   //创建群组
      * const val GROUP_CHAT_ADD_PEOPLE =2           //添加人员
      */
-    var controlType = 0
+    var controlType = ConfContants.CREATE_CONF
 
     //添加人员的群组id
     var groupId: String? = null
@@ -192,24 +192,6 @@ class CreateConfActivity : BaseMvpActivity<CreateConfPresenter>(), CreateConfCon
                 titleBar.rightTitle = "确认"
             }
         }
-
-//        //如果是创建群组则隐藏会议接入码的输入框
-//        clTypeContent.isVisible = !isCreateGroup
-//        llConfCode.isVisible = !isCreateGroup
-//
-//        //创建群组则隐藏会议类型
-//        llConfType.isVisible = !isCreateGroup
-//
-//        //创建群组
-//        if (isCreateGroup) {
-//            tvConfNameLable.text = "群组名称"
-//            etConfName.hint = "名称（最长10个字符）"
-//            tvTopTitle.text = "创建群组"
-//            titleBar.rightTitle = "创建群组"
-//        } else {
-//            //设置会议类型
-//            setConfTypeStyle()
-//        }
     }
 
     /**
@@ -269,7 +251,7 @@ class CreateConfActivity : BaseMvpActivity<CreateConfPresenter>(), CreateConfCon
             tvContType.text = if (isChecked) "预约会议" else "即时会议"
 
             //是否是预约会议，0:即时会议，1：预约会议
-            isReservedConf = if (isChecked) 1 else 0
+            isReservedConf = if (isChecked) ConfContants.RESERVED_CONF else ConfContants.INSTANT_CONF
 
             //显示开始时间
             llStartTime.isVisible = isChecked
@@ -280,13 +262,13 @@ class CreateConfActivity : BaseMvpActivity<CreateConfPresenter>(), CreateConfCon
         }
 
         tvVideoConf.setOnClickListener {
-            isVideoConf = 1
+            isVideoConf = ConfContants.VIDEO_CONF
 
             setConfTypeStyle()
         }
 
         tvVoiceConf.setOnClickListener {
-            isVideoConf = 0
+            isVideoConf = ConfContants.AUDIO_CONF
 
             setConfTypeStyle()
         }
@@ -382,7 +364,7 @@ class CreateConfActivity : BaseMvpActivity<CreateConfPresenter>(), CreateConfCon
         }
 
         //如果是预约会议
-        if (1 == isReservedConf && startTime.isEmpty()) {
+        if (ConfContants.RESERVED_CONF == isReservedConf && startTime.isEmpty()) {
             ToastHelper.showShort("请选择会议开始时间")
             return
         }
@@ -398,7 +380,7 @@ class CreateConfActivity : BaseMvpActivity<CreateConfPresenter>(), CreateConfCon
             selectPeoples.joinToString { it.sip } + ", ${SPStaticUtils.getString(UserContants.HUAWEI_ACCOUNT)}"
 
         //预约会议
-        if (1 == isReservedConf) {
+        if (ConfContants.RESERVED_CONF == isReservedConf) {
             ToastHelper.showShort("开始预约会议")
             mPresenter.reservedConf(
                 confName,
@@ -476,21 +458,21 @@ class CreateConfActivity : BaseMvpActivity<CreateConfPresenter>(), CreateConfCon
         tvVideoConf.setTextColor(
             ContextCompat.getColor(
                 mActivity,
-                if (isVideoConf == 1) R.color.color_418ad5 else R.color.color_999
+                if (isVideoConf == ConfContants.VIDEO_CONF) R.color.color_418ad5 else R.color.color_999
             )
         )
-        tvVideoConf.paint.isFakeBoldText = isVideoConf == 1
-        viewVideo.isVisible = isVideoConf == 1
+        tvVideoConf.paint.isFakeBoldText = isVideoConf == ConfContants.VIDEO_CONF
+        viewVideo.isVisible = isVideoConf == ConfContants.VIDEO_CONF
 
         //语音
         tvVoiceConf.setTextColor(
             ContextCompat.getColor(
                 mActivity,
-                if (isVideoConf == 1) R.color.color_999 else R.color.color_418ad5
+                if (isVideoConf == ConfContants.VIDEO_CONF) R.color.color_999 else R.color.color_418ad5
             )
         )
-        tvVoiceConf.paint.isFakeBoldText = !(isVideoConf == 1)
-        viewVoice.isVisible = !(isVideoConf == 1)
+        tvVoiceConf.paint.isFakeBoldText = !(isVideoConf == ConfContants.VIDEO_CONF)
+        viewVoice.isVisible = !(isVideoConf == ConfContants.VIDEO_CONF)
     }
 
     override fun queryPeopleSuccess(showPeoples: List<PeopleBean>) {
@@ -541,7 +523,6 @@ class CreateConfActivity : BaseMvpActivity<CreateConfPresenter>(), CreateConfCon
                     createConfAdapter.notifyDataSetChanged()
                 }
             }
-
         }
     }
 

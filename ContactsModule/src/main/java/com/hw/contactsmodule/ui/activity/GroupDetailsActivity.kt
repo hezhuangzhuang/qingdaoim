@@ -109,19 +109,6 @@ class GroupDetailsActivity : BaseMvpActivity<GroupDetailsPresenter>(), GroupDeta
                 showModifyGroupNameDialog()
             }
         }
-
-        titleBar.setOnTitleBarListener(object : OnTitleBarListener {
-            override fun onRightClick(v: View?) {
-            }
-
-            override fun onTitleClick(v: View?) {
-            }
-
-            override fun onLeftClick(v: View?) {
-                finish()
-            }
-
-        })
     }
 
     //修改群名称的对话框
@@ -219,6 +206,37 @@ class GroupDetailsActivity : BaseMvpActivity<GroupDetailsPresenter>(), GroupDeta
         //不是群主的时候隐藏解散按钮
         tvDismissGroup.isVisible = isCreate
         this.isCreate = isCreate
+
+        //如果群主则显示右边箭头
+        tvGroupName.setCompoundDrawablesRelativeWithIntrinsicBounds(
+            0,
+            0,
+            if (isCreate) R.mipmap.ic_arrow else 0,
+            0
+        )
+
+        titleBar.rightTitle = if (isCreate) "删除成员" else ""
+
+        titleBar.setOnTitleBarListener(object : OnTitleBarListener {
+            override fun onRightClick(v: View?) {
+                //删除人员
+                ARouter.getInstance()
+                    .build(RouterPath.Contacts.DELETE_GROUP_PEOPLE)
+                    .withString(RouterPath.Contacts.FILED_GROUP_ID, groupId)
+                    .withSerializable(
+                        RouterPath.Contacts.FILED_ALL_PEOPLE,
+                        groupDetailsAdapter.data as Serializable
+                    )
+                    .navigation()
+            }
+
+            override fun onTitleClick(v: View?) {
+            }
+
+            override fun onLeftClick(v: View?) {
+                finish()
+            }
+        })
 
         groupDetailsAdapter.replaceData(groupPeoples)
     }

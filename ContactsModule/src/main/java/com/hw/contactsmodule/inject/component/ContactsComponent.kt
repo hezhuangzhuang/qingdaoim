@@ -3,6 +3,7 @@ package com.hw.contactsmodule.inject.component
 import com.hw.baselibrary.injection.PerComponentScope
 import com.hw.baselibrary.injection.component.ActivityComponent
 import com.hw.contactsmodule.inject.module.ContactsModule
+import com.hw.contactsmodule.ui.activity.DeleteGroupPeopleActivity
 import com.hw.contactsmodule.ui.activity.GroupDetailsActivity
 import com.hw.contactsmodule.ui.fragment.ContactsFragment
 import dagger.Component
@@ -21,4 +22,6 @@ interface ContactsComponent {
     fun inject(contactsFragment: ContactsFragment)
 
     fun inject(groupDetailsActivity: GroupDetailsActivity)
+
+    fun inject(deleteGroupPeopleActivity: DeleteGroupPeopleActivity)
 }

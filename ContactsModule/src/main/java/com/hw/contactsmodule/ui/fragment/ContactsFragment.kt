@@ -157,6 +157,7 @@ class ContactsFragment : BaseMvpFragment<ContactsPresenter>(), ContactsContract.
         allPeopleAdapter.setOnItemClickListener(object : BaseQuickAdapter.OnItemClickListener {
             override fun onItemClick(adapter: BaseQuickAdapter<*, *>?, view: View?, position: Int) {
                 val peopleBean = allPeopleAdapter.getItem(position)!!
+                //跳转到联系人详情
                 startContactsDetails(peopleBean)
             }
         })
@@ -166,6 +167,9 @@ class ContactsFragment : BaseMvpFragment<ContactsPresenter>(), ContactsContract.
         getData()
     }
 
+    /**
+     * 跳转到联系人详情
+     */
     private fun startContactsDetails(peopleBean: PeopleBean) {
         ARouter.getInstance()
             .build(RouterPath.Contacts.CONTACT_DETAILS)
@@ -179,6 +183,19 @@ class ContactsFragment : BaseMvpFragment<ContactsPresenter>(), ContactsContract.
      */
     private fun initOrganAdapter() {
         organizationAdapter = OrganizationAdapter(ArrayList<MultiItemEntity>())
+
+        organizationAdapter.setOnItemChildClickListener { adapter, view, position ->
+            var item = organizationAdapter.getItem(position) as OrganizationItem
+            //组织机构一键起会
+            mPresenter.organizationOneCreateConf(
+                item.organizationBean.depName,
+                "120",
+                "",
+                item.organizationBean.depId.toString(),
+                1
+            )
+        }
+
         organizationAdapter.setChildClick(object : onClildClickLis1 {
             override fun onCollapseClick(pos: Int, depId: Int) {
                 organizationAdapter.collapse(pos)
@@ -194,6 +211,7 @@ class ContactsFragment : BaseMvpFragment<ContactsPresenter>(), ContactsContract.
             }
 
             override fun onPersonClick(peopleBean: PeopleBean) {
+                //跳转到联系人详情
                 startContactsDetails(peopleBean)
             }
         })
@@ -220,7 +238,8 @@ class ContactsFragment : BaseMvpFragment<ContactsPresenter>(), ContactsContract.
 
                 R.id.ivCreateConf -> {
                     val groupChatBean = groupChatAdapter.getItem(position)!!
-                    mPresenter.createConf(
+                    //群组一键起会
+                    mPresenter.groupChatOneCreateConf(
                         groupChatBean.groupName,
                         "120",
                         "",
@@ -378,7 +397,6 @@ class ContactsFragment : BaseMvpFragment<ContactsPresenter>(), ContactsContract.
         }
     }
 
-
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -403,7 +421,6 @@ class ContactsFragment : BaseMvpFragment<ContactsPresenter>(), ContactsContract.
          * @param param2 Parameter 2.
          * @return A new instance of fragment ContactsFragment.
          */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(type: String) =
             ContactsFragment().apply {

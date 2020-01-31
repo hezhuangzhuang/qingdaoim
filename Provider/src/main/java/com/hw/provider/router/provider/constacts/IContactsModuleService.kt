@@ -41,4 +41,12 @@ public interface IContactsModuleService : IProvider {
         ids: String
     ): Observable<BaseData<PeopleBean>>
 
+    /**
+     * 添加人员到群组
+     */
+    fun deletePeopleToGroupChat(
+        groupId: String,
+        ids: String
+    ): Observable<BaseData<PeopleBean>>
+
 }

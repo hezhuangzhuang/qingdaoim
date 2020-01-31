@@ -1,6 +1,5 @@
 package com.hw.mylibrary.ui.activity
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import com.alibaba.android.arouter.facade.annotation.Route
@@ -39,13 +38,13 @@ class SetUrlActivity : BaseActivity() {
             if (isChecked) {
                 tvType.text = "正式环境"
 
-                etFilePath.setText(Urls.FILE_FORMAL_URL)
-                etImPath.setText(Urls.WEBSOCKET_FORMAL_URL)
+                etFilePath.setText(Urls.FILE_FORMAL)
+                etImPath.setText(Urls.WEBSOCKET_FORMAL)
             } else {//测试环境
                 tvType.text = "测试环境"
 
-                etFilePath.setText(Urls.FILE_TEST_URL)
-                etImPath.setText(Urls.WEBSOCKET_TEST_URL)
+                etFilePath.setText(Urls.FILE_TEST)
+                etImPath.setText(Urls.WEBSOCKET_TEST)
             }
         }
 

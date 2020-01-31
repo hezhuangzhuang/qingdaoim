@@ -17,6 +17,20 @@ import javax.inject.Inject
 @Route(path = RouterPath.Contacts.CONTACTS_MODULE_SERVICE)
 class ContactsModuleServiceImp @Inject constructor() :
     IContactsModuleService {
+
+    /**
+     * 删除群组人员
+     */
+    override fun deletePeopleToGroupChat(
+        groupId: String,
+        ids: String
+    ): Observable<BaseData<PeopleBean>> {
+        return ContactsService().delPeopleToGroupChat(groupId, ids)
+    }
+
+    /**
+     * 添加人员到群组
+     */
     override fun addPeopleToGroupChat(
         groupId: String,
         ids: String

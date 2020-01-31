@@ -136,4 +136,17 @@ class ContactsService @Inject constructor() {
             .addPeopleToGroupChat(groupId, ids)
             .compose(CustomCompose())
     }
+
+    /**
+     * 删除群组人员
+     */
+    fun delPeopleToGroupChat(
+        groupId: String,
+        ids: String
+    ): Observable<BaseData<PeopleBean>> {
+        return RetrofitManager
+            .create(ContactsApi::class.java, Urls.WEBSOCKET_URL)
+            .deletePeopleToGroupChat(groupId, ids)
+            .compose(CustomCompose())
+    }
 }

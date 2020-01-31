@@ -5,8 +5,7 @@ import com.hw.baselibrary.bindLife
 import com.hw.baselibrary.common.BasePresenter
 import com.hw.baselibrary.net.NetWorkContants
 import com.hw.confmodule.mvp.contract.MyConfContract
-import com.hw.confmodule.mvp.model.CreateConfService
-import io.reactivex.internal.util.ExceptionHelper
+import com.hw.confmodule.mvp.model.ConfService
 import javax.inject.Inject
 
 class MyConfPresenter @Inject constructor() : BasePresenter<MyConfContract.View>(),
@@ -14,7 +13,7 @@ class MyConfPresenter @Inject constructor() : BasePresenter<MyConfContract.View>
 
 
     @Inject
-    lateinit var createService: CreateConfService
+    lateinit var createService: ConfService
 
     /**
      * 获取所有会议

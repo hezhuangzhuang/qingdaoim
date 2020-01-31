@@ -29,4 +29,14 @@ object ContactsModuleRouteService {
 
         return navigation.addPeopleToGroupChat(groupId, ids)
     }
+
+    fun deletePeopleToGroupChat(
+        groupId: String,
+        ids: String
+    ): Observable<BaseData<PeopleBean>> {
+
+        val navigation = ARouter.getInstance().navigation(IContactsModuleService::class.java)
+
+        return navigation.deletePeopleToGroupChat(groupId, ids)
+    }
 }

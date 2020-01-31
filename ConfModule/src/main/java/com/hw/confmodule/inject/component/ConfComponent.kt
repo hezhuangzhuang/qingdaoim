@@ -17,8 +17,8 @@ import dagger.Component
     modules = arrayOf(ConfModule::class)
 )
 interface ConfComponent {
-    fun inject(createConfActivity:CreateConfActivity)
+    fun inject(createConfActivity: CreateConfActivity)
 
 
-    fun inject (myConfActivity: MyConfActivity)
+    fun inject(myConfActivity: MyConfActivity)
 }

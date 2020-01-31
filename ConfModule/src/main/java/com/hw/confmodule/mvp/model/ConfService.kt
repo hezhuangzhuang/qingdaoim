@@ -22,7 +22,14 @@ import javax.inject.Inject
  *author：pc-20171125
  *data:2020/1/9 14:27
  */
-class CreateConfService @Inject constructor() {
+class ConfService @Inject constructor() {
+
+    /**
+     * 删除群组成员
+     */
+    fun deleteGroupPeople(groupId: String, ids: String): Observable<BaseData<PeopleBean>> {
+        return ContactsModuleRouteService.deletePeopleToGroupChat(groupId, ids)
+    }
 
     /**
      * 获取所有联系人

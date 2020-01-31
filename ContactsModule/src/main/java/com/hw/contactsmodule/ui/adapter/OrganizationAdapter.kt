@@ -36,7 +36,7 @@ class OrganizationAdapter : BaseMultiItemQuickAdapter<MultiItemEntity, BaseViewH
      * 设置组织信息
      */
     private fun setOrganizationInfo(helper: BaseViewHolder, item: MultiItemEntity?) {
-        var organizationItem = item as OrganizationItem;
+        var organizationItem = item as OrganizationItem
         var organName = organizationItem.organizationBean.depName
         //设置名称
         helper.setText(R.id.tvName, "${organName}(${organizationItem.organizationBean.count})")
@@ -44,6 +44,8 @@ class OrganizationAdapter : BaseMultiItemQuickAdapter<MultiItemEntity, BaseViewH
                 R.id.ivArrow,
                 if (organizationItem.isExpanded) R.mipmap.arrow_b else R.mipmap.arrow_r
             )
+            .addOnClickListener(R.id.ivCreateConf)
+
         helper.setOnClickListener(R.id.ivArrow, object : View.OnClickListener {
             override fun onClick(p0: View?) {
                 //判断组织下是否有成员

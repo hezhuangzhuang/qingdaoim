@@ -3,6 +3,8 @@
     package="com.hw.contactsmodule">
 
     <application>
+
+        <activity android:name=".ui.activity.DeleteGroupPeopleActivity"></activity>
         <activity android:name=".ui.activity.GroupDetailsActivity"></activity>
         <activity android:name=".ui.activity.ContactDetailsActivity" />
     </application>

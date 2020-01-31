@@ -26,13 +26,19 @@ object RouterPath {
     class Contacts {
         companion object {
             //联系人详情
-            const val CONTACT_DETAILS="/contacts/contactsDetails"
+            const val CONTACT_DETAILS = "/contacts/contactsDetails"
 
             //群聊详情
-            const val GROUP_CHAT_DETAILS="/contacts/groupChatDetails"
+            const val GROUP_CHAT_DETAILS = "/contacts/groupChatDetails"
+
+            //删除群组成员
+            const val DELETE_GROUP_PEOPLE = "/contacts/deleteGroupPeople"
 
             const val FILED_RECEIVE_ID = "FILED_RECEIVE_ID"
             const val FILED_RECEIVE_NAME = "FILED_RECEIVE_NAME"
+
+            const val FILED_ALL_PEOPLE = "FILED_ALL_PEOPLE"
+            const val FILED_GROUP_ID = "FILED_GROUP_ID"
 
             //提供给其他模块调用的服务
             const val CONTACTS_MODULE_SERVICE = "/contacts/service"
@@ -53,9 +59,6 @@ object RouterPath {
             //已选择的成员
             const val FILED_SELECTED_PEOPLE = "FILED_SELECTED_PEOPLE"
 
-
-
-
             //是否是历史会议
             const val FILED_IS_HISTORY = "FILED_IS_HISTORY"
 
@@ -73,6 +76,9 @@ object RouterPath {
 
             //是否是视频会议
             const val FILED_VIDEO_CONF = "FILED_VIDEO_CONF"
+
+            //是否是删除群组成员
+            const val FILED_DELETE_GROUP_PEOPLE = "FILED_DELETE_GROUP_PEOPLE"
         }
     }
 

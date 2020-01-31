@@ -41,13 +41,22 @@ interface ContactsContract {
         //获取所有群聊
         fun getGroupChat()
 
-        //一键召集会议
-        fun createConf(
+        //群组一键召集会议
+        fun groupChatOneCreateConf(
             confName: String,
             duration: String,
             accessCode: String,
             groupId: String,
             type: Int
+        )
+
+        //组织机构一键召集会议
+        fun organizationOneCreateConf(
+            confName: String,//会议名称
+            duration: String,//会议时长
+            accessCode: String,//会议接入码
+            groupId: String,//群组id
+            type: Int//会议类型
         )
     }
 }

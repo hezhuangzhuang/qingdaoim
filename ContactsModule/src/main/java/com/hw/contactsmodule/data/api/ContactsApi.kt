@@ -116,4 +116,18 @@ interface ContactsApi {
     ): Observable<BaseData<PeopleBean>>
 
 
+    /**
+     * 删除群组人员
+     *
+     * @param id
+     * @return
+     */
+    @Headers("Content-Type: application/json", "Accept: application/json")//需要添加头
+    @POST("im/mobile/group/delGroupUser")
+    fun deletePeopleToGroupChat(
+        @Query("groupId") groupId: String,
+        @Query("ids") ids: String
+    ): Observable<BaseData<PeopleBean>>
+
+
 }

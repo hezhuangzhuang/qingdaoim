@@ -6,7 +6,7 @@ import com.hw.baselibrary.common.BasePresenter
 import com.hw.baselibrary.net.NetWorkContants
 import com.hw.baselibrary.utils.sharedpreferences.SPStaticUtils
 import com.hw.confmodule.mvp.contract.CreateConfContract
-import com.hw.confmodule.mvp.model.CreateConfService
+import com.hw.confmodule.mvp.model.ConfService
 import com.hw.provider.router.provider.constacts.impl.ContactsModuleRouteService
 import com.hw.provider.router.provider.huawei.impl.HuaweiModuleService
 import com.hw.provider.user.UserContants
@@ -85,7 +85,7 @@ class CreateConfPresenter @Inject constructor() : BasePresenter<CreateConfContra
 
 
     @Inject
-    lateinit var confService: CreateConfService
+    lateinit var confService: ConfService
 
     override fun queryAllPeople() {
         checkViewAttached()

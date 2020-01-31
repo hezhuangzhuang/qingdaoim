@@ -71,6 +71,16 @@ class KotlinMessageSocketService : Service() {
 
                 //轮询华为的状态
                 pingHuawei()
+
+                //检查socket是否为空
+                if (kotlinMessageSocketClient != null) {
+                    if (kotlinMessageSocketClient.isClosed()) {
+                        reConnectSocket();
+                    }
+                } else {
+                    //如果client已为空，重新初始化websocket
+                    initSocketClient();
+                }
             }, {
                 ToastHelper.showShort(ExceptionHandle.handleException(it))
             })
@@ -134,7 +144,7 @@ class KotlinMessageSocketService : Service() {
                     }
                 }
             }, {
-//                ToastHelper.showShort(it.toString() + getLine(55))
+                //                ToastHelper.showShort(it.toString() + getLine(55))
             })
     }
 
@@ -274,11 +284,6 @@ class KotlinMessageSocketService : Service() {
                     try {
                         // if (NetWorkUtils.isConnected() && 2 != socketStatusInt) {
                         if (NetWorkUtils.isConnected() && SocketStatus.CONNECTING != socketStatus) {
-//                            //正在连接
-//                            socketStatusInt = 2
-//                            //正在连接
-//                            socketStatus = SocketStatus.CONNECTING
-//                            val reconnectBlocking = kotlinMessageSocketClient.reconnectBlocking()
 
                             //重新连接
                             val reconnectBlocking = reConnectSocket()
@@ -321,7 +326,7 @@ class KotlinMessageSocketService : Service() {
                     }
                 }
             } catch (e: Exception) {
-                ToastHelper.showShort("socket重新连接异常-->${e.message}")
+//                ToastHelper.showShort("socket重新连接异常-->${e.message}")
             }
             return isConnect
         }
@@ -374,44 +379,45 @@ class KotlinMessageSocketService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         initSocketClient()
-        LogUtils.i("onStartCommand-->" + kotlinMessageSocketClient)
         return super.onStartCommand(intent, flags, startId)
     }
 
     private fun initSocketClient() {
-        kotlinMessageSocketClient =
-            object : KotlinMessageSocketClient(URI.create(url)) {
-                override fun onMessage(message: String?) {
-                    LogUtils.d("MessageSocketService-->onMessage-->$message")
-                    handlerMessage(message!!)
+        singleThreadExecutor.execute {
+            kotlinMessageSocketClient =
+                object : KotlinMessageSocketClient(URI.create(url)) {
+                    override fun onMessage(message: String?) {
+                        LogUtils.d("MessageSocketService-->onMessage-->$message")
+                        handlerMessage(message!!)
+                    }
+
+                    override fun onOpen(handshakedata: ServerHandshake?) {
+                        super.onOpen(handshakedata)
+                        LogUtils.d("MessageSocketService-->onOpen-->$handshakedata")
+                        //已连接
+                        socketStatusInt = 1;
+
+                        //已连接
+                        socketStatus = SocketStatus.CONNECT
+                    }
+
+                    override fun onClose(code: Int, reason: String?, remote: Boolean) {
+                        super.onClose(code, reason, remote)
+                        LogUtils.d("MessageSocketService-->onClose-->code-->${code}remote-->${remote}")
+                        //已断开
+                        socketStatusInt = 0;
+
+                        //已断开
+                        socketStatus = SocketStatus.CLOSE
+                    }
+
+                    override fun onError(ex: Exception?) {
+                        super.onError(ex)
+                        LogUtils.d("MessageSocketService-->onError-->${ex?.message}")
+                    }
                 }
-
-                override fun onOpen(handshakedata: ServerHandshake?) {
-                    super.onOpen(handshakedata)
-                    LogUtils.d("MessageSocketService-->onOpen-->$handshakedata")
-                    //已连接
-                    socketStatusInt = 1;
-
-                    //已连接
-                    socketStatus = SocketStatus.CONNECT
-                }
-
-                override fun onClose(code: Int, reason: String?, remote: Boolean) {
-                    super.onClose(code, reason, remote)
-                    LogUtils.d("MessageSocketService-->onClose-->code-->${code}remote-->${remote}")
-                    //已断开
-                    socketStatusInt = 0;
-
-                    //已断开
-                    socketStatus = SocketStatus.CLOSE
-                }
-
-                override fun onError(ex: Exception?) {
-                    super.onError(ex)
-                    LogUtils.d("MessageSocketService-->onError-->${ex?.message}")
-                }
-            }
-        kotlinMessageSocketClient.connectBlocking()
+            kotlinMessageSocketClient.connectBlocking()
+        }
     }
 
     /**

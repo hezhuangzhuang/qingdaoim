@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:orientation="vertical"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".ui.activity.GroupDetailsActivity">
 
     <com.hjq.bar.TitleBar
@@ -15,54 +14,57 @@
         android:background="@color/color_418ad5"
         app:leftIcon="@mipmap/bar_icon_back_white"
         app:titleColor="@color/white"
-        app:titleSize="18sp" >
+        tools:rightTitle="删除成员"
+        app:rightColor="@color/white"
+        app:rightSize="16sp"
+        app:titleSize="18sp">
 
         <TextView
             android:id="@+id/tvName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:text="群聊信息"
             android:textColor="@color/white"
-            android:textSize="18sp"
-            android:text="群聊信息" />
+            android:textSize="18sp" />
     </com.hjq.bar.TitleBar>
 
     <LinearLayout
-        android:background="@color/white"
-        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:orientation="horizontal">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="15dp"
-            android:text="群聊名称"
+            android:text=" 群聊名称"
             android:textColor="#ff666666"
-            android:textSize="15sp"/>
+            android:textSize="15sp" />
 
         <TextView
             android:id="@+id/tvGroupName"
             android:layout_width="match_parent"
-            android:drawablePadding="6dp"
             android:layout_height="match_parent"
-            android:drawableRight="@mipmap/ic_arrow"
-            android:gravity="center_vertical|right"
-            tools:text="李思恒发起的群聊"
-            android:maxLines="1"
-            android:singleLine="true"
-            android:paddingLeft="12dp"
+            android:drawablePadding="6dp"
             android:ellipsize="end"
-            android:textColor="#ff333333"
+            android:gravity="center_vertical|right"
+            android:maxLines="1"
+            android:paddingLeft="12dp"
             android:paddingRight="12dp"
-            android:textSize="16sp"/>
+            android:singleLine="true"
+            android:textColor="#ff333333"
+            android:textSize="16sp"
+            tools:drawableRight="@mipmap/ic_arrow"
+            tools:text="李思恒发起的群聊" />
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvList"
-        android:layout_weight="1"
         android:layout_width="match_parent"
-        android:layout_height="0dp"/>
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
     <TextView
         android:id="@+id/tvDismissGroup"
@@ -73,9 +75,9 @@
         android:gravity="center"
         android:padding="15dp"
         android:text="解散群组"
-        android:visibility="gone"
-        tools:visibility="visible"
         android:textColor="@color/color_418ad5"
-        android:textSize="16sp"/>
+        android:textSize="16sp"
+        android:visibility="gone"
+        tools:visibility="visible" />
 
 </LinearLayout>

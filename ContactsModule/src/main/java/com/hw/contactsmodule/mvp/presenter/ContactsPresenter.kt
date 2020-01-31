@@ -83,9 +83,9 @@ class ContactsPresenter @Inject constructor() : BasePresenter<ContactsContract.V
                                 it.online = 1
                             }
 
-                            onlineSites.data.forEach {onlineBean->
+                            onlineSites.data.forEach { onlineBean ->
                                 allList.forEach {
-                                    if(onlineBean.name.equals(it.name)){
+                                    if (onlineBean.name.equals(it.name)) {
                                         //设置为在线状态
                                         it.online = 0
 
@@ -94,7 +94,7 @@ class ContactsPresenter @Inject constructor() : BasePresenter<ContactsContract.V
                                     }
                                 }
                             }
-                        }catch (e:Exception){
+                        } catch (e: Exception) {
                             ToastHelper.showShort("出现异常了")
                         }
                     } else {
@@ -187,6 +187,9 @@ class ContactsPresenter @Inject constructor() : BasePresenter<ContactsContract.V
                 })
     }
 
+    /**
+     * 获取群聊信息
+     */
     override fun getGroupChat() {
         checkViewAttached()
         mRootView?.showLoading()
@@ -216,7 +219,7 @@ class ContactsPresenter @Inject constructor() : BasePresenter<ContactsContract.V
     }
 
     //群组一键起会
-    override fun createConf(
+    override fun groupChatOneCreateConf(
         confName: String,
         duration: String,
         accessCode: String,
@@ -226,18 +229,62 @@ class ContactsPresenter @Inject constructor() : BasePresenter<ContactsContract.V
         checkViewAttached()
         mRootView?.showLoading()
 
+        //获取群主的人员
         contactsService.getGroupIdConstacts(groupId)
             .bindLife(lifecycleProvider)
             .subscribe({ baseData ->
                 mRootView?.apply {
                     if (NetWorkContants.RESPONSE_CODE == baseData.responseCode) {
                         var memberSipList = baseData.data.joinToString { it.sip }
+
                         HuaweiModuleService.createConfNetWork(
                             confName,
                             duration,
                             accessCode,
                             memberSipList,
                             groupId,
+                            type
+                        )
+                    } else {
+                        showError(baseData.message)
+                    }
+                }
+            }, {
+                mRootView?.apply {
+                    dismissLoading()
+                    showError(ExceptionHandle.handleException(it))
+                }
+            })
+    }
+
+    /**
+     * 组织机构一键起会
+     */
+    override fun organizationOneCreateConf(
+        confName: String,
+        duration: String,
+        accessCode: String,
+        depId: String,
+        type: Int
+    ) {
+        checkViewAttached()
+        mRootView?.showLoading()
+
+        //获取组织机构的人员
+        contactsService.queryByDepIdConstacts(depId.toInt())
+            .bindLife(lifecycleProvider)
+            .subscribe({ baseData ->
+                mRootView?.apply {
+                    if (NetWorkContants.RESPONSE_CODE == baseData.responseCode) {
+                        //获取人员的sip
+                        var memberSipList = baseData.data.joinToString { it.sip }
+
+                        HuaweiModuleService.createConfNetWork(
+                            confName,
+                            duration,
+                            accessCode,
+                            memberSipList,
+                            depId,
                             type
                         )
                     } else {
