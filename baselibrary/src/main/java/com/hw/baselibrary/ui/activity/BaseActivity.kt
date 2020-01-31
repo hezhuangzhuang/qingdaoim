@@ -19,7 +19,7 @@ abstract class BaseActivity : RxAppCompatActivity(), IBaseView {
     protected lateinit var mContentView: View
     protected lateinit var mActivity: Activity
 
-    protected lateinit var mLoadingDialog: ProgressLoading
+    public lateinit var mLoadingDialog: ProgressLoading
 
     /** 标题栏对象  */
     protected var mTitleBar: TitleBar? = null

@@ -376,14 +376,6 @@ class ContactsFragment : BaseMvpFragment<ContactsPresenter>(), ContactsContract.
         }
     }
 
-    override fun showLoading() {
-//        super.showLoading()
-    }
-
-    override fun dismissLoading() {
-//        super.dismissLoading()
-    }
-
     /**
      * 主线程中处理事件
      */
