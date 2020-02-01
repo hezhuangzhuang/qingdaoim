@@ -47,11 +47,13 @@ class OrganizationAdapter : BaseMultiItemQuickAdapter<MultiItemEntity, BaseViewH
      */
     private fun setOrganizationInfo(helper: BaseViewHolder, item: MultiItemEntity?) {
         var organizationItem = item as OrganizationItem
+
+        var name =
+            if (organizationItem.organizationBean.count > 0)
+                "${organizationItem.organizationBean.name}(${organizationItem.organizationBean.count})" else organizationItem.organizationBean.name
         //设置名称
         helper.setText(
-            R.id.tvName,
-            "${organizationItem.organizationBean.name}(${organizationItem.organizationBean.count})"
-        )
+            R.id.tvName, name)
             .setImageResource(
                 R.id.ivArrow,
                 if (organizationItem.isExpanded) R.mipmap.arrow_b else R.mipmap.arrow_r
@@ -102,9 +104,10 @@ class OrganizationAdapter : BaseMultiItemQuickAdapter<MultiItemEntity, BaseViewH
         var rootView = helper.getView<RelativeLayout>(R.id.rl_people)
 
         rootView.setPadding(
-            peopleBean.organizationBean.level * DisplayUtil.dp2px(
-                10.0f
-            ),  0, 0, 0
+            peopleBean.organizationBean.level * DisplayUtil.dp2px(10.0f),
+            0,
+            0,
+            0
         )
     }
 

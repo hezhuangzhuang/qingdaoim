@@ -3,12 +3,14 @@ package com.hw.contactsmodule.ui.fragment
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.alibaba.android.arouter.launcher.ARouter
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.entity.MultiItemEntity
 import com.hw.baselibrary.ui.fragment.BaseMvpFragment
+import com.hw.baselibrary.utils.DisplayUtil
 import com.hw.baselibrary.utils.ToastHelper
 import com.hw.contactsmodule.R
 import com.hw.contactsmodule.inject.component.DaggerContactsComponent
@@ -294,6 +296,13 @@ class ContactsFragment : BaseMvpFragment<ContactsPresenter>(), ContactsContract.
             override fun getHeaderName(pos: Int): String {
                 return allPeople.get(pos).firstLetter
             }
+        }
+
+        decoration?.apply {
+
+            setHeaderHeight(DisplayUtil.dp2px(22f))
+            setTextSize(DisplayUtil.sp2px(15f))
+            setTextColor(ContextCompat.getColor(mActivity,R.color.color_999))
         }
 
         //添加item

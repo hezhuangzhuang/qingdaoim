@@ -26,8 +26,8 @@
         app:tl_iconHeight="25dp"
         app:tl_iconMargin="2dp"
         app:tl_iconWidth="25dp"
-        app:tl_textSelectColor="#E64A3A"
-        app:tl_textUnselectColor="#666666"
+        app:tl_textSelectColor="#328CE8"
+        app:tl_textUnselectColor="#b5b5b5"
         app:tl_textsize="12sp"
         app:tl_underline_height="0dp" />
 

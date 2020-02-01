@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/rl_organ"
     android:layout_width="match_parent"
-    android:layout_height="45dp">
+    android:layout_height="55dp">
 
     <ImageView
         android:id="@+id/ivArrow"
@@ -11,13 +11,14 @@
         android:layout_height="45dp"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
-        android:padding="12dp"
-        android:src="@mipmap/arrow_r" />
+        android:padding="15dp"
+        android:src="@mipmap/ic_arrow" />
 
     <TextView
         android:id="@+id/tvName"
         android:layout_width="wrap_content"
-        android:layout_height="45dp"
+        android:layout_height="54dp"
+        android:layout_centerVertical="true"
         android:layout_toLeftOf="@id/ivCreateConf"
         android:layout_toRightOf="@id/ivArrow"
         android:gravity="center_vertical|left"

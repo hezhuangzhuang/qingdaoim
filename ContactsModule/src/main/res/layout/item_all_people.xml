@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/rl_people"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -23,7 +24,7 @@
         android:layout_toRightOf="@id/ivHead"
         android:gravity="center_vertical"
         android:singleLine="true"
-        android:text="名字"
+        tools:text="名字"
         android:textColor="@color/color_333"
         android:textSize="15sp"
         android:textStyle="bold" />
@@ -33,5 +34,7 @@
         android:layout_height="1px"
         android:layout_below="@id/ivHead"
         android:layout_marginTop="7dp"
-        android:background="@color/color_e5e5e5" />
+        android:background="@color/color_e5e5e5"
+        tools:background="@color/color_333"
+        />
 </RelativeLayout>

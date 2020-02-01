@@ -12,7 +12,7 @@
         android:layout_marginTop="4dp"
         android:gravity="center"
         android:maxLines="1"
-        android:text="时间"
+        tools:text="时间"
         android:textColor="@color/color_999"
         android:textSize="12sp" />
 

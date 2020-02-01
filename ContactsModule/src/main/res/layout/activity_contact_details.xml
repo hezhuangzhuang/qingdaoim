@@ -16,9 +16,7 @@
         app:backButton="false"
         app:leftIcon="@mipmap/bar_icon_back_black"
         app:titleColor="@color/white"
-        app:titleSize="18sp">
-
-    </com.hjq.bar.TitleBar>
+        app:titleSize="18sp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -71,7 +69,6 @@
                 android:text="发消息"
                 android:textColor="@color/color_333"
                 android:textSize="15sp" />
-
         </FrameLayout>
 
         <View
