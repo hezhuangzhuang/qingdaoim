@@ -14,11 +14,19 @@ interface ContactsContract {
     interface View : IBaseView {
         fun showAllPeople(allPeople: List<PeopleBean>,onlineNumber:Int)
 
-        fun showOrgan(allOrgan: List<OrganizationBean>)
+        //显示所有组织
+        fun showAllOrgan(allOrgan: List<OrganizationBean>)
+
+        //显示子组织人员
+        fun showChildOrganPeople(pos: Int, depId: Int, peoples: List<OrganizationBean>)
+
+        //查询子组织失败
+        fun queryChildOrganPeopleError(errorMsg: String)
 
         //显示组织人员
         fun showOrganPeople(pos: Int, peoples: List<PeopleBean>)
 
+        //查询子组织失败
         fun queryOrganPeopleError(errorMsg: String)
 
         fun showGroupChat(groupChats: List<GroupChatBean>)
@@ -34,6 +42,10 @@ interface ContactsContract {
 
         //获取所有组织
         fun getAllOrganizations()
+
+
+        //获取子组织
+        fun getChildOrganizations(pos: Int, depId: Int)
 
         //通过组织id获取组织下的人员
         fun getDepIdConstacts(pos: Int, depId: Int)

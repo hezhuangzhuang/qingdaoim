@@ -19,6 +19,7 @@ data class PeopleBean(
 ) : Serializable, MultiItemEntity {
 
     override fun getItemType(): Int {
+        //2代表返回的人员
         return 2
     }
 

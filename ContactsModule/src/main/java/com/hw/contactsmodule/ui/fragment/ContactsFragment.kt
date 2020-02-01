@@ -56,8 +56,8 @@ class ContactsFragment : BaseMvpFragment<ContactsPresenter>(), ContactsContract.
     //群聊适配器
     private lateinit var groupChatAdapter: GroupChatAdapter
 
-    private val organPeopleMap: HashMap<Int, List<PeopleBean>> by lazy {
-        HashMap<Int, List<PeopleBean>>()
+    private val organPeopleMap: HashMap<Int, List<OrganizationBean>> by lazy {
+        HashMap<Int, List<OrganizationBean>>()
     }
 
     private val errorView: View by lazy {
@@ -158,7 +158,7 @@ class ContactsFragment : BaseMvpFragment<ContactsPresenter>(), ContactsContract.
             override fun onItemClick(adapter: BaseQuickAdapter<*, *>?, view: View?, position: Int) {
                 val peopleBean = allPeopleAdapter.getItem(position)!!
                 //跳转到联系人详情
-                startContactsDetails(peopleBean)
+                startContactsDetails(peopleBean.sip, peopleBean.name)
             }
         })
         rvList.layoutManager = LinearLayoutManager(mActivity)
@@ -170,11 +170,11 @@ class ContactsFragment : BaseMvpFragment<ContactsPresenter>(), ContactsContract.
     /**
      * 跳转到联系人详情
      */
-    private fun startContactsDetails(peopleBean: PeopleBean) {
+    private fun startContactsDetails(sip: String, name: String) {
         ARouter.getInstance()
             .build(RouterPath.Contacts.CONTACT_DETAILS)
-            .withString(RouterPath.Contacts.FILED_RECEIVE_ID, peopleBean.sip)
-            .withString(RouterPath.Contacts.FILED_RECEIVE_NAME, peopleBean.name)
+            .withString(RouterPath.Contacts.FILED_RECEIVE_ID, sip)
+            .withString(RouterPath.Contacts.FILED_RECEIVE_NAME, name)
             .navigation()
     }
 
@@ -188,7 +188,7 @@ class ContactsFragment : BaseMvpFragment<ContactsPresenter>(), ContactsContract.
             var item = organizationAdapter.getItem(position) as OrganizationItem
             //组织机构一键起会
             mPresenter.organizationOneCreateConf(
-                item.organizationBean.depName,
+                item.organizationBean.name,
                 "120",
                 "",
                 item.organizationBean.depId.toString(),
@@ -203,16 +203,16 @@ class ContactsFragment : BaseMvpFragment<ContactsPresenter>(), ContactsContract.
 
             override fun onExpandClick(pos: Int, depId: Int) {
                 //包含数据则直接展开
-                if (organPeopleMap.containsKey(pos)) {
+                if (organPeopleMap.containsKey(depId)) {
                     organizationAdapter.expand(pos)
                 } else {//请求组织下的人员
-                    mPresenter.getDepIdConstacts(pos, depId)
+                    mPresenter.getChildOrganizations(pos, depId)
                 }
             }
 
-            override fun onPersonClick(peopleBean: PeopleBean) {
+            override fun onPersonClick(organizationBean: OrganizationBean) {
                 //跳转到联系人详情
-                startContactsDetails(peopleBean)
+                startContactsDetails(organizationBean.sip, organizationBean.name)
             }
         })
         rvList.layoutManager = LinearLayoutManager(mActivity)
@@ -300,13 +300,14 @@ class ContactsFragment : BaseMvpFragment<ContactsPresenter>(), ContactsContract.
         rvList.addItemDecoration(decoration!!)
     }
 
-    //显示组织结构
-    override fun showOrgan(allOrgan: List<OrganizationBean>) {
+    //显示所有组织结构
+    override fun showAllOrgan(allOrgan: List<OrganizationBean>) {
         showOnline(false)
 
         var multiItems = ArrayList<MultiItemEntity>()
 
         allOrgan.forEach { organBean ->
+            organBean.level = 0
             multiItems.add(OrganizationItem(organBean))
         }
 
@@ -314,18 +315,48 @@ class ContactsFragment : BaseMvpFragment<ContactsPresenter>(), ContactsContract.
         organizationAdapter.replaceData(multiItems)
     }
 
+    //查询子组织
+    override fun showChildOrganPeople(pos: Int, depId: Int, peoples: List<OrganizationBean>) {
+        var parentItem = organizationAdapter.getItem(pos) as OrganizationItem;
+
+        val sortedBy = peoples.sortedBy {
+            -it.type
+        }
+
+        sortedBy.forEach { organization ->
+            organization.level = parentItem.organizationBean.level + 1
+            //type1 是组织 2是人员
+            parentItem.addSubItem(OrganizationItem(organization))
+        }
+
+        //判断是否有这个列表
+        if (!organPeopleMap.containsKey(depId)) {
+            //添加到map中，避免重复请求
+            organPeopleMap.put(depId, sortedBy)
+        }
+
+        organizationAdapter.notifyDataSetChanged()
+        organizationAdapter.expand(pos)
+    }
+
+    //查询子组织失败
+    override fun queryChildOrganPeopleError(errorMsg: String) {
+
+    }
+
     //显示组织的下属成员
     override fun showOrganPeople(pos: Int, peoples: List<PeopleBean>) {
-        var item = organizationAdapter.getItem(pos) as OrganizationItem;
+        var parentItem = organizationAdapter.getItem(pos) as OrganizationItem;
+
         //添加到组织结构中
         peoples.forEach {
-            item.addSubItem(it)
+            //            parentItem.addSubItem(it)
         }
 
         //判断是否有这个列表
         if (!organPeopleMap.containsKey(pos)) {
             //添加到map中，避免重复请求
-            organPeopleMap.put(pos, peoples)
+//            organPeopleMap.put(pos, peoples)
         }
 
         organizationAdapter.notifyDataSetChanged()

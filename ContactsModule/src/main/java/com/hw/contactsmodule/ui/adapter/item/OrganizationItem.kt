@@ -10,14 +10,17 @@ import com.hw.contactsmodule.ui.adapter.OrganizationAdapter
  *author：pc-20171125
  *data:2020/1/8 19:10
  */
-class OrganizationItem( var organizationBean: OrganizationBean) : AbstractExpandableItem<PeopleBean>(),
+class OrganizationItem(var organizationBean: OrganizationBean) :
+    AbstractExpandableItem<OrganizationItem>(),
     MultiItemEntity {
 
     override fun getLevel(): Int {
-        return OrganizationAdapter.TYPE_LEVEL_ORGANIZATION;
+//        return OrganizationAdapter.TYPE_LEVEL_ORGANIZATION;
+        return organizationBean.type
     }
 
     override fun getItemType(): Int {
-        return OrganizationAdapter.TYPE_LEVEL_ORGANIZATION;
+//        return OrganizationAdapter.TYPE_LEVEL_ORGANIZATION;
+        return organizationBean.type
     }
 }

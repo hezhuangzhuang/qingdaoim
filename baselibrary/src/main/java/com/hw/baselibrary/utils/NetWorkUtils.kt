@@ -415,7 +415,6 @@ object NetWorkUtils {
         } catch (e: SocketException) {
             e.printStackTrace()
         }
-
         return ""
     }
 

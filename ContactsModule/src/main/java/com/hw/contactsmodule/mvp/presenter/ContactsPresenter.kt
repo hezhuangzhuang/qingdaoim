@@ -1,13 +1,11 @@
 package com.hw.contactsmodule.mvp.presenter
 
-import android.widget.Toast
 import com.hazz.kotlinmvp.net.exception.ExceptionHandle
 import com.hw.baselibrary.bindLife
 import com.hw.baselibrary.common.BaseData
 import com.hw.baselibrary.common.BasePresenter
 import com.hw.baselibrary.net.NetWorkContants
 import com.hw.baselibrary.utils.LogUtils
-import com.hw.baselibrary.utils.ToastHelper
 import com.hw.baselibrary.utils.sharedpreferences.SPStaticUtils
 import com.hw.contactsmodule.mvp.contract.ContactsContract
 import com.hw.contactsmodule.mvp.model.ContactsService
@@ -27,6 +25,7 @@ import javax.inject.Inject
  */
 class ContactsPresenter @Inject constructor() : BasePresenter<ContactsContract.View>(),
     ContactsContract.Presenter {
+
     @Inject
     lateinit var contactsService: ContactsService
 
@@ -120,16 +119,47 @@ class ContactsPresenter @Inject constructor() : BasePresenter<ContactsContract.V
         checkViewAttached()
         mRootView?.showLoading()
 
-        contactsService.queryAllOrganizations()
+        contactsService.queryAllOrganizations("0")
             .bindLife(lifecycleProvider)
             .subscribe({ baseData ->
                 mRootView?.apply {
                     dismissLoading()
                     if (NetWorkContants.RESPONSE_CODE == baseData.responseCode) {
                         if (baseData.data.size > 0) {
-                            showOrgan(baseData.data)
+                            showAllOrgan(baseData.data)
                         } else {
                             showEmptyView()
+                        }
+                    } else {
+                        showError(baseData.message)
+                    }
+                }
+            }, {
+                mRootView?.apply {
+                    dismissLoading()
+                    showError(ExceptionHandle.handleException(it))
+                }
+            }
+            )
+    }
+
+    /**
+     * 通过depId查看子组织结构
+     */
+    override fun getChildOrganizations(pos: Int, depId: Int) {
+        checkViewAttached()
+        mRootView?.showLoading()
+
+        contactsService.queryAllOrganizations(depId.toString())
+            .bindLife(lifecycleProvider)
+            .subscribe({ baseData ->
+                mRootView?.apply {
+                    dismissLoading()
+                    if (NetWorkContants.RESPONSE_CODE == baseData.responseCode) {
+                        if (baseData.data.size > 0) {
+                            showChildOrganPeople(pos, depId,baseData.data)
+                        } else {
+//                            showEmptyView()
                         }
                     } else {
                         showError(baseData.message)

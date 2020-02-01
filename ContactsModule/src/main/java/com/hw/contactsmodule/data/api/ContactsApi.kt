@@ -47,6 +47,13 @@ interface ContactsApi {
     fun getAllOrganizations(): Observable<BaseData<OrganizationBean>>
 
     /**
+     * 获取所有组织
+     */
+    @Headers("Content-Type: application/json", "Accept: application/json")//需要添加头
+    @POST("im/mobile/department/findByParent")
+    fun getAllOrganizaitions(@Query("parentId") parentId: String): Observable<BaseData<OrganizationBean>>
+
+    /**
      * 根据组织id获取所属人员
      */
     @Headers("Content-Type: application/json", "Accept: application/json")//需要添加头

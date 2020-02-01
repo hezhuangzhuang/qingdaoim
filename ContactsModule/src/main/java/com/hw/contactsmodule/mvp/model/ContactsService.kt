@@ -60,6 +60,16 @@ class ContactsService @Inject constructor() {
     }
 
     /**
+     * 获取组织结构
+     */
+    fun queryAllOrganizations(depId: String): Observable<BaseData<OrganizationBean>> {
+        return RetrofitManager
+            .create(ContactsApi::class.java, Urls.WEBSOCKET_URL)
+            .getAllOrganizaitions(depId)
+            .compose(CustomCompose())
+    }
+
+    /**
      * 通过组织id查询下属成员
      */
     fun queryByDepIdConstacts(depId: Int): Observable<BaseData<PeopleBean>> {

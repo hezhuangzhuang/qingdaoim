@@ -14,6 +14,7 @@ import com.alibaba.android.arouter.launcher.ARouter
 import com.hw.baselibrary.common.BaseApp
 import com.hw.baselibrary.constant.PermissionConstants
 import com.hw.baselibrary.net.NetWorkContants
+import com.hw.baselibrary.net.Urls
 import com.hw.baselibrary.ui.activity.BaseActivity
 import com.hw.baselibrary.utils.LogUtils
 import com.hw.baselibrary.utils.PermissionUtils
@@ -33,7 +34,19 @@ import com.hw.provider.user.UserContants
 import kotlinx.android.synthetic.main.activity_launcher.*
 
 class LauncherActivity : BaseActivity() {
+
     override fun initData(bundle: Bundle?) {
+        //是否是正式环境
+        var isFormalUrl = SPStaticUtils.getBoolean(UserContants.FORMAL_URL, true)
+
+        //正式环境
+        if (isFormalUrl) {
+            Urls.FILE_URL = Urls.FILE_FORMAL
+            Urls.WEBSOCKET_URL = Urls.WEBSOCKET_FORMAL
+        } else {//测试环境
+            Urls.FILE_URL = Urls.FILE_TEST
+            Urls.WEBSOCKET_URL = Urls.WEBSOCKET_TEST
+        }
     }
 
     override fun bindLayout(): Int = R.layout.activity_launcher
@@ -51,7 +64,7 @@ class LauncherActivity : BaseActivity() {
             PermissionConstants.CAMERA,
             PermissionConstants.MICROPHONE
         )
-    //            .rationale { shouldRequest -> DialogHelper.showRationaleDialog(shouldRequest) }
+            //            .rationale { shouldRequest -> DialogHelper.showRationaleDialog(shouldRequest) }
             .callback(object : PermissionUtils.FullCallback {
                 override fun onGranted(permissionsGranted: List<String>) {
                     //注册广播

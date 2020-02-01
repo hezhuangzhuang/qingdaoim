@@ -26,7 +26,6 @@ object Urls {
     const val FILE_FORMAL = "http://120.221.95.142:7002/videoConf/"
     //客户环境-end
 
-
     //即时通讯和基础业务的路径
     public var WEBSOCKET_URL = WEBSOCKET_FORMAL
 

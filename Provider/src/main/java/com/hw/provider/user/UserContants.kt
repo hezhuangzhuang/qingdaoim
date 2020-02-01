@@ -28,4 +28,7 @@ object UserContants {
     //是否设置了权限
     val SETTING_PERMISSION = "SETTING_PERMISSION"
 
+    //是否是正式环境
+    val FORMAL_URL = "FORMAL_URL"
+
 }
