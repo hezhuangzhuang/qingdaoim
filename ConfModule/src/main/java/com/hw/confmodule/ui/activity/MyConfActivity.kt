@@ -57,6 +57,10 @@ class MyConfActivity : BaseMvpActivity<MyConfPresenter>(), MyConfContract.View {
     //请求的页数
     var pageNum = 0
 
+    val displayName: String by lazy {
+        SPStaticUtils.getString(UserContants.DISPLAY_NAME)
+    }
+
     override fun initComponent() {
         DaggerConfComponent
             .builder()
@@ -87,9 +91,9 @@ class MyConfActivity : BaseMvpActivity<MyConfPresenter>(), MyConfContract.View {
         if (isHistory) {
             titleBar.rightTitle = ""
             initHistoryConfAdapter()
-            tvName.text="历史会议"
+            tvName.text = "历史会议"
         } else {
-            tvName.text="我的会议"
+            tvName.text = "我的会议"
             initMyConfAdapter()
         }
 
@@ -135,6 +139,9 @@ class MyConfActivity : BaseMvpActivity<MyConfPresenter>(), MyConfContract.View {
         //是否启用刷新
         refreshLayout.setEnableRefresh(isHistory)
         refreshLayout.setEnableLoadMore(isHistory)
+
+        //设置是否在没有更多数据之后 Footer 跟随内容
+        refreshLayout.setEnableFooterFollowWhenNoMoreData(true)
     }
 
     /**
@@ -175,7 +182,7 @@ class MyConfActivity : BaseMvpActivity<MyConfPresenter>(), MyConfContract.View {
     }
 
     override fun queryConfListError(errorMsg: String) {
-        if(errorMsg.contains("查询不到会议")){
+        if (errorMsg.contains("查询不到会议")) {
             confAdapter.setEmptyView(emptyView)
         }
     }
@@ -185,11 +192,11 @@ class MyConfActivity : BaseMvpActivity<MyConfPresenter>(), MyConfContract.View {
      */
     override fun queryHistoryEmpty(isFirst: Boolean) {
         if (isFirst) {
-            refreshLayout.finishRefresh(true)
+            refreshLayout.finishRefreshWithNoMoreData()
             //显示空布局
             historyListAdapter.setEmptyView(emptyView)
             //禁用加载更多
-            refreshLayout.setEnableLoadMore(false)
+//            refreshLayout.setEnableLoadMore(false)
         } else {
             //完成加载并标记没有更多数据
             refreshLayout.finishLoadMoreWithNoMoreData()
@@ -201,7 +208,9 @@ class MyConfActivity : BaseMvpActivity<MyConfPresenter>(), MyConfContract.View {
      */
     override fun showHistoryList(
         isFirst: Boolean,
-        historyConfList: List<HistoryConfBean.DataBean>) {
+        historyConfList: List<HistoryConfBean.DataBean>
+    ) {
+
         if (isFirst) {
             pageNum = 1
             //刷新加载更多状态

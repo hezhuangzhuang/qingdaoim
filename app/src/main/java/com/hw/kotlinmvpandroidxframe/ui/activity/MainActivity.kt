@@ -91,7 +91,7 @@ class MainActivity : BaseActivity() {
         ArrayList<Fragment>()
     }
 
-    private var currentTab = 0
+    private var currentTab = 1
 
     override fun initData(bundle: Bundle?) {
         //初始化网络监听

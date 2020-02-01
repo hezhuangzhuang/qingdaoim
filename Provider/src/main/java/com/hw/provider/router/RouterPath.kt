@@ -19,6 +19,8 @@ object RouterPath {
     class Main {
         companion object {
             const val PATH_MAIN = "/main/main"
+
+            const val FILED_TAB_INDEX = "FILED_TAB_INDEX"
         }
     }
 

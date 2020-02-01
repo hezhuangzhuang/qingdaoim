@@ -25,6 +25,16 @@ interface ConfApi {
         @Query("pageSize") pageSize: Int = 10
     ): Observable<HistoryConfBean>
 
+    /**
+     * 获取历史会议列表
+     */
+    @GET("im/confInfoAccount/queryListByMobile")
+    fun getHistoryConfListBySip(
+        @Query("pageNum") pageNum: Int,
+        @Query("pageSize") pageSize: Int = 10,
+        @Query("sipAccount") sipAccount: String
+    ): Observable<HistoryConfBean>
+
 
     /**
      * 创建群组

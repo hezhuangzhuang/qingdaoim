@@ -66,6 +66,15 @@ class ConfService @Inject constructor() {
     }
 
     /**
+     * 获取历史会议列表
+     */
+    fun getHistoryConfList(pageNum: Int, sip: String): Observable<HistoryConfBean> {
+        return RetrofitManager.create(ConfApi::class.java, Urls.WEBSOCKET_URL)
+            .getHistoryConfListBySip(pageNum = pageNum, sipAccount = sip)
+            .compose(CustomCompose())
+    }
+
+    /**
      * 创建群组
      */
     fun createGroupChat(

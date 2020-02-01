@@ -377,7 +377,7 @@ class CreateConfActivity : BaseMvpActivity<CreateConfPresenter>(), CreateConfCon
         var accessCode: String = if (etConfCode.text.isEmpty()) "" else etConfCode.text.toString()
 
         var selectUri =
-            selectPeoples.joinToString { it.sip } + ", ${SPStaticUtils.getString(UserContants.HUAWEI_ACCOUNT)}"
+            selectPeoples.joinToString { it.sip } + ",${SPStaticUtils.getString(UserContants.HUAWEI_ACCOUNT)}"
 
         //预约会议
         if (ConfContants.RESERVED_CONF == isReservedConf) {

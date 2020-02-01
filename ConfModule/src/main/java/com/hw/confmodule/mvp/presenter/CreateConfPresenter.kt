@@ -131,7 +131,6 @@ class CreateConfPresenter @Inject constructor() : BasePresenter<CreateConfContra
         )
     }
 
-
     /**
      * 创建群组
      */
