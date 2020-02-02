@@ -6,6 +6,7 @@ if (isUserModule.toBoolean()) {
 
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+
 //dagger2
 apply plugin: 'kotlin-kapt'
 
@@ -50,9 +51,9 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test:runner:1.2.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+//    testImplementation 'junit:junit:4.12'
+//    androidTestImplementation 'androidx.test:runner:1.2.0'
+//    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
     api project(path: ':Provider')
 

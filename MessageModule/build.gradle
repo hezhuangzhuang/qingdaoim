@@ -36,9 +36,9 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+//    testImplementation 'junit:junit:4.12'
+//    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+//    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
     api project(path: ':Provider')
 
@@ -49,14 +49,14 @@ dependencies {
     kapt rootProject.ext.arouterCompiler
 
     //websocket--https://github.com/TooTallNate/Java-WebSocket
-    implementation 'org.java-websocket:Java-WebSocket:1.4.0'
+    implementation rootProject.ext.webSocket
 
     //图片选择-https://github.com/LuckSiege/PictureSelector
-    implementation 'com.github.LuckSiege.PictureSelector:picture_library:v2.4.3'
+    implementation rootProject.ext.pictureSelector
 
     //语音控件
-    implementation 'com.lqr.audio:library:1.0.0'
+    implementation rootProject.ext.audioLib
 
     //下载控件--https://github.com/lingochamp/FileDownloader
-    implementation 'com.liulishuo.filedownloader:library:1.7.7'
+    implementation rootProject.ext.fileDownloader
 }
