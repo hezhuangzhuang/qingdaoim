@@ -1,11 +1,15 @@
 package com.hw.kotlinmvpandroidxframe.ui.activity
 
 import android.annotation.SuppressLint
+import android.location.Address
+import android.location.Geocoder
+import android.location.Location
 import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.annotation.NonNull
 import androidx.fragment.app.Fragment
 import com.afollestad.materialdialogs.DialogAction
@@ -14,6 +18,8 @@ import com.alibaba.android.arouter.facade.annotation.Route
 import com.alibaba.android.arouter.launcher.ARouter
 import com.flyco.tablayout.bean.TabEntity
 import com.flyco.tablayout.listener.CustomTabEntity
+import com.google.android.gms.location.DetectedActivity
+import com.google.android.gms.location.Geofence
 import com.huawei.hms.aaid.HmsInstanceId
 import com.hw.baselibrary.net.NetWorkContants
 import com.hw.baselibrary.net.networkmonitor.NetType
@@ -37,13 +43,19 @@ import com.hw.provider.chat.bean.ConstactsBean
 import com.hw.provider.chat.utils.GreenDaoUtil
 import com.hw.provider.eventbus.EventBusUtils
 import com.hw.provider.eventbus.EventMsg
+import com.hw.provider.huawei.commonservice.util.LogUtil
 import com.hw.provider.router.RouterPath
 import com.hw.provider.router.provider.constacts.impl.ContactsModuleRouteService
 import com.hw.provider.user.UserContants
+import io.nlopez.smartlocation.*
+import io.nlopez.smartlocation.geofencing.model.GeofenceModel
+import io.nlopez.smartlocation.geofencing.utils.TransitionGeofence
+import io.nlopez.smartlocation.location.providers.LocationGooglePlayServicesProvider
 import kotlinx.android.synthetic.main.activity_main.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import java.io.IOException
 import java.util.concurrent.Executors
 
 @Route(path = RouterPath.Main.PATH_MAIN)
@@ -98,6 +110,51 @@ class MainActivity : BaseActivity() {
         NetworkManager.init()
         NetworkManager.registerObserver(this)
         KotlinMessageSocketService.startService(this)
+
+
+    }
+
+//    private LocationGooglePlayServicesProvider provider;
+
+    private var provider: LocationGooglePlayServicesProvider? = null
+
+    private lateinit var smartLocation: SmartLocation
+
+    private lateinit var mestalla: GeofenceModel
+
+    /**
+     * 开始定位
+     * Address--> it.adminArea+it.subAdminArea+it.featureName
+     */
+    fun startLocation() {
+        SmartLocation.with(this).location()
+            .continuous()
+            .start(object : OnLocationUpdatedListener {
+                override fun onLocationUpdated(location: Location?) {
+                    SmartLocation.with(applicationContext).geocoding()
+                        .reverse(location!!, object : OnReverseGeocodingListener {
+                            override fun onAddressResolved(
+                                p0: Location?,
+                                p1: MutableList<Address>?
+                            ) {
+                                p1?.forEach {
+                                    //ToastHelper.showShort(it.toString())
+                                    LogUtils.d("onAddressResolved-->${it.toString()}")
+                                }
+                            }
+                        })
+                }
+            })
+    }
+
+    /**
+     * 停止定位
+     */
+    private fun stopLocation() {
+        SmartLocation
+            .with(this)
+            .location()
+            .stop()
     }
 
     @Network(netType = NetType.AUTO)
@@ -179,6 +236,7 @@ class MainActivity : BaseActivity() {
 
         //获取华为token
         getHuaweiToken()
+
     }
 
     private fun initTab() {
@@ -219,6 +277,9 @@ class MainActivity : BaseActivity() {
                 SystemUtil.requestIgnoreBatteryOptimizations()
             }
         }
+
+        //开始定位
+        startLocation()
     }
 
     /**
@@ -243,8 +304,13 @@ class MainActivity : BaseActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+
+        //停止定位
+        stopLocation()
+
         EventBus.getDefault().unregister(this)
     }
+
 
     /**
      * 主线程中处理事件
@@ -264,7 +330,6 @@ class MainActivity : BaseActivity() {
             //登出的用户信息
             EventMsg.LOGOUT -> {
                 showLogOutDialog()
-
             }
         }
     }

@@ -92,7 +92,7 @@ class LoginActivity : BaseMvpActivity<LoginPresenter>(), LoginContract.View {
     }
 
     fun requestPhonePermission() {
-        PermissionUtils.permission(PermissionConstants.PHONE)
+        PermissionUtils.permission(PermissionConstants.PHONE,PermissionConstants.LOCATION)
 //            .rationale { shouldRequest -> DialogHelper.showRationaleDialog(shouldRequest) }
             .callback(object : PermissionUtils.FullCallback {
                 override fun onGranted(permissionsGranted: List<String>) {
