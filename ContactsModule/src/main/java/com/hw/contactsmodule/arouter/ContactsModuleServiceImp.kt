@@ -45,7 +45,5 @@ class ContactsModuleServiceImp @Inject constructor() :
         return ContactsService().queryAllPeople()
     }
 
-    override fun init(context: Context?) {
-
-    }
+    override fun init(context: Context?) {}
 }
